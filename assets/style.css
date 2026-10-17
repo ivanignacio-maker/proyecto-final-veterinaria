@@ -1,0 +1,270 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #1d2939;
+    background: #f4f7fb;
+}
+
+body {
+    margin: 0;
+}
+
+/* =========================================
+   Navegación y Cabecera
+========================================= */
+.topbar {
+    background: #123b35;
+    color: #fff;
+    padding: 15px max(20px, calc((100% - 1120px) / 2));
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.brand {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: #fff;
+    text-decoration: none;
+}
+
+.topbar nav {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.topbar nav a {
+    color: #e3f4ed;
+    text-decoration: none;
+    font-size: .92rem;
+}
+
+.topbar nav a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================
+   Layout Principal
+========================================= */
+.container {
+    max-width: 1120px;
+    margin: 30px auto;
+    padding: 0 20px;
+    min-height: 70vh;
+}
+
+.hero {
+    padding: 28px;
+    border-radius: 20px;
+    background: linear-gradient(120deg, #e1f5ed, #f2f8ff);
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    margin: 0 0 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+/* =========================================
+   Tarjetas y Paneles
+========================================= */
+.card,
+form.panel,
+.panel {
+    background: #fff;
+    border: 1px solid #e1e7ef;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 14px #152c4010;
+    margin-bottom: 18px;
+}
+
+.card h2,
+.card h3 {
+    margin-top: 0;
+}
+
+.card h2 {
+    font-size: 1.15rem;
+}
+
+.card form {
+    margin-top: 10px;
+}
+
+/* =========================================
+   Botones y Elementos de Acción
+========================================= */
+.btn,
+button {
+    background: #126b58;
+    color: white;
+    border: 0;
+    border-radius: 9px;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    font: inherit;
+}
+
+button:hover,
+.btn:hover {
+    filter: brightness(.95);
+}
+
+.btn.secondary {
+    background: #e7f0ed;
+    color: #164c40;
+}
+
+.btn.danger {
+    background: #a52b2b;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+/* =========================================
+   Formularios
+========================================= */
+label {
+    display: block;
+    font-weight: 600;
+    margin: 12px 0 5px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cfd8e3;
+    border-radius: 8px;
+    font: inherit;
+    background: white;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 3px solid #b7e4d7;
+    border-color: #16846b;
+}
+
+textarea {
+    min-height: 100px;
+}
+
+input[type=checkbox] {
+    width: auto;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 8px 16px;
+}
+
+/* =========================================
+   Tablas
+========================================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #e8edf2;
+    vertical-align: top;
+}
+
+th {
+    background: #eef4f3;
+}
+
+/* =========================================
+   Utilidades y Componentes UI
+========================================= */
+.muted {
+    color: #667085;
+}
+
+.notice {
+    padding: 13px;
+    background: #e4f7ed;
+    border: 1px solid #b4e5cb;
+    border-radius: 10px;
+    margin-bottom: 18px;
+}
+
+.pill {
+    display: inline-block;
+    background: #e9f1ff;
+    color: #244b85;
+    padding: 4px 9px;
+    border-radius: 99px;
+    font-size: .85rem;
+}
+
+.pet-photo {
+    width: 112px;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid #d9e3e8;
+    display: block;
+    margin: 0 0 14px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #667085;
+    font-size: .9rem;
+}
+
+/* =========================================
+   Responsive / Dispositivos Móviles
+========================================= */
+@media (max-width: 650px) {
+    .topbar {
+        align-items: flex-start;
+    }
+    
+    .topbar nav {
+        gap: 9px;
+    }
+    
+    .container {
+        margin-top: 18px;
+        padding: 0 12px;
+    }
+    
+    th,
+    td {
+        padding: 8px;
+        font-size: .9rem;
+    }
+}
