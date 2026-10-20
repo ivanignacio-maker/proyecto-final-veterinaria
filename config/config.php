@@ -34,6 +34,7 @@ if (!defined('BASE_URL')) {
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_name('vetcompartido_session');
     session_set_cookie_params([
+        'lifetime' => 2592000,
         'httponly' => true,
         'secure'   => !empty($_SERVER['HTTPS']),
         'samesite' => 'Lax'
@@ -68,6 +69,15 @@ function e(?string $value): string {
     return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
 }
 
+function format_name(?string $name): string {
+    if ($name === null || $name === '') return '';
+    return mb_convert_case(trim($name), MB_CASE_TITLE, 'UTF-8');
+}
+
+function e_name(?string $value): string {
+    return e(format_name($value));
+}
+
 function url(string $path = ''): string {
     return BASE_URL . '/' . ltrim($path, '/');
 }
@@ -95,25 +105,25 @@ function verify_csrf(): void {
 }
 
 // ============================================================================
-// Guardias de Acceso por Roles
+// Guardias de Acceso por Roles (Redirigen al Login Unificado)
 // ============================================================================
 function require_vet(): void {
     if (empty($_SESSION['vet_user_id']) || empty($_SESSION['clinic_id'])) {
-        header('Location: ' . url('login.php?tipo=veterinaria'));
+        header('Location: ' . url('login.php'));
         exit;
     }
 }
 
 function require_admin(): void {
     if (empty($_SESSION['admin_id'])) {
-        header('Location: ' . url('admin/login.php'));
+        header('Location: ' . url('login.php'));
         exit;
     }
 }
 
 function require_client(): void {
     if (empty($_SESSION['client_id'])) {
-        header('Location: ' . url('login.php?tipo=cliente'));
+        header('Location: ' . url('login.php'));
         exit;
     }
 }
@@ -160,49 +170,123 @@ function ensure_upload_dir(): string {
 }
 
 // ============================================================================
-// Validación Automática de Cookie "Recordarme" (Veterinarias)
+// Helpers para Gestión de Cookie y Token "Recordarme"
 // ============================================================================
-if (empty($_SESSION['vet_user_id']) && !empty($_COOKIE['vet_remember'])) {
+function create_remember_cookie(string $userType, int $userId): void {
+    try {
+        $selector  = bin2hex(random_bytes(12));
+        $validator = bin2hex(random_bytes(32));
+        $vetUserId = ($userType === 'vet') ? $userId : null;
+
+        $q = db()->prepare("
+            INSERT INTO remember_tokens(user_type, user_id, vet_user_id, selector, validator_hash, expires_at) 
+            VALUES(?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 60 DAY))
+        ");
+        $q->execute([$userType, $userId, $vetUserId, $selector, hash('sha256', $validator)]);
+
+        setcookie('vet_remember', $selector . ':' . $validator, [
+            'expires'  => time() + (86400 * 60),
+            'path'     => '/',
+            'secure'   => !empty($_SERVER['HTTPS']),
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    } catch (Throwable $e) {
+        error_log('Failed creating remember cookie: ' . $e->getMessage());
+    }
+}
+
+function clear_remember_cookie(): void {
+    if (!empty($_COOKIE['vet_remember'])) {
+        $parts = explode(':', (string)$_COOKIE['vet_remember'], 2);
+        if (!empty($parts[0])) {
+            try {
+                $q = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
+                $q->execute([$parts[0]]);
+            } catch (Throwable $e) {
+                // ignore
+            }
+        }
+    }
+    setcookie('vet_remember', '', [
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'secure'   => !empty($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+}
+
+// ============================================================================
+// Validación Automática de Cookie "Recordarme" (Cualquier Rol)
+// ============================================================================
+if (empty($_SESSION['vet_user_id']) && empty($_SESSION['client_id']) && empty($_SESSION['admin_id']) && !empty($_COOKIE['vet_remember'])) {
     $parts = explode(':', (string)$_COOKIE['vet_remember'], 2);
     if (count($parts) === 2 && preg_match('/^[a-f0-9]{24}$/', $parts[0]) && preg_match('/^[a-f0-9]{64}$/', $parts[1])) {
         try {
-            $q = db()->prepare("
-                SELECT t.*, u.clinic_id, u.username, u.active, c.name AS clinic_name, c.active AS clinic_active 
-                FROM remember_tokens t 
-                JOIN vet_users u ON u.id = t.vet_user_id 
-                JOIN clinics c ON c.id = u.clinic_id 
-                WHERE t.selector = ? AND t.expires_at > NOW() 
-                LIMIT 1
-            ");
+            $q = db()->prepare("SELECT * FROM remember_tokens WHERE selector = ? AND expires_at > NOW() LIMIT 1");
             $q->execute([$parts[0]]);
             $t = $q->fetch();
 
-            if ($t && $t['active'] && $t['clinic_active'] && hash_equals($t['validator_hash'], hash('sha256', $parts[1]))) {
-                session_regenerate_id(true);
-                $_SESSION['vet_user_id']  = $t['vet_user_id'];
-                $_SESSION['clinic_id']    = $t['clinic_id'];
-                $_SESSION['vet_username'] = $t['username'];
-                $_SESSION['clinic_name']  = $t['clinic_name'];
+            if ($t && hash_equals($t['validator_hash'], hash('sha256', $parts[1]))) {
+                $uType = $t['user_type'] ?? 'vet';
+                $uId   = (int)($t['user_id'] ?: $t['vet_user_id']);
 
-                $q = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
-                $q->execute([$parts[0]]);
+                if ($uType === 'vet') {
+                    $vq = db()->prepare("
+                        SELECT u.*, c.name AS clinic_name, c.active AS clinic_active 
+                        FROM vet_users u 
+                        JOIN clinics c ON c.id = u.clinic_id 
+                        WHERE u.id = ? AND u.active = 1 
+                        LIMIT 1
+                    ");
+                    $vq->execute([$uId]);
+                    $vu = $vq->fetch();
+                    if ($vu && $vu['clinic_active']) {
+                        session_regenerate_id(true);
+                        $_SESSION['vet_user_id']  = (int)$vu['id'];
+                        $_SESSION['clinic_id']    = (int)$vu['clinic_id'];
+                        $_SESSION['vet_username'] = $vu['username'];
+                        $_SESSION['clinic_name']  = $vu['clinic_name'];
 
-                $selector  = bin2hex(random_bytes(12));
-                $validator = bin2hex(random_bytes(32));
-                $q = db()->prepare("INSERT INTO remember_tokens(vet_user_id, selector, validator_hash, expires_at) VALUES(?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))");
-                $q->execute([$t['vet_user_id'], $selector, hash('sha256', $validator)]);
+                        $del = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
+                        $del->execute([$parts[0]]);
+                        create_remember_cookie('vet', (int)$vu['id']);
+                    } else {
+                        clear_remember_cookie();
+                    }
+                } elseif ($uType === 'client') {
+                    $cq = db()->prepare("SELECT * FROM clients WHERE id = ? LIMIT 1");
+                    $cq->execute([$uId]);
+                    $cu = $cq->fetch();
+                    if ($cu) {
+                        session_regenerate_id(true);
+                        $_SESSION['client_id']   = (int)$cu['id'];
+                        $_SESSION['client_name'] = $cu['full_name'];
 
-                setcookie('vet_remember', $selector . ':' . $validator, [
-                    'expires'  => time() + 2592000,
-                    'path'     => '/',
-                    'secure'   => !empty($_SERVER['HTTPS']),
-                    'httponly' => true,
-                    'samesite' => 'Lax'
-                ]);
+                        $del = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
+                        $del->execute([$parts[0]]);
+                        create_remember_cookie('client', (int)$cu['id']);
+                    } else {
+                        clear_remember_cookie();
+                    }
+                } elseif ($uType === 'admin') {
+                    $aq = db()->prepare("SELECT * FROM admins WHERE id = ? LIMIT 1");
+                    $aq->execute([$uId]);
+                    $au = $aq->fetch();
+                    if ($au) {
+                        session_regenerate_id(true);
+                        $_SESSION['admin_id'] = (int)$au['id'];
+
+                        $del = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
+                        $del->execute([$parts[0]]);
+                        create_remember_cookie('admin', (int)$au['id']);
+                    } else {
+                        clear_remember_cookie();
+                    }
+                }
             } else {
-                $q = db()->prepare("DELETE FROM remember_tokens WHERE selector = ?");
-                $q->execute([$parts[0]]);
-                setcookie('vet_remember', '', ['expires' => time() - 3600, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax']);
+                clear_remember_cookie();
             }
         } catch (Throwable $e) {
             error_log('Remember-me lookup failed: ' . $e->getMessage());

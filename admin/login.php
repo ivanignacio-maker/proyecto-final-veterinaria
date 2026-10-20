@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+header('Location: ' . url('login.php'));
+exit;
+
 csrf_check();
 
 $error = '';
@@ -32,24 +35,48 @@ $pageTitle = 'Administración';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="panel" style="max-width:500px;margin:40px auto">
-    <h1>Administración general</h1>
-    
-    <?php if ($error): ?>
-        <p><?= e($error) ?></p>
-    <?php endif; ?>
-    
-    <form method="post">
-        <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+<div class="auth-wrapper" style="padding: 40px 15px;">
+    <div class="auth-card" style="max-width: 480px; margin: 0 auto;">
+        <div class="auth-header">
+            <div class="auth-badge">
+                <span class="auth-paw">⚙️</span>
+            </div>
+            <h2>Administración General</h2>
+            <p class="auth-subtitle">Acceso exclusivo para administradores de la plataforma VetCompartido</p>
+        </div>
         
-        <label>Correo administrador</label>
-        <input type="email" name="email" required>
+        <?php if ($error): ?>
+            <div class="notice error">
+                <span class="notice-icon">⚠️</span>
+                <span><?= e($error) ?></span>
+            </div>
+        <?php endif; ?>
         
-        <label>Contraseña</label>
-        <input type="password" name="password" required>
+        <form method="post" class="auth-form">
+            <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+            
+            <div class="form-group">
+                <label>Correo del administrador</label>
+                <input type="email" name="email" required placeholder="admin@vetcompartido.com">
+            </div>
+            
+            <div class="form-group" style="margin-top: 14px;">
+                <label>Contraseña maestra</label>
+                <input type="password" name="password" required placeholder="••••••••••••">
+            </div>
+            
+            <button class="btn primary full" type="submit" style="margin-top: 20px; padding: 13px;">
+                <span>Ingresar al panel de control</span>
+                <span style="margin-left: 6px;">→</span>
+            </button>
+        </form>
         
-        <button>Ingresar</button>
-    </form>
+        <div style="text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line);">
+            <a href="<?= url('login.php') ?>" style="font-size: 13px; font-weight: 700; color: var(--green);">
+                ← Volver al login principal
+            </a>
+        </div>
+    </div>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

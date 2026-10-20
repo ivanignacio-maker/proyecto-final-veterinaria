@@ -19,12 +19,7 @@ if (ini_get('session.use_cookies')) {
 session_destroy();
 
 // Eliminar cookie de recuerdame
-setcookie('vet_remember', '', [
-    'expires'  => time() - 3600,
-    'path'     => '/',
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
+clear_remember_cookie();
 
 header('Location: ' . url('login.php'));
 exit;

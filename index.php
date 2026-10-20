@@ -288,36 +288,6 @@
     </div>
 </section>
 
-<!-- =========================================================================
-     4. CARTEL / ACCESO A PLANES DE SERVICIO
-     ========================================================================= -->
-<section class="section-padding-sm bg-white" id="planes">
-    <div class="public-container">
-        <div class="plans-teaser-card">
-            <div class="plans-teaser-grid">
-                <div class="plans-teaser-info">
-                    <span class="section-eyebrow" style="margin-bottom: 12px;">Tarifas y Modelos de Servicio</span>
-                    <h2 class="plans-teaser-title">Planes pensados para consultorios, clínicas y hospitales</h2>
-                    <p class="plans-teaser-desc">
-                        Opciones flexibles adaptadas al tamaño de tu equipo y volumen de atención. Accedé a la comparativa completa de características, gestión de stock y beneficios de cada modalidad.
-                    </p>
-                    <div class="plans-teaser-highlights">
-                        <span class="teaser-item"><span class="check-green">✓</span> Sin contratos forzados</span>
-                        <span class="teaser-item"><span class="check-green">✓</span> Prueba gratis de 14 días</span>
-                        <span class="teaser-item"><span class="check-green">✓</span> Migración asistida incluida</span>
-                    </div>
-                </div>
-                <div class="plans-teaser-cta-box">
-                    <a href="planes.php" class="btn-hero-primary btn-teaser-action">
-                        <span>Ver Planes y Precios</span>
-                        <span>→</span>
-                    </a>
-                    <span class="teaser-note">Comparativa detallada de funciones y servicios</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- =========================================================================
      6. PREGUNTAS FRECUENTES (FAQ ACORDEÓN)
@@ -426,7 +396,7 @@
                 Brindá una experiencia médica superior a tus pacientes y simplificá el trabajo administrativo de tu equipo desde el primer día.
             </p>
             <div class="final-cta-buttons">
-                <a href="planes.php" class="btn-hero-primary">Comenzar prueba gratis de 14 días →</a>
+                <a href="planes.php" class="btn-hero-primary">Empezar prueba de 14 días →</a>
                 <a href="contacto.php?motivo=migracion" class="btn-hero-secondary">Consultar por migración asistida</a>
             </div>
         </div>

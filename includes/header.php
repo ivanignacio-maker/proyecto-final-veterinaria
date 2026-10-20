@@ -33,7 +33,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <span class="brand-name"><?= APP_NAME ?></span>
                     <span class="brand-tagline">
                         <?php if (!empty($_SESSION['clinic_name'])): ?>
-                            <?= e($_SESSION['clinic_name']) ?>
+                            <?= e_name($_SESSION['clinic_name']) ?>
                         <?php elseif (!empty($_SESSION['admin_id'])): ?>
                             Panel Administrador
                         <?php elseif (!empty($_SESSION['client_id'])): ?>
@@ -56,22 +56,46 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('turnos/index.php') ?>" class="<?= $currentScript === 'index.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/turnos/') !== false ? 'active-nav' : '' ?>">Turnos</a>
                     <a href="<?= url('stock/index.php') ?>" class="<?= $currentScript === 'index.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/stock/') !== false ? 'active-nav' : '' ?>">Stock</a>
                     <span class="nav-divider"></span>
-                    <span style="font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 4px;">
-                        👨‍⚕️ <?= e($_SESSION['vet_username'] ?? '') ?>
-                    </span>
-                    <a href="<?= url('logout.php') ?>" class="btn-nav-outline">Cerrar sesión</a>
+                    <div class="user-profile-header">
+                        <div class="user-avatar-initial">
+                            <?= strtoupper(substr(trim($_SESSION['vet_username'] ?? 'V'), 0, 1)) ?>
+                        </div>
+                        <div class="user-meta-header">
+                            <span class="user-meta-name"><?= e_name($_SESSION['vet_username'] ?? 'Veterinario') ?></span>
+                            <span class="user-meta-role"><?= e_name($_SESSION['clinic_name'] ?? 'Clínica') ?></span>
+                        </div>
+                    </div>
+                    <a href="<?= url('logout.php') ?>" class="btn-nav-outline" title="Cerrar sesión segura">Cerrar sesión</a>
 
                 <?php elseif (!empty($_SESSION['client_id'])): ?>
                     <!-- Menú Clientes / Dueños de Mascotas -->
                     <a href="<?= url('cliente/mascotas.php') ?>" class="<?= $currentScript === 'mascotas.php' ? 'active-nav' : '' ?>">Mis mascotas</a>
                     <a href="<?= url('cliente/turnos.php') ?>" class="<?= $currentScript === 'turnos.php' ? 'active-nav' : '' ?>">Turnos</a>
                     <span class="nav-divider"></span>
+                    <div class="user-profile-header">
+                        <div class="user-avatar-initial" style="background: #2b7bc4;">
+                            T
+                        </div>
+                        <div class="user-meta-header">
+                            <span class="user-meta-name">Tutor</span>
+                            <span class="user-meta-role">Libreta Digital</span>
+                        </div>
+                    </div>
                     <a href="<?= url('cliente/logout.php') ?>" class="btn-nav-outline">Cerrar sesión</a>
 
                 <?php elseif (!empty($_SESSION['admin_id'])): ?>
                     <!-- Menú Superadministrador -->
                     <a href="<?= url('admin/veterinarias.php') ?>" class="<?= $currentScript === 'veterinarias.php' ? 'active-nav' : '' ?>">Veterinarias</a>
                     <span class="nav-divider"></span>
+                    <div class="user-profile-header">
+                        <div class="user-avatar-initial" style="background: #6366f1;">
+                            A
+                        </div>
+                        <div class="user-meta-header">
+                            <span class="user-meta-name">Admin</span>
+                            <span class="user-meta-role">Superadministrador</span>
+                        </div>
+                    </div>
                     <a href="<?= url('admin/logout.php') ?>" class="btn-nav-outline">Cerrar sesión</a>
 
                 <?php else: ?>
@@ -89,7 +113,6 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                         <a href="<?= url('login.php') ?>" class="btn-nav-login">
                             <span class="login-dot"></span> Iniciar sesión
                         </a>
-                        <a href="<?= url('planes.php') ?>" class="btn-nav-cta">Comenzar gratis</a>
                     </div>
                 <?php endif; ?>
             </nav>
@@ -137,7 +160,6 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('terminos.php') ?>" class="<?= $currentScript === 'terminos.php' ? 'active' : '' ?>">📄 Términos para veterinarias</a>
                     <div class="mobile-nav-buttons">
                         <a href="<?= url('login.php') ?>" class="btn-mobile-login">Iniciar sesión</a>
-                        <a href="<?= url('planes.php') ?>" class="btn-mobile-primary">Comenzar prueba gratis</a>
                     </div>
                 <?php endif; ?>
             </div>
