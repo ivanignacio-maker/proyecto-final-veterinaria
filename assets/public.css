@@ -151,6 +151,32 @@
 }
 
 /* Botones de accion del navbar con padding amplio para evitar letras pegadas al borde */
+.desktop-nav .btn-nav-tutor,
+.btn-nav-tutor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 18px !important;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green) !important;
+    background: rgba(35, 119, 101, 0.06);
+    border: 1.5px solid rgba(35, 119, 101, 0.2);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.desktop-nav .btn-nav-tutor:hover,
+.btn-nav-tutor:hover {
+    background: rgba(35, 119, 101, 0.12);
+    border-color: var(--green);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35, 119, 101, 0.08);
+}
+
 .desktop-nav .btn-nav-login,
 .btn-nav-login {
     display: inline-flex;

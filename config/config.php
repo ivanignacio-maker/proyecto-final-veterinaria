@@ -109,21 +109,21 @@ function verify_csrf(): void {
 // ============================================================================
 function require_vet(): void {
     if (empty($_SESSION['vet_user_id']) || empty($_SESSION['clinic_id'])) {
-        header('Location: ' . url('login.php'));
+        header('Location: ' . url('login.php?tipo=veterinaria'));
         exit;
     }
 }
 
 function require_admin(): void {
     if (empty($_SESSION['admin_id'])) {
-        header('Location: ' . url('login.php'));
+        header('Location: ' . url('admin/login.php'));
         exit;
     }
 }
 
 function require_client(): void {
     if (empty($_SESSION['client_id'])) {
-        header('Location: ' . url('login.php'));
+        header('Location: ' . url('login.php?tipo=cliente'));
         exit;
     }
 }

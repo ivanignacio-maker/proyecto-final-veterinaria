@@ -110,7 +110,10 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('contacto.php') ?>" class="<?= $currentScript === 'contacto.php' ? 'active-nav' : '' ?>">Contacto</a>
                     
                     <div class="nav-actions">
-                        <a href="<?= url('login.php') ?>" class="btn-nav-login">
+                        <a href="<?= url('login.php?tipo=cliente') ?>" class="btn-nav-tutor">
+                            🐾 Portal Tutores
+                        </a>
+                        <a href="<?= url('login.php?tipo=veterinaria') ?>" class="btn-nav-login">
                             <span class="login-dot"></span> Iniciar sesión
                         </a>
                     </div>
@@ -159,7 +162,8 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('contacto.php') ?>" class="<?= $currentScript === 'contacto.php' ? 'active' : '' ?>">✉️ Contacto y Soporte</a>
                     <a href="<?= url('terminos.php') ?>" class="<?= $currentScript === 'terminos.php' ? 'active' : '' ?>">📄 Términos para veterinarias</a>
                     <div class="mobile-nav-buttons">
-                        <a href="<?= url('login.php') ?>" class="btn-mobile-login">Iniciar sesión</a>
+                        <a href="<?= url('login.php?tipo=veterinaria') ?>" class="btn-mobile-login">🏥 Acceso Veterinarias</a>
+                        <a href="<?= url('login.php?tipo=cliente') ?>" class="btn-nav-tutor" style="width: 100%; justify-content: center; margin-top: 8px;">🐾 Portal Tutores</a>
                     </div>
                 <?php endif; ?>
             </div>

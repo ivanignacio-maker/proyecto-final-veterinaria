@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-header('Location: ' . url('login.php'));
+header('Location: ' . url('login.php?tipo=cliente'));
 exit;
 
 csrf_check();
