@@ -31,7 +31,7 @@ $q = db()->prepare("
 $q->execute([$id]);
 $consults = $q->fetchAll();
 
-$pageTitle = e_name($p['name']) . ' · Historial Clínico';
+$pageTitle = e_name($p['name']) . ' · Historial Clínico | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
@@ -42,8 +42,8 @@ require __DIR__ . '/../includes/header.php';
             <?php if ($p['photo_path']): ?>
                 <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de <?= e_name($p['name']) ?>" style="width: 140px; height: 140px; border-radius: 20px; object-fit: cover;">
             <?php else: ?>
-                <div style="width: 140px; height: 140px; border-radius: 20px; background: var(--mint); border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 54px;">
-                    🐾
+                <div style="width: 140px; height: 140px; border-radius: 20px; background: var(--mint); border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 54px; color: var(--green);">
+                    <i class="fa-solid fa-paw"></i>
                 </div>
             <?php endif; ?>
         </div>
@@ -58,7 +58,7 @@ require __DIR__ . '/../includes/header.php';
             
             <!-- Dueño responsable situado inmediatamente debajo del nombre -->
             <p style="margin: 0 0 18px; font-size: 15px; color: var(--ink);">
-                <strong>Tutor responsable:</strong> 
+                <strong><i class="fa-solid fa-user" style="color: var(--green); margin-right: 4px;"></i> Tutor responsable:</strong> 
                 <a href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>" style="color: var(--green); text-decoration: underline; font-weight: 700;">
                     <?= e_name($p['full_name']) ?>
                 </a> 
@@ -93,29 +93,31 @@ require __DIR__ . '/../includes/header.php';
     
     <div class="actions" style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line);">
         <a class="btn primary" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">
-            <span>+ Agregar consulta médica</span>
+            <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Agregar consulta médica
         </a>
         <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>">
-            <span>Volver a la ficha del tutor</span>
+            <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Volver a la ficha del tutor
         </a>
         <a class="btn secondary" href="<?= url('dashboard.php') ?>">
-            <span>Panel principal</span>
+            <i class="fa-solid fa-house" style="margin-right: 6px;"></i> Panel principal
         </a>
     </div>
 </div>
 
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin: 0;">Historial Clínico Unificado (<?= count($consults) ?>)</h2>
+        <h2 style="margin: 0;"><i class="fa-solid fa-notes-medical" style="color: var(--green); margin-right: 8px;"></i>Historial Clínico Unificado (<?= count($consults) ?>)</h2>
         <a class="btn secondary" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>" style="font-size: 13px; padding: 8px 14px;">
-            + Nueva consulta
+            <i class="fa-solid fa-plus" style="margin-right: 4px;"></i> Nueva consulta
         </a>
     </div>
     
     <?php if (!$consults): ?>
         <div style="text-align: center; padding: 35px 20px; background: var(--paper); border-radius: 14px; border: 1.5px dashed var(--line);">
             <p style="margin: 0 0 12px; color: var(--muted); font-size: 15px;">No hay consultas médicas asentadas para esta mascota.</p>
-            <a class="btn" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">Asentar primera consulta</a>
+            <a class="btn primary" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">
+                <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Asentar primera consulta
+            </a>
         </div>
     <?php else: ?>
         <?php foreach ($consults as $c): ?>
@@ -123,9 +125,11 @@ require __DIR__ . '/../includes/header.php';
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <span class="pill"><?= e($c['status']) ?></span>
-                        <strong style="color: var(--green-dark); font-size: 14px;">🏥 <?= e_name($c['clinic_name']) ?></strong>
+                        <strong style="color: var(--green-dark); font-size: 14px;"><i class="fa-solid fa-hospital" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($c['clinic_name']) ?></strong>
                     </div>
-                    <span class="muted" style="font-size: 13px;">📅 <?= e($c['created_at']) ?> · Atendió Dr/a. <?= e_name($c['username']) ?></span>
+                    <span class="muted" style="font-size: 13px;">
+                        <i class="fa-solid fa-calendar-day" style="margin-right: 4px;"></i> <?= e($c['created_at']) ?> · Atendió Dr/a. <?= e_name($c['username']) ?>
+                    </span>
                 </div>
                 
                 <h3 style="margin: 0 0 8px; font-size: 18px;"><?= e($c['reason']) ?></h3>
@@ -142,14 +146,15 @@ require __DIR__ . '/../includes/header.php';
                 
                 <?php if ($c['vaccine_expiry']): ?>
                     <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 10px 0; font-size: 13.5px;">
-                        💉 <strong>Vencimiento de vacuna:</strong> <?= e($c['vaccine_expiry']) ?> · 
+                        <i class="fa-solid fa-syringe" style="color: var(--green); margin-right: 6px;"></i> <strong>Vencimiento de vacuna:</strong> <?= e($c['vaccine_expiry']) ?> · 
                         <strong>Próxima dosis:</strong> <?= e($c['next_dose']) ?>
                     </div>
                 <?php endif; ?>
                 
                 <div style="margin-top: 14px;">
                     <a class="btn secondary" href="<?= url('consultas/ver.php?id=' . (int)$c['id']) ?>" style="font-size: 13px; padding: 8px 14px;">
-                        Ver consulta y archivos adjuntos →
+                        <span>Ver consulta y archivos adjuntos</span>
+                        <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
                     </a>
                 </div>
             </div>

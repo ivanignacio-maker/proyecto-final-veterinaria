@@ -80,19 +80,19 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Solicitar nuevo turno</h1>
+    <h1><i class="fa-solid fa-calendar-plus" style="color: var(--green); margin-right: 8px;"></i>Solicitar nuevo turno</h1>
     <p class="muted">Elegí la clínica veterinaria que ya atendió a tu mascota, la fecha preferida y el motivo de consulta.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
     
     <?php if (!$clinics || !$pets): ?>
         <div class="notice" style="background: #f7faf7; border: 1px solid var(--line); color: var(--ink);">
-            <p style="margin: 0;">Para solicitar un turno digital, necesitás tener al menos una mascota registrada y haber recibido una primera atención en una veterinaria de la red.</p>
+            <p style="margin: 0;"><i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 6px;"></i>Para solicitar un turno digital, necesitás tener al menos una mascota registrada y haber recibido una primera atención en una veterinaria de la red.</p>
         </div>
     <?php else: ?>
         <form method="post">
@@ -131,14 +131,16 @@ require __DIR__ . '/../includes/header.php';
             </div>
             
             <div class="actions">
-                <button class="btn primary" type="submit">📅 Enviar solicitud de turno</button>
+                <button class="btn primary" type="submit">
+                    <i class="fa-solid fa-calendar-check" style="margin-right: 6px;"></i> Enviar solicitud de turno
+                </button>
             </div>
         </form>
     <?php endif; ?>
 </div>
 
 <div class="card" style="margin-top: 28px;">
-    <h2>Mis solicitudes y turnos programados</h2>
+    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--green); margin-right: 8px;"></i>Mis solicitudes y turnos programados</h2>
     <p class="muted">Historial de citas solicitadas y confirmadas por tus veterinarias.</p>
     
     <?php if (!$appointments): ?>
@@ -168,10 +170,10 @@ require __DIR__ . '/../includes/header.php';
                             <span class="muted"><?= date('H:i', strtotime($a['appointment_at'])) ?> hs</span>
                         </td>
                         <td>
-                            <strong class="name-titlecase">🏥 <?= e_name($a['clinic_name']) ?></strong>
+                            <strong class="name-titlecase"><i class="fa-solid fa-hospital" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($a['clinic_name']) ?></strong>
                         </td>
                         <td>
-                            <span class="pill name-titlecase">🐾 <?= e_name($a['pet_name']) ?></span>
+                            <span class="pill name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($a['pet_name']) ?></span>
                         </td>
                         <td><?= e($a['reason'] ?: 'Consulta veterinaria') ?></td>
                         <td>

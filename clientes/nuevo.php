@@ -45,17 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Nuevo Cliente | VetCompartido';
+$pageTitle = 'Nuevo Cliente | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>👤 Registrar nuevo cliente</h1>
+    <h1><i class="fa-solid fa-user-plus" style="color: var(--green); margin-right: 8px;"></i>Registrar nuevo cliente</h1>
     <p class="muted">El DNI identifica de forma única al tutor en toda la red de clínicas participantes.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -86,9 +86,9 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button type="submit">
+            <button type="submit" class="btn primary">
                 <span>Guardar cliente</span>
-                <span>→</span>
+                <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
             </button>
             <a class="btn secondary" href="<?= url('clientes/buscar.php') ?>">Cancelar</a>
         </div>

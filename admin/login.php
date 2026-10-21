@@ -41,15 +41,15 @@ require __DIR__ . '/../includes/header.php';
     <div class="auth-card" style="max-width: 480px; margin: 0 auto;">
         <div class="auth-header">
             <div class="auth-badge">
-                <span class="auth-paw">⚙️</span>
+                <span class="auth-paw"><i class="fa-solid fa-gear"></i></span>
             </div>
             <h2>Administración General</h2>
-            <p class="auth-subtitle">Acceso exclusivo para administradores de la plataforma VetCompartido</p>
+            <p class="auth-subtitle">Acceso exclusivo para administradores de la plataforma <?= APP_NAME ?></p>
         </div>
         
         <?php if ($error): ?>
             <div class="notice error">
-                <span class="notice-icon">⚠️</span>
+                <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 <span><?= e($error) ?></span>
             </div>
         <?php endif; ?>

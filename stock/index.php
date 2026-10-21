@@ -23,12 +23,12 @@ $q = db()->prepare("SELECT * FROM medications WHERE clinic_id = ? ORDER BY name"
 $q->execute([$_SESSION['clinic_id']]);
 $rows = $q->fetchAll();
 
-$pageTitle = 'Stock';
+$pageTitle = 'Stock de medicamentos | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Stock de medicamentos</h1>
+    <h1><i class="fa-solid fa-boxes-stacked" style="color: var(--green); margin-right: 8px;"></i>Stock de medicamentos</h1>
     <p class="muted">Gestión de insumos médicos y farmacia clínica para tu veterinaria.</p>
     
     <form method="post">
@@ -46,13 +46,15 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button class="btn primary" type="submit">Agregar o actualizar stock</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Agregar o actualizar stock
+            </button>
         </div>
     </form>
 </div>
 
 <div class="card" style="margin-top: 28px;">
-    <h2>Inventario de farmacia</h2>
+    <h2><i class="fa-solid fa-pills" style="color: var(--green); margin-right: 8px;"></i>Inventario de farmacia</h2>
     <p class="muted">Control de existencias y alertas de reposición.</p>
     
     <?php if (!$rows): ?>

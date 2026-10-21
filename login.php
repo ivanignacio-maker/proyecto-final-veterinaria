@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = ($tipo === 'cliente' ? 'Portal de Tutores' : 'Acceso Veterinarias') . ' | VetCompartido';
+$pageTitle = ($tipo === 'cliente' ? 'Portal de Tutores' : 'Acceso Veterinarias') . ' | ' . APP_NAME;
 require __DIR__ . '/includes/header.php';
 ?>
 
@@ -127,7 +127,7 @@ require __DIR__ . '/includes/header.php';
     <div class="auth-card">
         <div class="auth-header">
             <div class="auth-badge">
-                <span class="auth-paw"><?= $tipo === 'cliente' ? '🐾' : '🏥' ?></span>
+                <span class="auth-paw"><?= $tipo === 'cliente' ? '<i class="fa-solid fa-paw"></i>' : '<i class="fa-solid fa-hospital"></i>' ?></span>
             </div>
             <h2><?= $tipo === 'cliente' ? 'Portal de Tutores' : 'Acceso Veterinarias' ?></h2>
             <p class="auth-subtitle">
@@ -140,16 +140,16 @@ require __DIR__ . '/includes/header.php';
         <!-- Pestañas de Acceso Diferenciado -->
         <div class="tabs auth-tabs">
             <a class="<?= $tipo === 'veterinaria' ? 'active' : '' ?>" href="<?= url('login.php?tipo=veterinaria') ?>">
-                <span class="tab-icon">🏥</span> Veterinaria
+                <span class="tab-icon"><i class="fa-solid fa-hospital"></i></span> Veterinaria
             </a>
             <a class="<?= $tipo === 'cliente' ? 'active' : '' ?>" href="<?= url('login.php?tipo=cliente') ?>">
-                <span class="tab-icon">🐾</span> Portal Tutores
+                <span class="tab-icon"><i class="fa-solid fa-paw"></i></span> Portal Tutores
             </a>
         </div>
 
         <?php if ($error): ?>
             <div class="notice error">
-                <span class="notice-icon">⚠️</span>
+                <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 <span><?= e($error) ?></span>
             </div>
         <?php endif; ?>
@@ -164,7 +164,7 @@ require __DIR__ . '/includes/header.php';
                         <span>Correo electrónico o usuario</span>
                     </label>
                     <div class="input-icon-wrapper">
-                        <span class="field-icon">✉️</span>
+                        <span class="field-icon"><i class="fa-solid fa-envelope"></i></span>
                         <input id="identity" type="text" name="identity" value="<?= e($identity) ?>" required autocomplete="username" placeholder="doctor@veterinaria.com o usuario" autofocus>
                     </div>
                 </div>
@@ -174,10 +174,10 @@ require __DIR__ . '/includes/header.php';
                         <span>Contraseña</span>
                     </label>
                     <div class="input-icon-wrapper">
-                        <span class="field-icon">🔒</span>
+                        <span class="field-icon"><i class="fa-solid fa-lock"></i></span>
                         <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="Ingresá tu contraseña">
                         <button type="button" class="btn-toggle-password" id="togglePasswordBtn" aria-label="Mostrar u ocultar contraseña" title="Mostrar/ocultar contraseña">
-                            👁️
+                            <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
                 </div>
@@ -191,7 +191,7 @@ require __DIR__ . '/includes/header.php';
 
                 <button class="btn primary full auth-submit" type="submit">
                     <span>Ingresar al panel médico</span>
-                    <span class="btn-arrow">→</span>
+                    <span class="btn-arrow"><i class="fa-solid fa-arrow-right"></i></span>
                 </button>
 
             <?php else: ?>
@@ -200,7 +200,7 @@ require __DIR__ . '/includes/header.php';
                         <span>DNI del tutor</span>
                     </label>
                     <div class="input-icon-wrapper">
-                        <span class="field-icon">🪪</span>
+                        <span class="field-icon"><i class="fa-solid fa-id-card"></i></span>
                         <input id="dni" name="dni" value="<?= e($dni) ?>" required inputmode="numeric" placeholder="Número de documento" autofocus>
                     </div>
                 </div>
@@ -210,13 +210,13 @@ require __DIR__ . '/includes/header.php';
                         <span>Correo electrónico registrado</span>
                     </label>
                     <div class="input-icon-wrapper">
-                        <span class="field-icon">✉️</span>
+                        <span class="field-icon"><i class="fa-solid fa-envelope"></i></span>
                         <input id="email" type="email" name="email" value="<?= e($email) ?>" required autocomplete="email" placeholder="tutor@correo.com">
                     </div>
                 </div>
 
                 <p class="form-note" style="margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.5;">
-                    ℹ️ Como tutor no requerís contraseña: tu acceso seguro está vinculado al DNI y correo informados en tu veterinaria.
+                    <i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 4px;"></i> Como tutor no requerís contraseña: tu acceso seguro está vinculado al DNI y correo informados en tu veterinaria.
                 </p>
 
                 <div class="auth-remember-row">
@@ -228,7 +228,7 @@ require __DIR__ . '/includes/header.php';
 
                 <button class="btn primary full auth-submit" type="submit">
                     <span>Ver libreta de mis mascotas</span>
-                    <span class="btn-arrow">→</span>
+                    <span class="btn-arrow"><i class="fa-solid fa-arrow-right"></i></span>
                 </button>
             <?php endif; ?>
         </form>
@@ -242,13 +242,13 @@ require __DIR__ . '/includes/header.php';
             
             <?php if ($tipo === 'veterinaria'): ?>
                 <div class="auth-extra-links">
-                    <a href="<?= url('admin/login.php') ?>" class="admin-link">⚙️ Acceso administración</a>
+                    <a href="<?= url('admin/login.php') ?>" class="admin-link"><i class="fa-solid fa-gear"></i> Acceso administración</a>
                 </div>
             <?php endif; ?>
         </div>
         
         <div class="auth-security-badge">
-            <span>🛡️ Conexión cifrada y registros médicos protegidos</span>
+            <span><i class="fa-solid fa-shield-halved" style="color: var(--green); margin-right: 4px;"></i> Conexión cifrada y registros médicos protegidos</span>
         </div>
     </div>
 </div>
@@ -261,7 +261,7 @@ require __DIR__ . '/includes/header.php';
             toggleBtn.addEventListener('click', () => {
                 const isPassword = passInput.getAttribute('type') === 'password';
                 passInput.setAttribute('type', isPassword ? 'text' : 'password');
-                toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+                toggleBtn.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
             });
         }
     });

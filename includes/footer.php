@@ -7,16 +7,16 @@
                 <!-- Columna 1: Marca y Propuesta -->
                 <div class="footer-col footer-col-brand">
                     <a class="footer-brand" href="<?= url('index.php') ?>">
-                        <span class="footer-brand-icon">✚</span>
+                        <img src="<?= url('assets/logo.jpg') ?>" alt="<?= APP_NAME ?>" class="footer-brand-icon-img">
                         <span class="footer-brand-name"><?= APP_NAME ?></span>
                     </a>
                     <p class="footer-description">
                         Plataforma SaaS de gestión clínica y colaboración médica veterinaria. Unificamos historias clínicas, control de stock y comunicación con tutores de mascotas en un entorno seguro y ágil.
                     </p>
                     <div class="footer-trust-tags">
-                        <span class="trust-tag">🛡️ Cifrado médico 256-bit</span>
-                        <span class="trust-tag">☁️ Respaldos diarios automáticos</span>
-                        <span class="trust-tag">⚡ 99.9% Uptime garantizado</span>
+                        <span class="trust-tag"><i class="fa-solid fa-shield-halved"></i> Cifrado médico 256-bit</span>
+                        <span class="trust-tag"><i class="fa-solid fa-cloud"></i> Respaldos diarios automáticos</span>
+                        <span class="trust-tag"><i class="fa-solid fa-bolt"></i> 99.9% Uptime garantizado</span>
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                         <li><a href="<?= url('index.php#soluciones') ?>">Historia Clínica Unificada</a></li>
                         <li><a href="<?= url('index.php#soluciones') ?>">Control de Stock y Medicamentos</a></li>
                         <li><a href="<?= url('index.php#soluciones') ?>">Libreta Sanitaria Digital (Tutores)</a></li>
-                        <li><a href="<?= url('index.php#migracion') ?>" class="highlight-link">Migración Asistida <span class="badge-pill-micro">Sin Costo</span></a></li>
+                        <li><a href="<?= url('migracion.php') ?>" class="highlight-link">Migración Asistida <span class="badge-pill-micro">Sin Costo</span></a></li>
                         <li><a href="<?= url('planes.php') ?>">Planes para Clínicas y Consultorios</a></li>
                     </ul>
                 </div>
@@ -40,7 +40,7 @@
                         <li><a href="<?= url('terminos.php') ?>">Términos para veterinarias</a></li>
                         <li><a href="<?= url('contacto.php') ?>">Contacto comercial</a></li>
                         <li><a href="<?= url('index.php#faq') ?>">Preguntas frecuentes</a></li>
-                        <li><a href="<?= url('admin/login.php') ?>" class="admin-discreet-link">⚙️ Acceso administración</a></li>
+                        <li><a href="<?= url('admin/login.php') ?>" class="admin-discreet-link"><i class="fa-solid fa-gear"></i> Acceso administración</a></li>
                     </ul>
                 </div>
 
@@ -49,14 +49,14 @@
                     <h3 class="footer-heading">Portales y Ayuda</h3>
                     <div class="footer-access-cards">
                         <a href="<?= url('login.php?tipo=veterinaria') ?>" class="footer-access-item">
-                            <span class="access-icon">🏥</span>
+                            <span class="access-icon"><i class="fa-solid fa-hospital"></i></span>
                             <div>
                                 <strong>Acceso Veterinarias</strong>
                                 <span>Ingreso al panel clínico</span>
                             </div>
                         </a>
                         <a href="<?= url('login.php?tipo=cliente') ?>" class="footer-access-item">
-                            <span class="access-icon">🐾</span>
+                            <span class="access-icon"><i class="fa-solid fa-paw"></i></span>
                             <div>
                                 <strong>Portal de Clientes</strong>
                                 <span>Ver libreta de tu mascota</span>
@@ -91,7 +91,7 @@
     <!-- Footer Limpio para Paneles y Vistas Internas -->
     <footer style="text-align: center; padding: 26px 15px; color: #667085; font-size: 0.88rem; border-top: 1px solid #e1e7ef; margin-top: 40px;">
         <p style="margin: 0;">
-            🐾 <strong><?= APP_NAME ?></strong> · Sistema de gestión clínica y turnos veterinarios.
+            <i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <strong><?= APP_NAME ?></strong> · Sistema de gestión clínica y turnos veterinarios.
         </p>
     </footer>
 <?php endif; ?>

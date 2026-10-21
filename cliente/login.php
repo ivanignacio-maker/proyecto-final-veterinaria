@@ -37,7 +37,7 @@ require __DIR__ . '/../includes/header.php';
     <div class="auth-card" style="max-width: 480px; margin: 0 auto;">
         <div class="auth-header">
             <div class="auth-badge">
-                <span class="auth-paw">🐾</span>
+                <span class="auth-paw"><i class="fa-solid fa-paw"></i></span>
             </div>
             <h2>Portal de Tutores</h2>
             <p class="auth-subtitle">Accedé a las historias clínicas y libreta sanitaria digital de tus mascotas</p>
@@ -45,7 +45,7 @@ require __DIR__ . '/../includes/header.php';
         
         <?php if ($error): ?>
             <div class="notice error">
-                <span class="notice-icon">⚠️</span>
+                <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 <span><?= e($error) ?></span>
             </div>
         <?php endif; ?>
@@ -64,7 +64,7 @@ require __DIR__ . '/../includes/header.php';
             </div>
             
             <p class="form-note" style="margin: 12px 0 18px; text-align: left; font-size: 13px; color: var(--muted);">
-                ℹ️ No requerís contraseña: tu acceso está vinculado al DNI y email informados en la clínica.
+                <i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 4px;"></i> No requerís contraseña: tu acceso está vinculado al DNI y email informados en la clínica.
             </p>
             
             <button class="btn primary full" type="submit" style="padding: 13px;">
@@ -75,7 +75,7 @@ require __DIR__ . '/../includes/header.php';
         
         <div style="text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line);">
             <a href="<?= url('login.php?tipo=veterinaria') ?>" style="font-size: 13px; font-weight: 700; color: var(--green);">
-                🏥 ¿Sos veterinaria? Ingresá aquí
+                <i class="fa-solid fa-hospital" style="margin-right: 4px;"></i> ¿Sos veterinaria? Ingresá aquí
             </a>
         </div>
     </div>

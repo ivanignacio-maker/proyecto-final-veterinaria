@@ -81,21 +81,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Editar consulta';
+$pageTitle = 'Editar consulta | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Editar consulta clínica</h1>
+    <h1><i class="fa-solid fa-pen-to-square" style="color: var(--green); margin-right: 8px;"></i>Editar consulta clínica</h1>
     
     <p class="muted">
-        Paciente: <strong class="name-titlecase">🐾 <?= e_name($c['pet_name']) ?></strong> · ID de consulta #<?= (int)$id ?>
+        Paciente: <strong class="name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($c['pet_name']) ?></strong> · ID de consulta #<?= (int)$id ?>
     </p>
-    <p class="muted" style="font-size: 13px;">🛡️ Las modificaciones quedan registradas en el libro de auditoría médica.</p>
+    <p class="muted" style="font-size: 13px;"><i class="fa-solid fa-shield-halved" style="color: var(--green); margin-right: 4px;"></i> Las modificaciones quedan registradas en el libro de auditoría médica.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -143,7 +143,9 @@ require __DIR__ . '/../includes/header.php';
         <textarea name="treatment" rows="3"><?= e($c['treatment']) ?></textarea>
         
         <div class="actions">
-            <button class="btn primary" type="submit">💾 Guardar cambios</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Guardar cambios
+            </button>
             <a class="btn secondary" href="<?= url('consultas/ver.php?id=' . $id) ?>">Cancelar</a>
         </div>
     </form>

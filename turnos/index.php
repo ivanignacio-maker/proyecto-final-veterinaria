@@ -67,17 +67,17 @@ $q = db()->prepare("
 $q->execute([$cid]);
 $rows = $q->fetchAll();
 
-$pageTitle = 'Turnos';
+$pageTitle = 'Turnos | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Asignar nuevo turno</h1>
+    <h1><i class="fa-solid fa-calendar-plus" style="color: var(--green); margin-right: 8px;"></i>Asignar nuevo turno</h1>
     <p class="muted">Programá una consulta presencial indicando el DNI del titular y el ID de su mascota.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -105,13 +105,15 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button class="btn primary" type="submit">Asignar turno</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-calendar-check" style="margin-right: 6px;"></i> Asignar turno
+            </button>
         </div>
     </form>
 </div>
 
 <div class="card" style="margin-top: 28px;">
-    <h2>Agenda de turnos de la veterinaria</h2>
+    <h2><i class="fa-solid fa-calendar-days" style="color: var(--green); margin-right: 8px;"></i>Agenda de turnos de la veterinaria</h2>
     <p class="muted">Lista cronológica de turnos confirmados y solicitudes recibidas.</p>
     
     <?php if (!$rows): ?>
@@ -146,7 +148,7 @@ require __DIR__ . '/../includes/header.php';
                             <span class="muted">DNI <?= e($r['dni']) ?></span>
                         </td>
                         <td>
-                            <span class="pill name-titlecase"><?= e_name($r['pet_name']) ?></span>
+                            <span class="pill name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($r['pet_name']) ?></span>
                         </td>
                         <td><?= e($r['reason'] ?: 'Consulta veterinaria') ?></td>
                         <td>
@@ -155,12 +157,12 @@ require __DIR__ . '/../includes/header.php';
                             </span>
                         </td>
                         <td>
-                            <form method="post">
+                            <form method="post" style="display: flex; gap: 6px; align-items: center;">
                                 <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="change_status" value="1">
                                 <input type="hidden" name="appointment_id" value="<?= (int)$r['id'] ?>">
                                 
-                                <select name="status">
+                                <select name="status" style="margin: 0; padding: 6px 8px; font-size: 13px;">
                                     <?php foreach (['Solicitado', 'Confirmado', 'Cancelado', 'Atendido'] as $st): ?>
                                         <option value="<?= e($st) ?>" <?= $r['status'] === $st ? 'selected' : '' ?>>
                                             <?= e($st) ?>
@@ -168,7 +170,7 @@ require __DIR__ . '/../includes/header.php';
                                     <?php endforeach; ?>
                                 </select>
                                 
-                                <button type="submit" class="btn secondary btn-sm">Actualizar</button>
+                                <button type="submit" class="btn secondary btn-sm" style="padding: 6px 12px;">OK</button>
                             </form>
                         </td>
                     </tr>

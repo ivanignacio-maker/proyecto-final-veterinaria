@@ -44,7 +44,7 @@
             $msgError = 'Por favor ingresá un correo electrónico válido.';
         } else {
             // En un sistema en producción aquí se enviaría un correo o webhook hacia el CRM/Slack
-            $msgSuccess = '¡Gracias por comunicarte con VetCompartido! Recibimos tu consulta con éxito. Un asesor de nuestro equipo se pondrá en contacto a la brevedad.';
+            $msgSuccess = '¡Gracias por comunicarte con ' . APP_NAME . '! Recibimos tu consulta con éxito. Un asesor de nuestro equipo se pondrá en contacto a la brevedad.';
             // Limpiar campos tras éxito
             $nombre = '';
             $email = '';
@@ -54,7 +54,7 @@
     }
 
     $pageTitle = 'Contacto y Soporte Especializado';
-    $pageDescription = 'Contactate con el equipo de VetCompartido. Solicitá tu migración asistida sin costo, consultá por planes para veterinarias o recibí asistencia técnica personalizada.';
+    $pageDescription = 'Contactate con el equipo de ' . APP_NAME . '. Solicitá tu migración asistida sin costo, consultá por planes para veterinarias o recibí asistencia técnica personalizada.';
     $isLanding = true;
     require __DIR__ . '/includes/header.php';
 ?>
@@ -66,7 +66,7 @@
             <span class="section-eyebrow">Atención Personalizada</span>
             <h1>Estamos para ayudarte a dar el siguiente paso</h1>
             <p>
-                Ya sea para migrar tu base de datos de pacientes, resolver dudas técnicas o conocer en detalle nuestros planes, nuestro equipo responde en menos de 2 horas hábiles.
+                Ya sea para migrar tu base de datos de pacientes, resolver dudas técnicas o conocer en detalle nuestros planes, nuestro equipo responde a la brevedad.
             </p>
         </div>
 
@@ -74,8 +74,8 @@
             <!-- Formulario Principal -->
             <div class="contact-card-form">
                 <?php if ($msgSuccess): ?>
-                    <div class="notice ok" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; background: #eaf7ee; color: #1e6348; border: 1px solid #cce8d5;">
-                        <span style="font-size: 22px;">✅</span>
+                    <div class="notice ok" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; background: #eaf7ee; color: #1e6348; border: 1px solid #cce8d5;">
+                        <span style="font-size: 22px; color: #1e6348;"><i class="fa-solid fa-circle-check"></i></span>
                         <div>
                             <strong style="display: block; font-size: 15px; margin-bottom: 2px;">¡Mensaje enviado con éxito!</strong>
                             <span style="font-size: 13px;"><?= e($msgSuccess) ?></span>
@@ -84,8 +84,8 @@
                 <?php endif; ?>
 
                 <?php if ($msgError): ?>
-                    <div class="notice error" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; background: #fff0ee; color: #a63e39; border: 1px solid #fbdcd9;">
-                        <span style="font-size: 22px;">⚠️</span>
+                    <div class="notice error" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; background: #fff0ee; color: #a63e39; border: 1px solid #fbdcd9;">
+                        <span style="font-size: 22px; color: #a63e39;"><i class="fa-solid fa-triangle-exclamation"></i></span>
                         <div>
                             <strong style="display: block; font-size: 15px; margin-bottom: 2px;">Atención</strong>
                             <span style="font-size: 13px;"><?= e($msgError) ?></span>
@@ -105,14 +105,14 @@
                         </label>
                         <div class="user-type-selector">
                             <div class="user-type-option <?= $tipoUsuario === 'veterinaria' ? 'selected' : '' ?>" data-value="veterinaria">
-                                <span>🏥</span>
+                                <span style="font-size: 18px; color: var(--green);"><i class="fa-solid fa-hospital"></i></span>
                                 <div>
                                     <div style="font-size: 13px; font-weight: 700;">Clínica o Veterinario</div>
                                     <div style="font-size: 11px; color: var(--muted); font-weight: 400;">Gestión médica y stock</div>
                                 </div>
                             </div>
                             <div class="user-type-option <?= $tipoUsuario === 'particular' ? 'selected' : '' ?>" data-value="particular">
-                                <span>🐾</span>
+                                <span style="font-size: 18px; color: #2b7bc4;"><i class="fa-solid fa-paw"></i></span>
                                 <div>
                                     <div style="font-size: 13px; font-weight: 700;">Tutor de Mascota</div>
                                     <div style="font-size: 11px; color: var(--muted); font-weight: 400;">Libreta sanitaria digital</div>
@@ -121,13 +121,13 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
                         <div class="form-group">
                             <label for="nombre">
                                 <span>Nombre y Apellido *</span>
                             </label>
                             <div class="input-icon-wrapper">
-                                <span class="field-icon">👤</span>
+                                <span class="field-icon"><i class="fa-solid fa-user"></i></span>
                                 <input id="nombre" name="nombre" value="<?= e($nombre) ?>" required placeholder="Ej. Dra. Valeria Rossi" autocomplete="name">
                             </div>
                         </div>
@@ -137,20 +137,20 @@
                                 <span>Correo electrónico *</span>
                             </label>
                             <div class="input-icon-wrapper">
-                                <span class="field-icon">✉️</span>
+                                <span class="field-icon"><i class="fa-solid fa-envelope"></i></span>
                                 <input id="email" type="email" name="email" value="<?= e($email) ?>" required placeholder="contacto@veterinaria.com" autocomplete="email">
                             </div>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; margin-top: 14px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px;">
                         <div class="form-group">
                             <label for="telefono">
                                 <span>Teléfono / WhatsApp</span>
                                 <span class="label-hint">(Opcional)</span>
                             </label>
                             <div class="input-icon-wrapper">
-                                <span class="field-icon">📱</span>
+                                <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
                                 <input id="telefono" type="tel" name="telefono" value="<?= e($telefono) ?>" placeholder="+54 9 11 2345-6789" autocomplete="tel">
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                                 <span>Asunto o Motivo</span>
                             </label>
                             <div class="input-icon-wrapper">
-                                <span class="field-icon">📌</span>
+                                <span class="field-icon"><i class="fa-solid fa-tag"></i></span>
                                 <input id="asunto" name="asunto" value="<?= e($asunto) ?>" required placeholder="Ej. Migración de pacientes o consulta de plan">
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                     <div class="form-group" style="margin-top: 14px;">
                         <label for="mensaje">
                             <span>Mensaje o Consulta *</span>
-                            <span class="label-hint">Contanos sobre tu clínica o necesidad</span>
+                            <span class="label-hint">Contanos sobre tu consulta o necesidad</span>
                         </label>
                         <textarea id="mensaje" name="mensaje" rows="5" required placeholder="Escribí aquí los detalles de tu consulta (por ejemplo: cantidad aproximada de pacientes a migrar, software actual que utilizás o dudas técnicas)..." style="width: 100%; border-radius: 12px; padding: 12px 14px; border: 1px solid #dbe6de; background: #fbfdfb; font-family: inherit; font-size: 14px; color: var(--ink); resize: vertical;"><?= e($mensaje) ?></textarea>
                     </div>
@@ -177,17 +177,17 @@
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; border: none; cursor: pointer; padding: 16px;">
                             <span>Enviar mensaje a nuestro equipo</span>
-                            <span>→</span>
+                            <i class="fa-solid fa-paper-plane" style="margin-left: 8px;"></i>
                         </button>
                     </div>
 
-                    <div style="text-align: center; margin-top: 14px; font-size: 11px; color: var(--muted);">
-                        🔒 Tus datos están resguardados bajo estricta confidencialidad médica y no serán compartidos con terceros.
+                    <div style="text-align: center; margin-top: 14px; font-size: 12px; color: var(--muted);">
+                        <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> Tus datos están resguardados bajo estricta confidencialidad médica y no serán compartidos con terceros.
                     </div>
                 </form>
             </div>
 
-            <!-- Sidebar de Canales Directos y Confianza -->
+            <!-- Sidebar de Canales Directos y Redes Sociales -->
             <aside class="contact-sidebar-card">
                 <div>
                     <h3 style="font: 800 20px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 8px;">
@@ -199,7 +199,7 @@
                 </div>
 
                 <div class="contact-info-block">
-                    <div class="contact-info-icon">💬</div>
+                    <div class="contact-info-icon"><i class="fa-brands fa-whatsapp" style="font-size: 20px; color: #25D366;"></i></div>
                     <div class="contact-info-text">
                         <strong>WhatsApp de Soporte y Migración</strong>
                         <p>+54 (11) 5820-4100<br><span style="font-size: 11px; color: var(--green); font-weight: 700;">● Guardias de soporte activas</span></p>
@@ -207,7 +207,7 @@
                 </div>
 
                 <div class="contact-info-block">
-                    <div class="contact-info-icon">✉️</div>
+                    <div class="contact-info-icon"><i class="fa-solid fa-envelope" style="font-size: 18px; color: var(--green);"></i></div>
                     <div class="contact-info-text">
                         <strong>Correo Institucional</strong>
                         <p>soporte@vetcompartido.com<br>info@vetcompartido.com</p>
@@ -215,7 +215,7 @@
                 </div>
 
                 <div class="contact-info-block">
-                    <div class="contact-info-icon">⏱️</div>
+                    <div class="contact-info-icon"><i class="fa-solid fa-clock" style="font-size: 18px; color: var(--green);"></i></div>
                     <div class="contact-info-text">
                         <strong>Horario de Atención Comercial</strong>
                         <p>Lunes a Viernes de 8:00 a 19:00 hs.<br>Sábados de 9:00 a 14:00 hs.</p>
@@ -223,8 +223,31 @@
                 </div>
 
                 <div class="contact-highlight-box">
-                    <strong style="display: block; font-size: 13px; color: var(--green); margin-bottom: 4px;">🚀 Compromiso de Migración Gratuita</strong>
-                    Si tenés dudas sobre cómo exportar los datos de tu software anterior, podemos coordinar una videollamada de 15 minutos para guiarte paso a paso.
+                    <strong style="display: block; font-size: 13px; color: var(--green); margin-bottom: 4px;">
+                        <i class="fa-solid fa-truck-ramp-box" style="margin-right: 4px;"></i> Compromiso de Migración Gratuita
+                    </strong>
+                    Si tenés dudas sobre cómo exportar los datos de tu software actual o planillas, coordinamos una videollamada para orientarte paso a paso.
+                </div>
+
+                <!-- Bloque de Redes Sociales -->
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);">
+                    <h4 style="font: 700 15px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-share-nodes" style="color: var(--green);"></i> Redes Sociales y Comunidad
+                    </h4>
+                    <p style="font-size: 12px; color: var(--muted); margin: 0 0 14px; line-height: 1.5;">
+                        Seguinos para novedades sobre salud animal, actualizaciones del sistema y capacitaciones veterinarias:
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; background: #ffffff; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--line)'">
+                            <i class="fa-brands fa-instagram" style="color: #E4405F; font-size: 16px;"></i> Instagram
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; background: #ffffff; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--line)'">
+                            <i class="fa-brands fa-facebook" style="color: #1877F2; font-size: 16px;"></i> Facebook
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; background: #ffffff; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--line)'">
+                            <i class="fa-brands fa-linkedin" style="color: #0A66C2; font-size: 16px;"></i> LinkedIn
+                        </a>
+                    </div>
                 </div>
             </aside>
         </div>

@@ -71,20 +71,23 @@ $q = db()->prepare("
 $q->execute([$id]);
 $files = $q->fetchAll();
 
-$pageTitle = 'Consulta · ' . e_name($c['pet_name']) . ' | VetCompartido';
+$pageTitle = 'Consulta · ' . e_name($c['pet_name']) . ' | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
         <span class="pill"><?= e($c['status']) ?></span>
-        <span class="muted" style="font-size: 13px;">📅 <?= e($c['created_at']) ?> · 🏥 <?= e_name($c['clinic_name']) ?></span>
+        <span class="muted" style="font-size: 13px;">
+            <i class="fa-solid fa-calendar-day" style="margin-right: 4px;"></i> <?= e($c['created_at']) ?> · 
+            <i class="fa-solid fa-hospital" style="margin-right: 4px; color: var(--green);"></i> <?= e_name($c['clinic_name']) ?>
+        </span>
     </div>
     
     <h1 style="margin: 0 0 10px;"><?= e($c['reason']) ?> · <?= e_name($c['pet_name']) ?></h1>
     
     <p style="font-size: 15px; margin: 0 0 18px;">
-        👤 <strong>Tutor responsable:</strong> <?= e_name($c['full_name']) ?>
+        <i class="fa-solid fa-user" style="color: var(--green); margin-right: 6px;"></i> <strong>Tutor responsable:</strong> <?= e_name($c['full_name']) ?>
     </p>
     
     <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
@@ -119,25 +122,25 @@ require __DIR__ . '/../includes/header.php';
         
         <?php if ($c['vaccine_expiry']): ?>
             <p style="margin: 0; font-size: 14px; color: var(--green-dark);">
-                💉 <strong>Vencimiento de vacuna:</strong> <?= e($c['vaccine_expiry']) ?> · 
+                <i class="fa-solid fa-syringe" style="color: var(--green); margin-right: 6px;"></i> <strong>Vencimiento de vacuna:</strong> <?= e($c['vaccine_expiry']) ?> · 
                 <strong>Próxima dosis:</strong> <?= e($c['next_dose']) ?>
             </p>
         <?php endif; ?>
     </div>
     
     <div class="actions">
-        <a class="btn" href="<?= url('consultas/editar.php?id=' . (int)$id) ?>">
-            <span>✏️ Editar consulta</span>
+        <a class="btn primary" href="<?= url('consultas/editar.php?id=' . (int)$id) ?>">
+            <i class="fa-solid fa-pen-to-square" style="margin-right: 6px;"></i> Editar consulta
         </a>
         <a class="btn secondary" href="<?= url('mascotas/ver.php?id=' . (int)$c['pet_id']) ?>">
-            <span>← Volver al historial de <?= e_name($c['pet_name']) ?></span>
+            <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Volver al historial de <?= e_name($c['pet_name']) ?>
         </a>
     </div>
 </div>
 
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin: 0;">📎 Archivos y Documentos Adjuntos (<?= count($files) ?>)</h2>
+        <h2 style="margin: 0;"><i class="fa-solid fa-paperclip" style="color: var(--green); margin-right: 8px;"></i>Archivos y Documentos Adjuntos (<?= count($files) ?>)</h2>
     </div>
     
     <?php if (!$files): ?>
@@ -147,12 +150,12 @@ require __DIR__ . '/../includes/header.php';
             <?php foreach ($files as $f): ?>
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <strong style="color: var(--ink); font-size: 14.5px;">📄 <?= e($f['original_name']) ?></strong>
+                        <strong style="color: var(--ink); font-size: 14.5px;"><i class="fa-solid fa-file-pdf" style="color: #dc2626; margin-right: 6px;"></i> <?= e($f['original_name']) ?></strong>
                         <div class="muted" style="font-size: 12px;">Subido el <?= e($f['created_at']) ?> por <?= e($f['uploaded_by']) ?></div>
                     </div>
                     <a class="btn secondary" href="<?= url('archivo_consulta.php?id=' . (int)$f['id']) ?>" style="font-size: 13px; padding: 8px 14px;">
                         <span>Descargar / Abrir</span>
-                        <span>↗</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 6px;"></i>
                     </a>
                 </div>
             <?php endforeach; ?>
@@ -161,15 +164,15 @@ require __DIR__ . '/../includes/header.php';
 
     <!-- Formulario para adjuntar nuevo archivo a la consulta -->
     <div style="background: #f7faf8; border: 1.5px dashed var(--line); border-radius: 14px; padding: 20px;">
-        <h3 style="margin: 0 0 8px; font-size: 16px;">➕ Adjuntar receta médica, comprobante o estudio</h3>
+        <h3 style="margin: 0 0 8px; font-size: 16px;"><i class="fa-solid fa-cloud-arrow-up" style="color: var(--green); margin-right: 6px;"></i>Adjuntar receta médica, comprobante o estudio</h3>
         <p class="muted" style="font-size: 13px; margin: 0 0 14px;">Admite documentos PDF o imágenes JPG, PNG, WEBP (hasta 10 MB).</p>
         
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png,.webp" required style="max-width: 380px; margin-top: 0;">
-                <button type="submit" style="font-size: 13px; padding: 10px 18px;">
-                    <span>Subir archivo</span>
+                <button type="submit" class="btn primary" style="font-size: 13px; padding: 10px 18px;">
+                    <i class="fa-solid fa-upload" style="margin-right: 6px;"></i> Subir archivo
                 </button>
             </div>
         </form>

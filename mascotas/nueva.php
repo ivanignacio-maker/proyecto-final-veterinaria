@@ -90,12 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Registrar Mascota | VetCompartido';
+$pageTitle = 'Registrar Mascota | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>🐾 Registrar nueva mascota</h1>
+    <h1><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 8px;"></i>Registrar nueva mascota</h1>
     
     <p class="muted">
         Tutor responsable: <strong><?= e_name($client['full_name']) ?></strong> · DNI: <strong><?= e($client['dni']) ?></strong>
@@ -103,7 +103,7 @@ require __DIR__ . '/../includes/header.php';
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -159,9 +159,9 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button type="submit">
+            <button type="submit" class="btn primary">
                 <span>Guardar mascota</span>
-                <span>→</span>
+                <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
             </button>
             <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . $clientId) ?>">Cancelar</a>
         </div>

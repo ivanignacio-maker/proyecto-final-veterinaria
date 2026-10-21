@@ -44,12 +44,12 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Registrar una mascota</h1>
+    <h1><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 8px;"></i>Registrar una mascota</h1>
     <p class="muted">La mascota quedará vinculada a tu cuenta. La veterinaria podrá completar su ficha médica y vacunas.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -59,12 +59,12 @@ require __DIR__ . '/../includes/header.php';
         
         <div class="form-grid">
             <div>
-                <label>Nombre de la mascota</label>
+                <label>Nombre de la mascota *</label>
                 <input name="name" placeholder="Ej. Luna" required>
             </div>
             
             <div>
-                <label>Tipo de animal</label>
+                <label>Tipo de animal *</label>
                 <select name="animal_type" required>
                     <option value="">Seleccionar especie</option>
                     <option value="Perro">Perro</option>
@@ -98,7 +98,9 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button class="btn primary" type="submit">🐾 Guardar mascota</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-paw" style="margin-right: 6px;"></i> Guardar mascota
+            </button>
             <a class="btn secondary" href="<?= url('cliente/mascotas.php') ?>">Cancelar</a>
         </div>
     </form>

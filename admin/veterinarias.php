@@ -71,12 +71,12 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Administración de Veterinarias</h1>
+    <h1><i class="fa-solid fa-building" style="color: var(--green); margin-right: 8px;"></i>Administración de Veterinarias</h1>
     <p class="muted">Las clínicas no se registran solas en la plataforma: el superadministrador crea la clínica y habilita su usuario inicial.</p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -113,7 +113,9 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button class="btn primary" type="submit">🏢 Crear veterinaria y usuario</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-building-circle-check" style="margin-right: 6px;"></i> Crear veterinaria y usuario
+            </button>
         </div>
     </form>
 </div>
@@ -137,11 +139,11 @@ require __DIR__ . '/../includes/header.php';
                 <?php $isActive = (bool)$r['active']; ?>
                 <tr>
                     <td>
-                        <strong class="name-titlecase">🏥 <?= e_name($r['name']) ?></strong>
+                        <strong class="name-titlecase"><i class="fa-solid fa-hospital" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($r['name']) ?></strong>
                     </td>
                     <td><?= e($r['email']) ?></td>
                     <td>
-                        <span class="pill">👨‍⚕️ <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
+                        <span class="pill"><i class="fa-solid fa-user-doctor" style="color: var(--green); margin-right: 4px;"></i> <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
                     </td>
                     <td>
                         <span class="badge <?= $isActive ? 'badge-success' : 'badge-danger' ?>">

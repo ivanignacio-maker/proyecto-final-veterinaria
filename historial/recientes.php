@@ -23,12 +23,12 @@ $q = db()->prepare("
 $q->execute([$_SESSION['clinic_id']]);
 $rows = $q->fetchAll();
 
-$pageTitle = 'Atendidos recientemente';
+$pageTitle = 'Atendidos recientemente | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Pacientes y clientes atendidos recientemente</h1>
+    <h1><i class="fa-solid fa-clock-rotate-left" style="color: var(--green); margin-right: 8px;"></i>Pacientes y clientes atendidos recientemente</h1>
     <p class="muted">Últimas 50 consultas clínicas registradas en el sistema para tu veterinaria.</p>
     
     <?php if (!$rows): ?>
@@ -60,7 +60,7 @@ require __DIR__ . '/../includes/header.php';
                             <span class="muted">DNI <?= e($r['dni']) ?></span>
                         </td>
                         <td>
-                            <span class="pill name-titlecase">🐾 <?= e_name($r['pet_name']) ?></span>
+                            <span class="pill name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($r['pet_name']) ?></span>
                             <span class="muted" style="font-size: 11px; margin-left: 4px;">#<?= (int)$r['pet_id'] ?></span>
                         </td>
                         <td>
@@ -73,7 +73,8 @@ require __DIR__ . '/../includes/header.php';
                         </td>
                         <td>
                             <a href="<?= url('consultas/ver.php?id=' . (int)$r['consultation_id']) ?>" class="btn secondary btn-sm">
-                                Ver consulta →
+                                <span>Ver consulta</span>
+                                <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i>
                             </a>
                         </td>
                     </tr>

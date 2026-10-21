@@ -97,20 +97,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Asentar Consulta Médica | VetCompartido';
+$pageTitle = 'Asentar Consulta Médica | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>🩺 Asentar consulta médica</h1>
+    <h1><i class="fa-solid fa-stethoscope" style="color: var(--green); margin-right: 8px;"></i>Asentar consulta médica</h1>
     <p class="muted">
-        Paciente: <strong><?= e_name($pet['name']) ?></strong> · 
+        Paciente: <strong class="name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($pet['name']) ?></strong> · 
         Tutor: <strong><?= e_name($pet['full_name']) ?></strong>
     </p>
     
     <?php if ($error): ?>
         <div class="notice error">
-            <span class="notice-icon">⚠️</span>
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <span><?= e($error) ?></span>
         </div>
     <?php endif; ?>
@@ -121,7 +121,7 @@ require __DIR__ . '/../includes/header.php';
         <div class="form-grid">
             <div>
                 <label>Motivo / tipo de consulta</label>
-                <select name="motivo" required>
+                <select name="motivo" required id="motivo_select">
                     <option value="">Seleccionar motivo...</option>
                     <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Dermatología', 'Otro'] as $r): ?>
                         <option><?= e($r) ?></option>
@@ -177,13 +177,25 @@ require __DIR__ . '/../includes/header.php';
         </div>
         
         <div class="actions">
-            <button type="submit">
+            <button type="submit" class="btn primary">
                 <span>Guardar consulta</span>
-                <span>→</span>
+                <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
             </button>
             <a class="btn secondary" href="<?= url('mascotas/ver.php?id=' . $petId) ?>">Cancelar</a>
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const motivoSelect = document.getElementById('motivo_select');
+    const vacunaFields = document.getElementById('vacuna-fields');
+    if (motivoSelect && vacunaFields) {
+        motivoSelect.addEventListener('change', function() {
+            vacunaFields.hidden = (this.value !== 'Vacuna');
+        });
+    }
+});
+</script>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
