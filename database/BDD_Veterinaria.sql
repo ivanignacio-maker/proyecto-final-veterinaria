@@ -42,7 +42,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `email`, `password_hash`, `created_at`) VALUES
-(1, 'admingrupo6@gmail.com', '$2y$10$a6lZ93lJQJb0smKYs9OWsOgkpmJaKYmiJplGiAwwfieEsfu5ZW0Wu', '2026-10-16 16:21:02');
+(1, 'vetcare987@gmail.com', '$2y$10$DaSz3XZhevJlljEVuWyY/uunn14RVBtVIhV/8atNH0JvbdJXXdKGm', '2026-10-16 16:21:02');
 
 -- --------------------------------------------------------
 

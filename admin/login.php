@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-header('Location: ' . url('login.php'));
-exit;
+if (!empty($_SESSION['admin_id'])) {
+    header('Location: ' . url('admin/veterinarias.php'));
+    exit;
+}
 
 csrf_check();
 
@@ -12,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
-    // Buscar al administrador por su correo electrónico
-    $q = db()->prepare("SELECT * FROM admins WHERE email = ?");
+    // Buscar al administrador por su correo electrónico (case-insensitive)
+    $q = db()->prepare("SELECT * FROM admins WHERE LOWER(email) = LOWER(?) LIMIT 1");
     $q->execute([$email]);
     $a = $q->fetch();
     
