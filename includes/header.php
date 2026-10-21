@@ -110,10 +110,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('contacto.php') ?>" class="<?= $currentScript === 'contacto.php' ? 'active-nav' : '' ?>">Contacto</a>
                     
                     <div class="nav-actions">
-                        <a href="<?= url('login.php?tipo=cliente') ?>" class="btn-nav-tutor">
-                            <i class="fa-solid fa-paw"></i> Portal Tutores
-                        </a>
-                        <a href="<?= url('login.php?tipo=veterinaria') ?>" class="btn-nav-login">
+                        <a href="<?= url('login.php') ?>" class="btn-nav-login">
                             <span class="login-dot"></span> Iniciar sesión
                         </a>
                     </div>
@@ -161,8 +158,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <a href="<?= url('contacto.php') ?>" class="<?= $currentScript === 'contacto.php' ? 'active' : '' ?>"><i class="fa-solid fa-envelope"></i> Contacto y Soporte</a>
                     <a href="<?= url('terminos.php') ?>" class="<?= $currentScript === 'terminos.php' ? 'active' : '' ?>"><i class="fa-solid fa-file-contract"></i> Términos para veterinarias</a>
                     <div class="mobile-nav-buttons">
-                        <a href="<?= url('login.php?tipo=veterinaria') ?>" class="btn-mobile-login"><i class="fa-solid fa-hospital"></i> Acceso Veterinarias</a>
-                        <a href="<?= url('login.php?tipo=cliente') ?>" class="btn-nav-tutor" style="width: 100%; justify-content: center; margin-top: 8px;"><i class="fa-solid fa-paw"></i> Portal Tutores</a>
+                        <a href="<?= url('login.php') ?>" class="btn-mobile-login"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión</a>
                     </div>
                 <?php endif; ?>
             </div>
