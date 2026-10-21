@@ -98,6 +98,7 @@ CREATE TABLE `clients` (
   `full_name` varchar(180) NOT NULL,
   `email` varchar(190) NOT NULL,
   `phone` varchar(50) NOT NULL,
+  `password_hash` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -106,8 +107,8 @@ CREATE TABLE `clients` (
 -- Volcado de datos para la tabla `clients`
 --
 
-INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `created_at`, `updated_at`) VALUES
-(1, '44649955', 'ivan bruno', 'ivan@gmail.com', '1111111111', '2026-10-16 16:24:10', '2026-10-16 16:24:10');
+INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `password_hash`, `created_at`, `updated_at`) VALUES
+(1, '44649955', 'ivan bruno', 'ivan@gmail.com', '1111111111', NULL, '2026-10-16 16:24:10', '2026-10-16 16:24:10');
 
 -- --------------------------------------------------------
 
@@ -264,7 +265,9 @@ INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `breed`, `weight_k
 
 CREATE TABLE `remember_tokens` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `vet_user_id` bigint(20) UNSIGNED NOT NULL,
+  `user_type` enum('vet','client','admin') NOT NULL DEFAULT 'vet',
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `vet_user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `selector` char(24) NOT NULL,
   `validator_hash` char(64) NOT NULL,
   `expires_at` datetime NOT NULL,
