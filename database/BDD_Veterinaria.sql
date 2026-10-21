@@ -18,8 +18,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `vetesta`
+-- Base de datos: `BDD_Veterinaria`
 --
+
+CREATE DATABASE IF NOT EXISTS `BDD_Veterinaria` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `BDD_Veterinaria`;
 
 -- --------------------------------------------------------
 

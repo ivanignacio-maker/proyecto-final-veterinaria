@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Configuración de Base de Datos y Aplicación
 // ============================================================================
 if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
-if (!defined('DB_NAME')) define('DB_NAME', 'vetesta');
+if (!defined('DB_NAME')) define('DB_NAME', 'BDD_Veterinaria');
 if (!defined('DB_USER')) define('DB_USER', 'root');
 if (!defined('DB_PASS')) define('DB_PASS', '');
 if (!defined('APP_NAME')) define('APP_NAME', 'VetCompartido');
