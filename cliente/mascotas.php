@@ -19,36 +19,62 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Hola, <?= e($c['full_name']) ?></h1>
-    <p>DNI <?= e($c['dni']) ?> · Tus mascotas y sus historiales clínicos.</p>
+    <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+        <div style="width: 58px; height: 58px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; font-size: 28px; border: 1.5px solid rgba(35, 119, 101, 0.2);">
+            👤
+        </div>
+        <div>
+            <h1 style="margin: 0;" class="name-titlecase">Hola, <?= e_name($c['full_name']) ?></h1>
+            <p class="muted" style="margin: 4px 0 0;">DNI <?= e($c['dni']) ?> · Libreta sanitaria y seguimiento médico de tus mascotas.</p>
+        </div>
+    </div>
     
-    <div class="actions">
-        <a class="btn" href="<?= url('cliente/agregar_mascota.php') ?>">Agregar mascota</a>
-        <a class="btn secondary" href="<?= url('cliente/turnos.php') ?>">Solicitar turno</a>
+    <div class="actions" style="margin-top: 24px;">
+        <a class="btn primary" href="<?= url('cliente/agregar_mascota.php') ?>">+ Registrar mascota</a>
+        <a class="btn secondary" href="<?= url('cliente/turnos.php') ?>">📅 Solicitar turno</a>
     </div>
 </div>
 
-<div class="grid">
+<div class="grid" style="margin-top: 28px;">
     <?php foreach ($pets as $p): ?>
-        <div class="card">
-            <?php if ($p['photo_path']): ?>
-                <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de mascota">
-            <?php endif; ?>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <?php if ($p['photo_path']): ?>
+                    <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de <?= e_name($p['name']) ?>">
+                <?php else: ?>
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--mint); color: var(--green); display: grid; place-items: center; font-size: 28px; margin-bottom: 14px;">
+                        🐾
+                    </div>
+                <?php endif; ?>
+                
+                <span class="pill">ID #<?= (int)$p['id'] ?></span>
+                <h2 class="name-titlecase" style="margin: 8px 0 4px;"><?= e_name($p['name']) ?></h2>
+                
+                <p class="name-titlecase" style="font-weight: 600; color: var(--green); margin: 0 0 8px;">
+                    <?= e_name($p['animal_type']) ?> <?= $p['breed'] ? '· ' . e_name($p['breed']) : '' ?>
+                </p>
+                
+                <div style="font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;">
+                    <div>⚖️ Peso: <strong><?= e((string)($p['weight_kg'] ?: 'No registrado')) ?></strong> <?= $p['weight_kg'] ? 'kg' : '' ?></div>
+                    <div>📏 Altura: <strong><?= e((string)($p['height_cm'] ?: 'No registrada')) ?></strong> <?= $p['height_cm'] ? 'cm' : '' ?></div>
+                </div>
+            </div>
             
-            <span class="pill">ID #<?= (int)$p['id'] ?></span>
-            <h2><?= e($p['name']) ?></h2>
-            
-            <p><?= e($p['animal_type']) ?> · <?= e($p['breed']) ?></p>
-            <p>Peso: <?= e((string)$p['weight_kg']) ?> kg · Altura: <?= e((string)$p['height_cm']) ?> cm</p>
-            
-            <a class="btn" href="<?= url('cliente/historial.php?pet_id=' . (int)$p['id']) ?>">Ver historial</a>
+            <a class="btn secondary full" href="<?= url('cliente/historial.php?pet_id=' . (int)$p['id']) ?>">
+                Ver historial médico →
+            </a>
         </div>
     <?php endforeach; ?>
 </div>
 
 <?php if (!$pets): ?>
-    <div class="card">
-        <p>Todavía no agregaste mascotas.</p>
+    <div class="card" style="text-align: center; padding: 40px 20px;">
+        <span style="font-size: 40px; display: block; margin-bottom: 12px;">🐾</span>
+        <h3>Todavía no registraste ninguna mascota</h3>
+        <p class="muted">Hacé clic en el botón superior para dar de alta a tu primer animal de compañía.</p>
+        <div style="margin-top: 18px;">
+            <a class="btn primary" href="<?= url('cliente/agregar_mascota.php') ?>">+ Registrar mi mascota</a>
+        </div>
     </div>
 <?php endif; ?>
 

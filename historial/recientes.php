@@ -27,36 +27,55 @@ $pageTitle = 'Atendidos recientemente';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="card">
-    <h1>Clientes y mascotas atendidos recientemente</h1>
+<div class="panel">
+    <h1>Pacientes y clientes atendidos recientemente</h1>
+    <p class="muted">Últimas 50 consultas clínicas registradas en el sistema para tu veterinaria.</p>
     
     <?php if (!$rows): ?>
-        <p>Todavía no hay consultas registradas por esta veterinaria.</p>
+        <p style="padding: 24px 0; color: var(--muted);">Todavía no hay consultas registradas por esta veterinaria.</p>
     <?php else: ?>
         <table>
             <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Mascota</th>
-                    <th>Consulta</th>
+                    <th>Fecha de atención</th>
+                    <th>Tutor / Cliente</th>
+                    <th>Paciente (Mascota)</th>
+                    <th>Motivo de consulta</th>
                     <th>Estado</th>
+                    <th>Ficha médica</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($rows as $r): ?>
+                    <?php
+                        $statusClass = $r['status'] === 'Dado de Alta' ? 'badge-success' : 'badge-warning';
+                    ?>
                     <tr>
-                        <td><?= e($r['created_at']) ?></td>
                         <td>
-                            <?= e($r['full_name']) ?><br>
+                            <strong><?= date('d/m/Y', strtotime($r['created_at'])) ?></strong><br>
+                            <span class="muted"><?= date('H:i', strtotime($r['created_at'])) ?> hs</span>
+                        </td>
+                        <td>
+                            <strong class="name-titlecase"><?= e_name($r['full_name']) ?></strong><br>
                             <span class="muted">DNI <?= e($r['dni']) ?></span>
                         </td>
-                        <td><?= e($r['pet_name']) ?> (#<?= (int)$r['pet_id'] ?>)</td>
                         <td>
-                            <?= e($r['reason']) ?><br>
-                            <a href="<?= url('consultas/ver.php?id=' . (int)$r['consultation_id']) ?>">Ver consulta</a>
+                            <span class="pill name-titlecase">🐾 <?= e_name($r['pet_name']) ?></span>
+                            <span class="muted" style="font-size: 11px; margin-left: 4px;">#<?= (int)$r['pet_id'] ?></span>
                         </td>
-                        <td><?= e($r['status']) ?></td>
+                        <td>
+                            <strong><?= e($r['reason']) ?></strong>
+                        </td>
+                        <td>
+                            <span class="badge <?= $statusClass ?>">
+                                <?= e($r['status']) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="<?= url('consultas/ver.php?id=' . (int)$r['consultation_id']) ?>" class="btn secondary btn-sm">
+                                Ver consulta →
+                            </a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

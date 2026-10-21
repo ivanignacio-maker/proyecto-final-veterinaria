@@ -97,37 +97,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Nueva consulta';
+$pageTitle = 'Asentar Consulta Médica | VetCompartido';
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Agregar consulta</h1>
-    <p>
-        Mascota: <strong><?= e($pet['name']) ?></strong> · 
-        Responsable: <?= e($pet['full_name']) ?>
+    <h1>🩺 Asentar consulta médica</h1>
+    <p class="muted">
+        Paciente: <strong><?= e_name($pet['name']) ?></strong> · 
+        Tutor: <strong><?= e_name($pet['full_name']) ?></strong>
     </p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon">⚠️</span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
-    <form method="post">
+    <form method="post" style="margin-top: 18px;">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
         
         <div class="form-grid">
             <div>
                 <label>Motivo / tipo de consulta</label>
                 <select name="motivo" required>
-                    <option value="">Seleccionar</option>
-                    <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Otro'] as $r): ?>
+                    <option value="">Seleccionar motivo...</option>
+                    <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Dermatología', 'Otro'] as $r): ?>
                         <option><?= e($r) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             
             <div>
-                <label>Estado</label>
+                <label>Estado clínico</label>
                 <select name="status">
                     <option>En proceso</option>
                     <option>Dado de Alta</option>
@@ -148,33 +151,36 @@ require __DIR__ . '/../includes/header.php';
             </div>
         </div>
         
-        <label>Notas / motivo detallado</label>
-        <textarea name="notes" required></textarea>
+        <label>Notas / motivo detallado del cuadro</label>
+        <textarea name="notes" placeholder="Describa síntomas, examen físico, constantes..." required></textarea>
         
         <label>Diagnóstico</label>
-        <textarea name="diagnosis"></textarea>
+        <textarea name="diagnosis" placeholder="Diagnóstico presuntivo o definitivo..."></textarea>
         
-        <label>Tratamiento indicado</label>
-        <textarea name="treatment"></textarea>
+        <label>Tratamiento indicado y posología</label>
+        <textarea name="treatment" placeholder="Instrucciones para el tutor, fármacos, frecuencia..."></textarea>
         
-        <label>Medicamento del stock</label>
+        <label>Medicamento del stock de la veterinaria</label>
         <select name="medicamento_id">
-            <option value="">No corresponde</option>
+            <option value="">No corresponde / Ninguno</option>
             <?php foreach ($meds as $m): ?>
                 <option value="<?= (int)$m['id'] ?>" <?= $m['quantity'] < 1 ? 'disabled' : '' ?>>
                     <?= e($m['name']) ?> — stock: <?= (int)$m['quantity'] ?>
                 </option>
             <?php endforeach; ?>
-            <option value="otro">Otro (comprar)</option>
+            <option value="otro">Otro (comprar en farmacia)</option>
         </select>
         
         <div id="otro-medicamento" hidden>
-            <label>Medicamento a obtener</label>
-            <input name="other_medication">
+            <label>Medicamento a comprar</label>
+            <input name="other_medication" placeholder="Nombre comercial o genérico">
         </div>
         
         <div class="actions">
-            <button>Guardar consulta</button>
+            <button type="submit">
+                <span>Guardar consulta</span>
+                <span>→</span>
+            </button>
             <a class="btn secondary" href="<?= url('mascotas/ver.php?id=' . $petId) ?>">Cancelar</a>
         </div>
     </form>

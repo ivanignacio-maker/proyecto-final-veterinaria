@@ -7,9 +7,9 @@ $error = '';
 
 // 1. Procesar la creación de una nueva veterinaria y su primer usuario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
+    $name = format_name(trim($_POST['name'] ?? ''));
     $clinicEmail = trim($_POST['clinic_email'] ?? '');
-    $username = trim($_POST['username'] ?? '');
+    $username = format_name(trim($_POST['username'] ?? ''));
     $email = trim($_POST['user_email'] ?? '');
     $pass = $_POST['password'] ?? '';
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Confirmar ambos registros
             $pdo->commit();
             
-            flash('Veterinaria y usuario creados.');
+            flash('Veterinaria y usuario creados con éxito.');
             header('Location: ' . url('admin/veterinarias.php'));
             exit;
             
@@ -52,6 +52,7 @@ if (isset($_GET['toggle'])) {
     $q = db()->prepare("UPDATE clinics SET active = 1 - active WHERE id = ?");
     $q->execute([(int)$_GET['toggle']]);
     
+    flash('Estado de la veterinaria modificado.');
     header('Location: ' . url('admin/veterinarias.php'));
     exit;
 }
@@ -70,72 +71,87 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Administrar veterinarias</h1>
-    <p>Las clínicas no se registran por su cuenta. El administrador crea la clínica y su primer usuario.</p>
+    <h1>Administración de Veterinarias</h1>
+    <p class="muted">Las clínicas no se registran solas en la plataforma: el superadministrador crea la clínica y habilita su usuario inicial.</p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon">⚠️</span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
     <form method="post">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
-        <h2>Nueva veterinaria</h2>
+        <h2 style="font-size: 20px; margin-bottom: 16px;">Alta de nueva clínica veterinaria</h2>
         
         <div class="form-grid">
             <div>
-                <label>Nombre de veterinaria</label>
-                <input name="name" required>
+                <label>Nombre de la veterinaria</label>
+                <input name="name" placeholder="Ej. Veterinaria del Parque" required>
             </div>
             
             <div>
-                <label>Correo de la veterinaria</label>
-                <input type="email" name="clinic_email" required>
+                <label>Correo oficial de la veterinaria</label>
+                <input type="email" name="clinic_email" placeholder="contacto@veterinaria.com" required>
             </div>
             
             <div>
-                <label>Nombre de usuario</label>
-                <input name="username" required>
+                <label>Nombre de usuario del veterinario</label>
+                <input name="username" placeholder="Ej. Dr. Martínez" required>
             </div>
             
             <div>
-                <label>Correo de inicio de sesión</label>
-                <input type="email" name="user_email" required>
+                <label>Correo de acceso (login)</label>
+                <input type="email" name="user_email" placeholder="martinez@veterinaria.com" required>
             </div>
             
             <div>
-                <label>Contraseña inicial (mínimo 10 caracteres)</label>
-                <input type="password" name="password" minlength="10" required>
+                <label>Contraseña inicial (mín. 10 caracteres)</label>
+                <input type="password" name="password" minlength="10" placeholder="••••••••••••" required>
             </div>
         </div>
         
         <div class="actions">
-            <button>Crear veterinaria</button>
+            <button class="btn primary" type="submit">🏢 Crear veterinaria y usuario</button>
         </div>
     </form>
 </div>
 
-<div class="card">
-    <h2>Veterinarias existentes</h2>
+<div class="card" style="margin-top: 28px;">
+    <h2>Clínicas veterinarias registradas</h2>
+    <p class="muted">Listado del ecosistema de centros y consultorios activos en la plataforma.</p>
     
     <table>
         <thead>
             <tr>
                 <th>Veterinaria</th>
-                <th>Correo</th>
-                <th>Usuarios</th>
+                <th>Correo de contacto</th>
+                <th>Veterinarios</th>
                 <th>Estado</th>
-                <th></th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($rows as $r): ?>
+                <?php $isActive = (bool)$r['active']; ?>
                 <tr>
-                    <td><?= e($r['name']) ?></td>
-                    <td><?= e($r['email']) ?></td>
-                    <td><?= (int)$r['users'] ?></td>
-                    <td><?= $r['active'] ? 'Activa' : 'Suspendida' ?></td>
                     <td>
-                        <a class="btn secondary" href="<?= url('admin/veterinarias.php?toggle=' . (int)$r['id']) ?>" data-confirm="¿Cambiar estado de esta veterinaria?">Cambiar estado</a>
+                        <strong class="name-titlecase">🏥 <?= e_name($r['name']) ?></strong>
+                    </td>
+                    <td><?= e($r['email']) ?></td>
+                    <td>
+                        <span class="pill">👨‍⚕️ <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
+                    </td>
+                    <td>
+                        <span class="badge <?= $isActive ? 'badge-success' : 'badge-danger' ?>">
+                            <?= $isActive ? 'Activa' : 'Suspendida' ?>
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn secondary btn-sm" href="<?= url('admin/veterinarias.php?toggle=' . (int)$r['id']) ?>" data-confirm="¿Cambiar estado de esta veterinaria?">
+                            <?= $isActive ? 'Suspender' : 'Activar' ?>
+                        </a>
                     </td>
                 </tr>
             <?php endforeach; ?>

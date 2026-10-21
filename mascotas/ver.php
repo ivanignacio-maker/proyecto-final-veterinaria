@@ -31,66 +31,127 @@ $q = db()->prepare("
 $q->execute([$id]);
 $consults = $q->fetchAll();
 
-$pageTitle = 'Historial de mascota';
+$pageTitle = e_name($p['name']) . ' · Historial Clínico';
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <?php if ($p['photo_path']): ?>
-        <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de mascota">
-    <?php endif; ?>
+    <div style="display: flex; gap: 26px; align-items: flex-start; flex-wrap: wrap;">
+        <!-- Foto de Mascota -->
+        <div style="flex-shrink: 0;">
+            <?php if ($p['photo_path']): ?>
+                <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de <?= e_name($p['name']) ?>" style="width: 140px; height: 140px; border-radius: 20px; object-fit: cover;">
+            <?php else: ?>
+                <div style="width: 140px; height: 140px; border-radius: 20px; background: var(--mint); border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 54px;">
+                    🐾
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <div style="flex: 1; min-width: 270px;">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                <span class="pill">Ficha Clínica #<?= (int)$p['id'] ?></span>
+            </div>
+
+            <!-- Nombre de la mascota -->
+            <h1 style="margin: 0 0 6px; font-size: 30px;"><?= e_name($p['name']) ?></h1>
+            
+            <!-- Dueño responsable situado inmediatamente debajo del nombre -->
+            <p style="margin: 0 0 18px; font-size: 15px; color: var(--ink);">
+                <strong>Tutor responsable:</strong> 
+                <a href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>" style="color: var(--green); text-decoration: underline; font-weight: 700;">
+                    <?= e_name($p['full_name']) ?>
+                </a> 
+                (DNI: <strong><?= e($p['dni']) ?></strong>)
+            </p>
+            
+            <!-- Datos del animal situados uno arriba del otro -->
+            <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; max-width: 480px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
+                    <span class="muted">Especie:</span>
+                    <strong style="color: var(--ink);"><?= e_name($p['animal_type']) ?></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
+                    <span class="muted">Raza:</span>
+                    <strong style="color: var(--ink);"><?= e_name($p['breed'] ?: 'Mestizo / No especificado') ?></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
+                    <span class="muted">Peso actual:</span>
+                    <strong style="color: var(--ink);"><?= $p['weight_kg'] ? e((string)$p['weight_kg']) . ' kg' : 'No registrado' ?></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed var(--line); padding-bottom: 6px;">
+                    <span class="muted">Altura:</span>
+                    <strong style="color: var(--ink);"><?= $p['height_cm'] ? e((string)$p['height_cm']) . ' cm' : 'No registrada' ?></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                    <span class="muted">Fecha de nacimiento:</span>
+                    <strong style="color: var(--ink);"><?= $p['birth_date'] ? e($p['birth_date']) : 'No especificada' ?></strong>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <span class="pill">ID de mascota: <?= (int)$p['id'] ?></span>
-    <h1><?= e($p['name']) ?></h1>
-    
-    <p>
-        <?= e($p['animal_type']) ?> · 
-        <?= e($p['breed']) ?> · 
-        Peso <?= e((string)$p['weight_kg']) ?> kg · 
-        Altura <?= e((string)$p['height_cm']) ?> cm
-    </p>
-    
-    <p>Dueño: <?= e($p['full_name']) ?> (DNI <?= e($p['dni']) ?>)</p>
-    
-    <div class="actions">
-        <a class="btn" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">Agregar consulta</a>
-        <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>">Volver al cliente</a>
+    <div class="actions" style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line);">
+        <a class="btn primary" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">
+            <span>+ Agregar consulta médica</span>
+        </a>
+        <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>">
+            <span>Volver a la ficha del tutor</span>
+        </a>
+        <a class="btn secondary" href="<?= url('dashboard.php') ?>">
+            <span>Panel principal</span>
+        </a>
     </div>
 </div>
 
 <div class="card">
-    <h2>Historial clínico</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin: 0;">Historial Clínico Unificado (<?= count($consults) ?>)</h2>
+        <a class="btn secondary" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>" style="font-size: 13px; padding: 8px 14px;">
+            + Nueva consulta
+        </a>
+    </div>
     
     <?php if (!$consults): ?>
-        <p>No hay consultas registradas.</p>
+        <div style="text-align: center; padding: 35px 20px; background: var(--paper); border-radius: 14px; border: 1.5px dashed var(--line);">
+            <p style="margin: 0 0 12px; color: var(--muted); font-size: 15px;">No hay consultas médicas asentadas para esta mascota.</p>
+            <a class="btn" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">Asentar primera consulta</a>
+        </div>
     <?php else: ?>
         <?php foreach ($consults as $c): ?>
-            <div class="panel">
-                <div class="actions">
-                    <span class="pill"><?= e($c['status']) ?></span>
-                    <span class="muted"><?= e($c['created_at']) ?> · <?= e($c['clinic_name']) ?></span>
+            <div class="panel" style="border-left: 4px solid var(--green); margin-bottom: 18px; padding: 22px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="pill"><?= e($c['status']) ?></span>
+                        <strong style="color: var(--green-dark); font-size: 14px;">🏥 <?= e_name($c['clinic_name']) ?></strong>
+                    </div>
+                    <span class="muted" style="font-size: 13px;">📅 <?= e($c['created_at']) ?> · Atendió Dr/a. <?= e_name($c['username']) ?></span>
                 </div>
                 
-                <h3><?= e($c['reason']) ?></h3>
+                <h3 style="margin: 0 0 8px; font-size: 18px;"><?= e($c['reason']) ?></h3>
                 
-                <p><strong>Motivo / notas:</strong> <?= nl2br(e($c['notes'])) ?></p>
+                <p style="margin: 0 0 10px; font-size: 14.5px;"><strong>Motivo / notas:</strong> <?= nl2br(e($c['notes'])) ?></p>
                 
                 <?php if ($c['diagnosis']): ?>
-                    <p><strong>Diagnóstico:</strong> <?= nl2br(e($c['diagnosis'])) ?></p>
+                    <p style="margin: 0 0 10px; font-size: 14.5px;"><strong>Diagnóstico:</strong> <?= nl2br(e($c['diagnosis'])) ?></p>
                 <?php endif; ?>
                 
                 <?php if ($c['treatment']): ?>
-                    <p><strong>Tratamiento:</strong> <?= nl2br(e($c['treatment'])) ?></p>
+                    <p style="margin: 0 0 10px; font-size: 14.5px;"><strong>Tratamiento:</strong> <?= nl2br(e($c['treatment'])) ?></p>
                 <?php endif; ?>
                 
                 <?php if ($c['vaccine_expiry']): ?>
-                    <p>
-                        Vencimiento de vacuna: <?= e($c['vaccine_expiry']) ?> · 
-                        Próxima dosis: <?= e($c['next_dose']) ?>
-                    </p>
+                    <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 10px 0; font-size: 13.5px;">
+                        💉 <strong>Vencimiento de vacuna:</strong> <?= e($c['vaccine_expiry']) ?> · 
+                        <strong>Próxima dosis:</strong> <?= e($c['next_dose']) ?>
+                    </div>
                 <?php endif; ?>
                 
-                <a class="btn secondary" href="<?= url('consultas/ver.php?id=' . (int)$c['id']) ?>">Ver consulta y archivos</a>
+                <div style="margin-top: 14px;">
+                    <a class="btn secondary" href="<?= url('consultas/ver.php?id=' . (int)$c['id']) ?>" style="font-size: 13px; padding: 8px 14px;">
+                        Ver consulta y archivos adjuntos →
+                    </a>
+                </div>
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
