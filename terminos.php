@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/config/config.php';
     $pageTitle = 'Términos de Servicio para Veterinarias';
     $pageDescription = 'Políticas de uso, custodia de historias clínicas, privacidad médica y normativas de seguridad para centros veterinarios y profesionales en ' . APP_NAME . '.';
     $isLanding = true;

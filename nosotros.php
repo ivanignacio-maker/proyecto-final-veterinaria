@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/config/config.php';
     $pageTitle = 'Quiénes Somos | Nuestra Misión en Salud Veterinaria';
     $pageDescription = 'Conocé la historia y el equipo detrás de ' . APP_NAME . '. Nacimos para eliminar el papel, unificar las historias clínicas y darle a las veterinarias la tecnología moderna que merecen.';
     $isLanding = true;

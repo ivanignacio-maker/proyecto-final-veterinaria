@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/config/config.php';
     $pageTitle = 'Migración Asistida de Datos | Sin Costo';
     $pageDescription = 'Te ayudamos a migrar todos los datos de tu veterinaria sin costo. Desde planillas de Excel, software anterior o fichas en papel, los estructuramos e importamos a tu nueva cuenta.';
     $isLanding = true;

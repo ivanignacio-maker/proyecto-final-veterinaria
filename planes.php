@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/config/config.php';
     $pageTitle = 'Planes de Servicio y Precios';
     $pageDescription = 'Elegí el plan perfecto para tu clínica o consultorio veterinario. Fichas clínicas ilimitadas, gestión de stock, recordatorios y migración de datos 100% asistida y gratuita.';
     $isLanding = true;

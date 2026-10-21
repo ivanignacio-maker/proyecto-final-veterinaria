@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/config/config.php';
     $pageTitle = 'Plataforma de Gestión Veterinaria y Libreta Digital';
     $pageDescription = 'Optimizá la atención de tu clínica veterinaria. Historias clínicas compartidas, control de stock inteligente, libreta digital para tutores y migración de datos 100% asistida y gratuita.';
     $isLanding = true;
