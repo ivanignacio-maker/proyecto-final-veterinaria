@@ -98,6 +98,7 @@ CREATE TABLE `clients` (
   `full_name` varchar(180) NOT NULL,
   `email` varchar(190) NOT NULL,
   `phone` varchar(50) NOT NULL,
+  `avatar_path` varchar(255) DEFAULT NULL,
   `password_hash` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -107,8 +108,8 @@ CREATE TABLE `clients` (
 -- Volcado de datos para la tabla `clients`
 --
 
-INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `password_hash`, `created_at`, `updated_at`) VALUES
-(1, '44649955', 'ivan bruno', 'ivan@gmail.com', '1111111111', NULL, '2026-10-16 16:24:10', '2026-10-16 16:24:10');
+INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `avatar_path`, `password_hash`, `created_at`, `updated_at`) VALUES
+(1, '44649955', 'ivan bruno', 'ivan@gmail.com', '1111111111', NULL, NULL, '2026-10-16 16:24:10', '2026-10-16 16:24:10');
 
 -- --------------------------------------------------------
 

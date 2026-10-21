@@ -25,8 +25,13 @@ require __DIR__ . '/../includes/header.php';
         <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
             <div style="position: relative;">
                 <div id="tutorAvatarContainer" style="width: 72px; height: 72px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; font-size: 30px; border: 2.5px solid var(--green); overflow: hidden; box-shadow: 0 4px 14px rgba(35,119,101,0.15);">
-                    <i class="fa-solid fa-user" id="tutorDefaultIcon"></i>
-                    <img id="tutorAvatarImg" src="" alt="Avatar del tutor" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    <?php if (!empty($c['avatar_path'])): ?>
+                        <i class="fa-solid fa-user" id="tutorDefaultIcon" style="display: none;"></i>
+                        <img id="tutorAvatarImg" src="<?= url('archivo_avatar.php?id=' . (int)$c['id']) ?>" alt="Avatar del tutor" style="width: 100%; height: 100%; object-fit: cover;">
+                    <?php else: ?>
+                        <i class="fa-solid fa-user" id="tutorDefaultIcon"></i>
+                        <img id="tutorAvatarImg" src="" alt="Avatar del tutor" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    <?php endif; ?>
                 </div>
                 <!-- Botón sutil para subir/cambiar foto de perfil del tutor -->
                 <button type="button" onclick="document.getElementById('tutorPhotoInput').click()" title="Cargar imagen de perfil" style="position: absolute; bottom: -2px; right: -2px; width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: #fff; border: 2px solid #fff; display: grid; place-items: center; font-size: 11px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
@@ -176,10 +181,10 @@ require __DIR__ . '/../includes/header.php';
             Los datos son verificados por la clínica para garantizar la custodia médica oficial de tus mascotas.
         </div>
 
-        <form onsubmit="handleTutorProfileSubmit(event)">
+        <form id="formTutorProfile" enctype="multipart/form-data">
             <div class="form-group" style="margin-bottom: 14px;">
                 <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Nombre y Apellido</label>
-                <input type="text" id="tutorEditName" value="<?= e($c['full_name']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+                <input type="text" id="tutorEditName" name="full_name" value="<?= e($c['full_name']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
             </div>
 
             <div class="form-group" style="margin-bottom: 14px;">
@@ -189,21 +194,30 @@ require __DIR__ . '/../includes/header.php';
 
             <div class="form-group" style="margin-bottom: 14px;">
                 <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Correo Electrónico</label>
-                <input type="email" id="tutorEditEmail" value="<?= e($c['email']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+                <input type="email" id="tutorEditEmail" name="email" value="<?= e($c['email']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Teléfono / WhatsApp</label>
+                <input type="tel" id="tutorEditPhone" name="phone" value="<?= e($c['phone'] ?? '') ?>" placeholder="+54 9 11..." style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
             </div>
 
             <div class="form-group" style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Teléfono / WhatsApp</label>
-                <input type="tel" id="tutorEditPhone" value="<?= e($c['phone'] ?? '') ?>" placeholder="+54 9 11..." style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Foto de perfil</label>
+                <input type="file" id="tutorModalPhoto" name="avatar" accept="image/jpeg,image/png,image/webp" style="font-size: 13px;">
+                <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">JPG, PNG o WEBP. Máximo 3 MB.</div>
             </div>
 
             <div id="tutorSuccessMsg" style="display: none; padding: 10px 14px; background: #eaf7ee; color: #1e6348; border-radius: 10px; font-size: 13px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check"></i> Datos actualizados en tu vista actual.
+                <i class="fa-solid fa-circle-check"></i> Datos guardados correctamente.
+            </div>
+            <div id="tutorErrorMsg" style="display: none; padding: 10px 14px; background: #fef2f2; color: #991b1b; border-radius: 10px; font-size: 13px; margin-bottom: 16px;">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="tutorErrorText"></span>
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" class="btn secondary" onclick="closeModal('modalTutorProfile')">Cerrar</button>
-                <button type="submit" class="btn primary">Guardar cambios</button>
+                <button type="submit" class="btn primary" id="btnSaveTutor">Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -226,7 +240,7 @@ require __DIR__ . '/../includes/header.php';
             Modificá los datos generales de tu mascota. Las fichas médicas y vacunas oficiales permanecen protegidas por tu veterinaria.
         </div>
 
-        <form onsubmit="handlePetEditSubmit(event)">
+        <form id="formEditPet">
             <input type="hidden" id="editPetId">
 
             <div class="form-group" style="margin-bottom: 14px;">
@@ -251,7 +265,7 @@ require __DIR__ . '/../includes/header.php';
                 <input type="text" id="editPetBreed" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
                 <div>
                     <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Peso (kg)</label>
                     <input type="number" step="0.01" id="editPetWeight" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
@@ -262,13 +276,21 @@ require __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Fecha de nacimiento</label>
+                <input type="date" id="editPetBirth" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;">
+            </div>
+
             <div id="petSuccessMsg" style="display: none; padding: 10px 14px; background: #eaf7ee; color: #1e6348; border-radius: 10px; font-size: 13px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check"></i> Datos actualizados en tu vista actual.
+                <i class="fa-solid fa-circle-check"></i> Datos de la mascota guardados correctamente.
+            </div>
+            <div id="petErrorMsg" style="display: none; padding: 10px 14px; background: #fef2f2; color: #991b1b; border-radius: 10px; font-size: 13px; margin-bottom: 16px;">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="petErrorText"></span>
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" class="btn secondary" onclick="closeModal('modalEditPet')">Cerrar</button>
-                <button type="submit" class="btn primary">Guardar cambios</button>
+                <button type="submit" class="btn primary" id="btnSavePet">Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -285,30 +307,97 @@ function closeModal(id) {
     if (el) el.style.display = 'none';
 }
 
-function previewTutorAvatar(input) {
+async function previewTutorAvatar(input) {
     if (input.files && input.files[0]) {
+        const file = input.files[0];
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = document.getElementById('tutorAvatarImg');
             const icon = document.getElementById('tutorDefaultIcon');
             img.src = e.target.result;
             img.style.display = 'block';
-            icon.style.display = 'none';
+            if (icon) icon.style.display = 'none';
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
+
+        // Guardar automáticamente la foto en el backend
+        const formData = new FormData();
+        formData.append('full_name', document.getElementById('tutorEditName').value);
+        formData.append('email', document.getElementById('tutorEditEmail').value);
+        formData.append('phone', document.getElementById('tutorEditPhone').value);
+        formData.append('avatar', file);
+
+        try {
+            const resp = await fetch('<?= url("cliente/api_actualizar_perfil.php") ?>', {
+                method: 'POST',
+                body: formData
+            });
+            const json = await resp.json();
+            if (json.ok) {
+                setTimeout(() => location.reload(), 800);
+            }
+        } catch (err) {
+            console.error('Error al subir avatar:', err);
+        }
     }
 }
 
-function handleTutorProfileSubmit(e) {
+// =========================================================================
+// AJAX: Actualizar perfil del tutor
+// =========================================================================
+document.getElementById('formTutorProfile').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const msg = document.getElementById('tutorSuccessMsg');
-    msg.style.display = 'block';
-    setTimeout(() => {
-        closeModal('modalTutorProfile');
-        msg.style.display = 'none';
-    }, 1500);
-}
 
+    const btn = document.getElementById('btnSaveTutor');
+    const successMsg = document.getElementById('tutorSuccessMsg');
+    const errorMsg = document.getElementById('tutorErrorMsg');
+    const errorText = document.getElementById('tutorErrorText');
+
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    const formData = new FormData();
+    formData.append('full_name', document.getElementById('tutorEditName').value);
+    formData.append('email', document.getElementById('tutorEditEmail').value);
+    formData.append('phone', document.getElementById('tutorEditPhone').value);
+
+    const photoInput = document.getElementById('tutorModalPhoto');
+    const quickPhoto = document.getElementById('tutorPhotoInput');
+    if (photoInput && photoInput.files.length > 0) {
+        formData.append('avatar', photoInput.files[0]);
+    } else if (quickPhoto && quickPhoto.files.length > 0) {
+        formData.append('avatar', quickPhoto.files[0]);
+    }
+
+    try {
+        const resp = await fetch('<?= url("cliente/api_actualizar_perfil.php") ?>', {
+            method: 'POST',
+            body: formData
+        });
+
+        const json = await resp.json();
+
+        if (json.ok) {
+            successMsg.style.display = 'block';
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            errorText.textContent = json.error || 'Error desconocido.';
+            errorMsg.style.display = 'block';
+        }
+    } catch (err) {
+        errorText.textContent = 'No se pudo conectar con el servidor.';
+        errorMsg.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar cambios';
+    }
+});
+
+// =========================================================================
+// MODAL: Editar mascota – Poblar campos
+// =========================================================================
 function openEditPetModal(pet) {
     document.getElementById('editPetId').value = pet.id;
     document.getElementById('editPetName').value = pet.name || '';
@@ -316,18 +405,63 @@ function openEditPetModal(pet) {
     document.getElementById('editPetBreed').value = pet.breed || '';
     document.getElementById('editPetWeight').value = pet.weight_kg || '';
     document.getElementById('editPetHeight').value = pet.height_cm || '';
+    document.getElementById('editPetBirth').value = pet.birth_date || '';
+
+    document.getElementById('petSuccessMsg').style.display = 'none';
+    document.getElementById('petErrorMsg').style.display = 'none';
     openModal('modalEditPet');
 }
 
-function handlePetEditSubmit(e) {
+// =========================================================================
+// AJAX: Actualizar datos de la mascota
+// =========================================================================
+document.getElementById('formEditPet').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const msg = document.getElementById('petSuccessMsg');
-    msg.style.display = 'block';
-    setTimeout(() => {
-        closeModal('modalEditPet');
-        msg.style.display = 'none';
-    }, 1500);
-}
+
+    const btn = document.getElementById('btnSavePet');
+    const successMsg = document.getElementById('petSuccessMsg');
+    const errorMsg = document.getElementById('petErrorMsg');
+    const errorText = document.getElementById('petErrorText');
+
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    const payload = {
+        id:          parseInt(document.getElementById('editPetId').value),
+        name:        document.getElementById('editPetName').value,
+        animal_type: document.getElementById('editPetType').value,
+        breed:       document.getElementById('editPetBreed').value,
+        weight_kg:   document.getElementById('editPetWeight').value || null,
+        height_cm:   document.getElementById('editPetHeight').value || null,
+        birth_date:  document.getElementById('editPetBirth').value || ''
+    };
+
+    try {
+        const resp = await fetch('<?= url("cliente/api_actualizar_mascota.php") ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const json = await resp.json();
+
+        if (json.ok) {
+            successMsg.style.display = 'block';
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            errorText.textContent = json.error || 'Error desconocido.';
+            errorMsg.style.display = 'block';
+        }
+    } catch (err) {
+        errorText.textContent = 'No se pudo conectar con el servidor.';
+        errorMsg.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar cambios';
+    }
+});
 
 // Cerrar modales al hacer clic fuera del contenido
 window.addEventListener('click', function(e) {

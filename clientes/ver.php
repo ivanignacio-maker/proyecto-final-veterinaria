@@ -2,7 +2,26 @@
 require_once __DIR__ . '/../config/config.php';
 require_vet();
 
-$id = (int)($_GET['id'] ?? 0);
+$id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
+
+// Procesar actualización de datos del cliente/tutor si se envió el formulario
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_client') {
+    csrf_check();
+    $name = trim($_POST['full_name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+
+    if ($name === '' || $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Completá todos los campos obligatorios con un correo válido.';
+    } else {
+        $q = db()->prepare("UPDATE clients SET full_name = ?, email = ?, phone = ? WHERE id = ?");
+        $q->execute([format_name($name), strtolower($email), $phone, $id]);
+        flash('Datos del tutor actualizados exitosamente en la base de datos.');
+        header('Location: ' . url('clientes/ver.php?id=' . $id));
+        exit;
+    }
+}
 
 // 1. Obtener la información del cliente
 $q = db()->prepare("SELECT * FROM clients WHERE id = ?");
@@ -56,6 +75,9 @@ require __DIR__ . '/../includes/header.php';
         <a class="btn primary" href="<?= url('mascotas/nueva.php?client_id=' . $id) ?>">
             <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Registrar mascota
         </a>
+        <button type="button" class="btn secondary" onclick="openModal('modalEditClient')">
+            <i class="fa-solid fa-user-pen" style="margin-right: 6px;"></i> Editar tutor
+        </button>
         <a class="btn secondary" href="<?= url('clientes/buscar.php') ?>">
             <i class="fa-solid fa-magnifying-glass" style="margin-right: 6px;"></i> Buscar cliente
         </a>
@@ -127,5 +149,68 @@ require __DIR__ . '/../includes/header.php';
         </table>
     <?php endif; ?>
 </div>
+
+<!-- Modal Editar Datos del Tutor (Veterinaria) -->
+<div id="modalEditClient" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; place-items: center; padding: 20px;">
+    <div class="modal-window" style="background: #ffffff; border-radius: 20px; max-width: 500px; width: 100%; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; font-size: 20px; color: var(--ink);">
+                <i class="fa-solid fa-user-pen" style="color: var(--green); margin-right: 8px;"></i>Editar datos del tutor
+            </h3>
+            <button type="button" onclick="closeModal('modalEditClient')" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted);">&times;</button>
+        </div>
+
+        <div style="padding: 12px 16px; background: #f0f7f4; border-radius: 12px; margin-bottom: 20px; font-size: 13px; color: var(--ink); line-height: 1.5; border: 1px solid #d2e7dd;">
+            <i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 4px;"></i>
+            Modificá los datos de contacto del tutor responsable. Los cambios se guardarán directamente en la base de datos.
+        </div>
+
+        <form method="post" action="<?= url('clientes/ver.php?id=' . $id) ?>">
+            <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+            <input type="hidden" name="action" value="update_client">
+            <input type="hidden" name="id" value="<?= $id ?>">
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Nombre y Apellido</label>
+                <input type="text" name="full_name" value="<?= e($c['full_name']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">DNI (Documento de Identidad)</label>
+                <input type="text" value="<?= e($c['dni']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px; background: #f9f9f9;" disabled title="El DNI es el identificador único del cliente en la red">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Correo Electrónico</label>
+                <input type="email" name="email" value="<?= e($c['email']) ?>" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--ink);">Teléfono / WhatsApp</label>
+                <input type="tel" name="phone" value="<?= e($c['phone'] ?? '') ?>" placeholder="Ej: 11 4455-6677" style="width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px;" required>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn secondary" onclick="closeModal('modalEditClient')">Cancelar</button>
+                <button type="submit" class="btn primary">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'grid';
+}
+function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+}
+window.addEventListener('click', function(e) {
+    const m = document.getElementById('modalEditClient');
+    if (e.target === m) closeModal('modalEditClient');
+});
+</script>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
