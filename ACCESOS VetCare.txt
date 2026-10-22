@@ -1,0 +1,39 @@
+ADMIN:
+vetcare987@gmail.com
+vetcare987
+
+
+VETERINARIA 1:  Veterinaria Santa Teresita
+vetsanter@gmail.com
+
+teresalasanta@gmail.com
+1234567890
+
+
+
+VETERINARIA 2: Veterinaria La Matanza
+vetmatanza@gmail.com
+
+martindoc@gmail.com
+1234567890
+
+VETERINARIA 3: mau
+thiago@gmail.com
+1234567890
+
+Dueño 1:
+Ivan Bruno
+464646
+ivanignaciobruno@gmail.com
+111111
+
+Dueño 2:
+Ricardo Rickenbacher
+474747
+ricardorickenbacher@gmail.com
+222222
+
+Dueño 3:
+thiagomantoani@gmail.com
+DNI 123456
+12345678

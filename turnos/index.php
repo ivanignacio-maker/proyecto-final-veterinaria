@@ -67,15 +67,19 @@ $q = db()->prepare("
 $q->execute([$cid]);
 $rows = $q->fetchAll();
 
-$pageTitle = 'Turnos';
+$pageTitle = 'Turnos | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Asignar turno</h1>
+    <h1><i class="fa-solid fa-calendar-plus" style="color: var(--green); margin-right: 8px;"></i>Asignar nuevo turno</h1>
+    <p class="muted">Programá una consulta presencial indicando el DNI del titular y el ID de su mascota.</p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
     <form method="post">
@@ -84,70 +88,89 @@ require __DIR__ . '/../includes/header.php';
         <div class="form-grid">
             <div>
                 <label>DNI del cliente</label>
-                <input name="dni" required>
+                <input name="dni" placeholder="Ej. 30123456" required>
             </div>
             <div>
                 <label>ID de mascota</label>
-                <input type="number" name="pet_id" required>
+                <input type="number" name="pet_id" placeholder="Ej. 1" required>
             </div>
             <div>
                 <label>Fecha y hora</label>
                 <input type="datetime-local" name="appointment_at" required>
             </div>
             <div>
-                <label>Motivo (opcional)</label>
-                <input name="reason">
+                <label>Motivo de la consulta (opcional)</label>
+                <input name="reason" placeholder="Ej. Vacunación anual, control">
             </div>
         </div>
         
-        <p class="muted">Ingresá el DNI y el ID de mascota que aparece en el historial.</p>
-        <button>Asignar turno</button>
+        <div class="actions">
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-calendar-check" style="margin-right: 6px;"></i> Asignar turno
+            </button>
+        </div>
     </form>
 </div>
 
-<div class="card">
-    <h2>Turnos de la veterinaria</h2>
+<div class="card" style="margin-top: 28px;">
+    <h2><i class="fa-solid fa-calendar-days" style="color: var(--green); margin-right: 8px;"></i>Agenda de turnos de la veterinaria</h2>
+    <p class="muted">Lista cronológica de turnos confirmados y solicitudes recibidas.</p>
     
     <?php if (!$rows): ?>
-        <p>No hay turnos todavía.</p>
+        <p style="padding: 20px 0; color: var(--muted);">No hay turnos registrados todavía en la clínica.</p>
     <?php else: ?>
         <table>
             <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
+                    <th>Fecha y hora</th>
+                    <th>Cliente / Tutor</th>
                     <th>Mascota</th>
                     <th>Motivo</th>
                     <th>Estado</th>
-                    <th>Actualizar</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($rows as $r): ?>
+                    <?php 
+                        $statusClass = 'badge-info';
+                        if ($r['status'] === 'Confirmado') $statusClass = 'badge-success';
+                        elseif ($r['status'] === 'Solicitado') $statusClass = 'badge-warning';
+                        elseif ($r['status'] === 'Cancelado') $statusClass = 'badge-danger';
+                    ?>
                     <tr>
-                        <td><?= e($r['appointment_at']) ?></td>
                         <td>
-                            <?= e($r['full_name']) ?><br>
-                            DNI <?= e($r['dni']) ?>
+                            <strong><?= date('d/m/Y', strtotime($r['appointment_at'])) ?></strong><br>
+                            <span class="muted"><?= date('H:i', strtotime($r['appointment_at'])) ?> hs</span>
                         </td>
-                        <td><?= e($r['pet_name']) ?></td>
-                        <td><?= e($r['reason']) ?></td>
-                        <td><?= e($r['status']) ?></td>
                         <td>
-                            <form method="post">
+                            <strong class="name-titlecase"><?= e_name($r['full_name']) ?></strong><br>
+                            <span class="muted">DNI <?= e($r['dni']) ?></span>
+                        </td>
+                        <td>
+                            <span class="pill name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($r['pet_name']) ?></span>
+                        </td>
+                        <td><?= e($r['reason'] ?: 'Consulta veterinaria') ?></td>
+                        <td>
+                            <span class="badge <?= $statusClass ?>">
+                                <?= e($r['status']) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" style="display: flex; gap: 6px; align-items: center;">
                                 <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="change_status" value="1">
                                 <input type="hidden" name="appointment_id" value="<?= (int)$r['id'] ?>">
                                 
-                                <select name="status">
+                                <select name="status" style="margin: 0; padding: 6px 8px; font-size: 13px;">
                                     <?php foreach (['Solicitado', 'Confirmado', 'Cancelado', 'Atendido'] as $st): ?>
-                                        <option <?= $r['status'] === $st ? 'selected' : '' ?>>
+                                        <option value="<?= e($st) ?>" <?= $r['status'] === $st ? 'selected' : '' ?>>
                                             <?= e($st) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                                 
-                                <button>Guardar</button>
+                                <button type="submit" class="btn secondary btn-sm" style="padding: 6px 12px;">OK</button>
                             </form>
                         </td>
                     </tr>
