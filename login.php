@@ -200,6 +200,6 @@ require __DIR__ . '/includes/header.php';
     </div>
 </div>
 
-<script src="<?= url('assets/login.js') ?>?v=5"></script>
+<script src="<?= url('assets/login.js') ?>?v=6"></script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
