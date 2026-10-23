@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const GEOCODER_USER_AGENT = 'VetCompartido/1.0 (proyecto universitario)';
+const GEOCODER_USER_AGENT = 'VetCare/1.0 (proyecto universitario)';
 
 /**
  * Mapeo completo de Provincias argentinas y sus principales localidades/ciudades.

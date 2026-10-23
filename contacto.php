@@ -59,7 +59,7 @@
     require __DIR__ . '/includes/header.php';
 ?>
 
-<div class="bg-paper section-padding-sm">
+<div class="bg-paper section-padding-sm contact-bg">
     <div class="public-container">
         <!-- Encabezado de Página -->
         <div class="page-intro-header">

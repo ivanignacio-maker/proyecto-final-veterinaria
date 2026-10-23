@@ -321,7 +321,7 @@ CREATE TABLE `remember_tokens` (
 --
 
 INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `selector`, `validator_hash`, `expires_at`, `created_at`) VALUES
-(0, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
+(1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
 
 -- --------------------------------------------------------
 
@@ -489,6 +489,30 @@ ALTER TABLE `clinics`
 --
 ALTER TABLE `consultations`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `consultation_files`
+--
+ALTER TABLE `consultation_files`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `medications`
+--
+ALTER TABLE `medications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `pets`
+--
+ALTER TABLE `pets`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `remember_tokens`
+--
+ALTER TABLE `remember_tokens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `vet_users`

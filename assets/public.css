@@ -2017,3 +2017,37 @@ textarea:focus-visible {
 .btn, .btn-hero-primary, .btn-hero-secondary, .btn-pricing-cta {
     transition: all 0.2s ease;
 }
+
+/* Fix mobile: .topbar nav (style.css) le ganaba a la media query y el menú de escritorio no se ocultaba */
+@media (max-width: 768px) {
+    .topbar nav.desktop-nav {
+        display: none;
+    }
+    .topbar-inner {
+        gap: 16px;
+        padding: 0;
+    }
+    .brand {
+        margin-right: 0;
+        min-width: 0;
+    }
+    .mobile-menu-toggle {
+        flex-shrink: 0;
+    }
+}
+
+/* Fondo de la página de contacto: patrón que se difumina de arriba hacia el centro */
+.contact-bg {
+    background:
+        linear-gradient(to bottom, rgba(247, 250, 247, .7) 0%, rgba(247, 250, 247, .88) 20%, rgba(247, 250, 247, .96) 35%, var(--paper) 50%),
+        url('contacto-fondo.jpg') top center / 612px repeat;
+}
+
+@media (max-width: 768px) {
+    /* En celular la sección es más alta y el texto ocupa más: velo más fuerte y difuminado en píxeles */
+    .contact-bg {
+        background:
+            linear-gradient(to bottom, rgba(247, 250, 247, .85) 0, rgba(247, 250, 247, .94) 220px, var(--paper) 480px),
+            url('contacto-fondo.jpg') top center / 360px repeat;
+    }
+}
