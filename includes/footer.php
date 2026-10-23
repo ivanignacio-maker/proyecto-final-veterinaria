@@ -96,6 +96,6 @@
     </footer>
 <?php endif; ?>
 
-    <script src="<?= url('assets/app.js') ?>"></script>
+    <script src="<?= url('assets/app.js') ?>?v=2"></script>
 </body>
 </html>

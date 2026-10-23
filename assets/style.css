@@ -1595,3 +1595,372 @@ textarea:focus-visible {
     outline: 2px solid var(--green);
     outline-offset: 2px;
 }
+
+
+/* =========================================================================
+   ATTACHMENTS & FLOW BUTTON COMPONENT
+   (Inspirado en @syeddhasnainn/attachments y @xubohuah/flow-button de 21st.dev)
+   ========================================================================= */
+
+.attachment-uploader {
+    position: relative;
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* 1. Zona de soltar / Selección (Dropzone) */
+.attachment-dropzone {
+    border: 2px dashed #b8d4c8;
+    background: #fbfdfc;
+    border-radius: 16px;
+    padding: 26px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.attachment-dropzone:hover,
+.attachment-dropzone.is-dragover {
+    border-color: var(--green);
+    background: #f0f7f3;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(35, 119, 101, 0.08);
+}
+
+.attachment-dropzone-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--mint);
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 10px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.attachment-dropzone:hover .attachment-dropzone-icon,
+.attachment-dropzone.is-dragover .attachment-dropzone-icon {
+    transform: scale(1.12) translateY(-2px);
+    background: #d8ece0;
+}
+
+.attachment-dropzone-title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0 0 5px;
+}
+
+.attachment-dropzone-title span {
+    color: var(--green);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.attachment-dropzone-subtitle {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0;
+}
+
+.attachment-input-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* 2. Tarjeta de archivo seleccionado (Attachment Preview Card) */
+.attachment-preview-card {
+    display: none;
+    background: #ffffff;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 16px rgba(24, 59, 53, 0.05);
+    position: relative;
+    overflow: hidden;
+    animation: attachFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.attachment-preview-card.has-file {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@keyframes attachFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.attachment-card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.attachment-card-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+}
+
+.attachment-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: var(--mint);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+}
+
+.attachment-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.attachment-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.attachment-filename {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+}
+
+.attachment-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+}
+
+.attachment-badge-ready {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eaf7ee;
+    color: #1e6348;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.attachment-badge-ready::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2ea043;
+}
+
+.attachment-remove-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f4f6f5;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.attachment-remove-btn:hover {
+    background: #fdf2f2;
+    color: var(--red);
+    border-color: #f8c9c7;
+    transform: rotate(90deg);
+}
+
+/* Barra de progreso de subida */
+.attachment-progress-wrapper {
+    display: none;
+    width: 100%;
+    height: 6px;
+    background: #eef2f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.attachment-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--green) 0%, #38b293 100%);
+    border-radius: 10px;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.attachment-uploader.is-uploading .attachment-progress-wrapper {
+    display: block;
+}
+
+.attachment-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* 3. FLOW BUTTON COMPONENT (@xubohuah/components/flow-button) */
+.btn-flow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ffffff !important;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+    background: linear-gradient(135deg, #185a4e 0%, #237765 50%, #1f6b5b 100%);
+    background-size: 200% 200%;
+    box-shadow: 0 4px 16px rgba(35, 119, 101, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Borde fluido exterior con gradiente animado */
+.btn-flow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(90deg, #237765, #4ecdc4, #a8ff78, #237765);
+    background-size: 300% 300%;
+    border-radius: 14px;
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Capa interior suave que deja ver solo el contorno fluido */
+.btn-flow::after {
+    content: '';
+    position: absolute;
+    top: 1.5px;
+    left: 1.5px;
+    right: 1.5px;
+    bottom: 1.5px;
+    background: linear-gradient(135deg, #185a4e 0%, #237765 60%, #1c6455 100%);
+    border-radius: 10.5px;
+    z-index: -1;
+    transition: all 0.3s ease;
+}
+
+.btn-flow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(35, 119, 101, 0.35), 0 0 16px rgba(78, 205, 196, 0.35);
+}
+
+.btn-flow:hover::before {
+    opacity: 1;
+    animation: flowBorderRotate 3s linear infinite;
+}
+
+.btn-flow:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Estado de subida / acción activa (Flowing / Uploading State) */
+.btn-flow.is-flowing,
+.btn-flow.is-uploading {
+    pointer-events: none;
+    background: #185a4e !important;
+}
+
+.btn-flow.is-flowing::before,
+.btn-flow.is-uploading::before {
+    opacity: 1;
+    animation: flowBorderRotate 1.2s linear infinite;
+}
+
+.btn-flow.is-flowing::after,
+.btn-flow.is-uploading::after {
+    background: linear-gradient(90deg, #185a4e 0%, #237765 30%, #34947d 50%, #237765 70%, #185a4e 100%);
+    background-size: 200% 100%;
+    animation: flowShimmer 1.4s infinite linear;
+}
+
+.btn-flow-icon {
+    font-size: 15px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-flow:hover .btn-flow-icon {
+    transform: translateY(-2px);
+}
+
+@keyframes flowBorderRotate {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes flowShimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

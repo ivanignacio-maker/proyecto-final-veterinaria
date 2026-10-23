@@ -7,6 +7,15 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        // Aplicar el tema antes de pintar la página para evitar el destello claro
+        (function () {
+            var t = null;
+            try { t = localStorage.getItem('vetcare-theme'); } catch (e) {}
+            if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <title><?= e($pageTitle ?? 'Plataforma de Gestión Veterinaria') ?> | <?= APP_NAME ?></title>
     <meta name="description" content="<?= e($pageDescription ?? 'Plataforma médica veterinaria integral. Historias clínicas unificadas, gestión de stock, libreta sanitaria digital para tutores y migración asistida sin costo.') ?>">
     
@@ -15,8 +24,10 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
-    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=4">
-    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=7">
+    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=5">
+    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=11">
+    <link rel="stylesheet" href="<?= url('assets/dark.generated.css') ?>?v=2">
+    <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=4">
     <link rel="icon" href="<?= url('assets/logo.jpg') ?>" type="image/jpeg">
 </head>
 <body class="<?= !empty($bodyClass) ? e($bodyClass) : '' ?>">
@@ -72,6 +83,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     <!-- Menú Clientes / Dueños de Mascotas -->
                     <a href="<?= url('cliente/mascotas.php') ?>" class="<?= $currentScript === 'mascotas.php' ? 'active-nav' : '' ?>">Mis mascotas</a>
                     <a href="<?= url('cliente/turnos.php') ?>" class="<?= $currentScript === 'turnos.php' ? 'active-nav' : '' ?>">Turnos</a>
+                    <a href="<?= url('cliente/veterinarias_cercanas.php') ?>" class="<?= $currentScript === 'veterinarias_cercanas.php' ? 'active-nav' : '' ?>">Veterinarias cercanas</a>
                     <span class="nav-divider"></span>
                     <div class="user-profile-header">
                         <div class="user-avatar-initial" style="background: #2b7bc4;">
@@ -117,12 +129,20 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                 <?php endif; ?>
             </nav>
 
-            <!-- Botón Menú Móvil -->
-            <button type="button" class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menú de navegación">
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
-            </button>
+            <div class="topbar-actions">
+                <!-- Botón de modo claro / oscuro -->
+                <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Cambiar a modo oscuro" title="Cambiar tema">
+                    <i class="fa-solid fa-moon"></i>
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+
+                <!-- Botón Menú Móvil -->
+                <button type="button" class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Abrir menú de navegación">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
+            </div>
         </div>
 
         <!-- Menú Móvil Desplegable -->
@@ -144,6 +164,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                 <?php elseif (!empty($_SESSION['client_id'])): ?>
                     <a href="<?= url('cliente/mascotas.php') ?>"><i class="fa-solid fa-paw"></i> Mis mascotas</a>
                     <a href="<?= url('cliente/turnos.php') ?>"><i class="fa-solid fa-calendar-check"></i> Mis turnos</a>
+                    <a href="<?= url('cliente/veterinarias_cercanas.php') ?>"><i class="fa-solid fa-location-dot"></i> Veterinarias cercanas</a>
                     <a href="<?= url('cliente/logout.php') ?>" class="mobile-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>
 
                 <?php elseif (!empty($_SESSION['admin_id'])): ?>
@@ -165,5 +186,24 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
         </div>
     </header>
     
+    <script>
+        (function () {
+            var btn = document.getElementById('themeToggleBtn');
+            var root = document.documentElement;
+            function sync() {
+                btn.setAttribute('aria-label', root.getAttribute('data-theme') === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+            }
+            sync();
+            btn.addEventListener('click', function () {
+                var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                root.classList.add('theme-switching');
+                root.setAttribute('data-theme', next);
+                try { localStorage.setItem('vetcare-theme', next); } catch (e) {}
+                sync();
+                setTimeout(function () { root.classList.remove('theme-switching'); }, 350);
+            });
+        })();
+    </script>
+
     <main class="<?= !empty($isLanding) ? 'main-landing' : 'container' ?>">
         <?php show_flash(); ?>

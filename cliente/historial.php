@@ -124,18 +124,64 @@ require __DIR__ . '/../includes/header.php';
                     </div>
                 <?php endif; ?>
                 
-                <form method="post" enctype="multipart/form-data" action="<?= url('cliente/subir_archivo.php') ?>" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-top: 10px;">
+                <form method="post" enctype="multipart/form-data" action="<?= url('cliente/subir_archivo.php') ?>" style="margin-top: 14px;">
                     <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
                     <input type="hidden" name="consultation_id" value="<?= (int)$r['id'] ?>">
                     
-                    <div style="flex: 1; min-width: 240px;">
-                        <label style="margin-bottom: 4px; font-size: 13px;">Subir nuevo estudio complementario (PDF, JPG, PNG)</label>
-                        <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" required style="margin-top: 0; padding: 8px;">
+                    <div class="attachment-uploader">
+                        <!-- Dropzone interactivo (Attachments) -->
+                        <div class="attachment-dropzone" style="padding: 18px 16px;">
+                            <div class="attachment-dropzone-icon" style="width: 40px; height: 40px; font-size: 18px; margin-bottom: 8px;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <div class="attachment-dropzone-title" style="font-size: 14px;">
+                                <span>Subir estudio complementario</span> o arrastralo acá
+                            </div>
+                            <div class="attachment-dropzone-subtitle" style="font-size: 12px;">
+                                PDF, JPG o PNG (hasta 5 MB)
+                            </div>
+                        </div>
+
+                        <input type="file" name="attachment" class="attachment-input-hidden" accept=".pdf,.jpg,.jpeg,.png" required>
+
+                        <!-- Tarjeta de archivo seleccionado (Attachments Card) -->
+                        <div class="attachment-preview-card">
+                            <div class="attachment-card-body">
+                                <div class="attachment-card-left">
+                                    <div class="attachment-thumb"></div>
+                                    <div class="attachment-info">
+                                        <div class="attachment-filename">estudio.pdf</div>
+                                        <div class="attachment-meta">
+                                            <span class="attachment-filesize">0 KB</span>
+                                            <span>·</span>
+                                            <span class="attachment-badge-ready">Listo para adjuntar</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="attachment-remove-btn" title="Quitar archivo" aria-label="Quitar archivo">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <!-- Barra de progreso fluida -->
+                            <div class="attachment-progress-wrapper">
+                                <div class="attachment-progress-bar"></div>
+                            </div>
+
+                            <div class="attachment-card-footer">
+                                <span class="muted" style="font-size: 12px;">
+                                    Consulta del <?= date('d/m/Y', strtotime($r['created_at'])) ?>
+                                </span>
+
+                                <!-- Flow Button (@xubohuah) -->
+                                <button type="submit" class="btn-flow" style="padding: 10px 20px; font-size: 13.5px;">
+                                    <i class="fa-solid fa-arrow-up-from-bracket btn-flow-icon"></i>
+                                    <span>Subir a mi libreta</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <button class="btn secondary" type="submit">
-                        <i class="fa-solid fa-arrow-up-from-bracket" style="margin-right: 6px;"></i> Subir estudio
-                    </button>
                 </form>
             </div>
         </div>

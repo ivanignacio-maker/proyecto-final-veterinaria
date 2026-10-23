@@ -1,0 +1,153 @@
+/* Modo oscuro: variables y ajustes manuales.
+   Los colores fijos del resto del CSS se convierten en dark.generated.css
+   (scripts/generar_dark_css.py). Este archivo se carga después y tiene la última palabra. */
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e3eee9;
+    --muted: #9fb5ad;
+    --green: #2a8f75;
+    --green-dark: #237765;
+    --mint: #183029;
+    --paper: #0f1916;
+    --line: #263a33;
+    --white: #16221f;
+    --gold: #e4b96b;
+    --red: #e07a73;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+}
+
+/* Botón para cambiar de tema */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: -22px;
+}
+
+.desktop-nav {
+    margin-left: auto;
+}
+
+/* Selector doble para ganarle a la regla genérica de button (también en oscuro) */
+.topbar .theme-toggle,
+html[data-theme="dark"] .topbar .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 16px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background .2s, color .2s, transform .2s;
+}
+
+.topbar .theme-toggle:hover,
+html[data-theme="dark"] .topbar .theme-toggle:hover {
+    background: var(--mint);
+    color: var(--green);
+    box-shadow: none;
+    transform: rotate(-15deg);
+}
+
+.theme-toggle .fa-sun,
+html[data-theme="dark"] .theme-toggle .fa-moon {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .fa-sun {
+    display: inline-block;
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .topbar-actions {
+        margin-left: 0;
+    }
+}
+
+/* Contacto: el patrón de perritos se invierte (líneas claras sobre fondo oscuro) */
+html[data-theme="dark"] .contact-bg {
+    background:
+        linear-gradient(to bottom, rgba(15, 25, 22, .72) 0%, rgba(15, 25, 22, .88) 20%, rgba(15, 25, 22, .96) 35%, var(--paper) 50%),
+        linear-gradient(#fff, #fff),
+        url('contacto-fondo.jpg') top center / 612px repeat;
+    background-blend-mode: normal, difference, normal;
+}
+
+@media (max-width: 768px) {
+    html[data-theme="dark"] .contact-bg {
+        background:
+            linear-gradient(to bottom, rgba(15, 25, 22, .85) 0, rgba(15, 25, 22, .94) 220px, var(--paper) 480px),
+            linear-gradient(#fff, #fff),
+            url('contacto-fondo.jpg') top center / 360px repeat;
+        background-blend-mode: normal, difference, normal;
+    }
+}
+
+/* Mapa de Leaflet: atenuar los mosaicos claros */
+html[data-theme="dark"] .leaflet-tile-pane {
+    filter: brightness(.75) contrast(1.1) saturate(.8);
+}
+
+/* Transición suave al cambiar de tema (la clase la pone el botón solo durante el cambio) */
+html.theme-switching,
+html.theme-switching * {
+    transition: background-color .3s ease, border-color .3s ease, color .3s ease !important;
+}
+
+/* Fondo general: mismo tono que las secciones y textura (fondo.png) invertida para que no ensucie */
+html[data-theme="dark"] body {
+    background-color: var(--paper);
+}
+
+html[data-theme="dark"] body::before {
+    filter: invert(1);
+}
+
+/* Login: título "VetCare" con degradado más claro para que se lea sobre el panel oscuro */
+html[data-theme="dark"] .tc-map-text h2 {
+    background: linear-gradient(90deg, #7fd8b9, #3fae92);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+
+/* Adaptación del componente Attachments en modo oscuro */
+html[data-theme="dark"] .attachment-dropzone {
+    background: #14221e;
+    border-color: #2b4239;
+}
+
+html[data-theme="dark"] .attachment-dropzone:hover,
+html[data-theme="dark"] .attachment-dropzone.is-dragover {
+    background: #182b26;
+    border-color: var(--green);
+}
+
+html[data-theme="dark"] .attachment-preview-card {
+    background: #172420;
+    border-color: #2c443b;
+}
+
+html[data-theme="dark"] .attachment-remove-btn {
+    background: #20312b;
+    border-color: #2f493f;
+    color: var(--muted);
+}
+
+html[data-theme="dark"] .attachment-remove-btn:hover {
+    background: #3c1c1b;
+    border-color: #632d2c;
+    color: #ff8e88;
+}
+
+html[data-theme="dark"] .attachment-progress-wrapper {
+    background: #20312b;
+}
