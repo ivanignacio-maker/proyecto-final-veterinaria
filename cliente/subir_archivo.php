@@ -25,11 +25,21 @@ if (!$c) {
     exit('Consulta no autorizada.');
 }
 
+$redirectToHistory = static function (string $error) use ($c): void {
+    $query = http_build_query([
+        'pet_id' => (int)$c['pet_id'],
+        'upload_error' => $error,
+        'consultation_id' => (int)$c['id']
+    ]);
+    header('Location: ' . url('cliente/historial.php?' . $query));
+    exit;
+};
+
 // 3. Validar el archivo enviado (existencia, errores en la subida y tamaño máximo de 5 MB)
 $f = $_FILES['attachment'] ?? null;
 
 if (!$f || $f['error'] !== UPLOAD_ERR_OK || $f['size'] > 5 * 1024 * 1024) {
-    exit('Archivo inválido o mayor a 5 MB.');
+    $redirectToHistory('invalid');
 }
 
 // 4. Validar que el tipo MIME sea seguro y permitido
@@ -39,9 +49,15 @@ $allowed = [
     'image/jpeg'      => 'jpg',
     'image/png'       => 'png'
 ];
+$extension = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
+$allowedExtensions = [
+    'application/pdf' => ['pdf'],
+    'image/jpeg' => ['jpg', 'jpeg'],
+    'image/png' => ['png']
+];
 
-if (!isset($allowed[$mime])) {
-    exit('Solo se aceptan PDF, JPG y PNG.');
+if (!isset($allowed[$mime]) || !in_array($extension, $allowedExtensions[$mime] ?? [], true)) {
+    $redirectToHistory('invalid');
 }
 
 // 5. Preparar el directorio de subidas y guardar el archivo con un nombre aleatorio
@@ -54,7 +70,7 @@ if (!is_dir($dir)) {
 $stored = bin2hex(random_bytes(24)) . '.' . $allowed[$mime];
 
 if (!move_uploaded_file($f['tmp_name'], $dir . '/' . $stored)) {
-    exit('No se pudo guardar el archivo.');
+    $redirectToHistory('save');
 }
 
 // 6. Registrar el archivo en la base de datos vinculado a la consulta
