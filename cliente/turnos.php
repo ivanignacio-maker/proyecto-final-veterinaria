@@ -80,15 +80,20 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Solicitar turno</h1>
-    <p class="muted">Solo aparecen veterinarias que ya atendieron a alguna de tus mascotas.</p>
+    <h1><i class="fa-solid fa-calendar-plus" style="color: var(--green); margin-right: 8px;"></i>Solicitar nuevo turno</h1>
+    <p class="muted">Elegí la clínica veterinaria que ya atendió a tu mascota, la fecha preferida y el motivo de consulta.</p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
     <?php if (!$clinics || !$pets): ?>
-        <p>Para solicitar un turno, necesitás tener una mascota y haber sido atendido por una veterinaria participante.</p>
+        <div class="notice" style="background: #f7faf7; border: 1px solid var(--line); color: var(--ink);">
+            <p style="margin: 0;"><i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 6px;"></i>Para solicitar un turno digital, necesitás tener al menos una mascota registrada y haber recibido una primera atención en una veterinaria de la red.</p>
+        </div>
     <?php else: ?>
         <form method="post">
             <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
@@ -98,7 +103,7 @@ require __DIR__ . '/../includes/header.php';
                     <label>Veterinaria</label>
                     <select name="clinic_id" required>
                         <?php foreach ($clinics as $cl): ?>
-                            <option value="<?= (int)$cl['id'] ?>"><?= e($cl['name']) ?></option>
+                            <option value="<?= (int)$cl['id'] ?>"><?= e_name($cl['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -108,52 +113,74 @@ require __DIR__ . '/../includes/header.php';
                     <select name="pet_id" required>
                         <?php foreach ($pets as $pet): ?>
                             <option value="<?= (int)$pet['id'] ?>">
-                                <?= e($pet['name']) ?> (ID #<?= (int)$pet['id'] ?>)
+                                <?= e_name($pet['name']) ?> (ID #<?= (int)$pet['id'] ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 
                 <div>
-                    <label>Fecha y hora deseada</label>
+                    <label>Fecha y horario deseado</label>
                     <input type="datetime-local" name="appointment_at" required>
                 </div>
                 
                 <div>
-                    <label>Motivo</label>
-                    <input name="reason" placeholder="Ej.: control anual">
+                    <label>Motivo de la consulta</label>
+                    <input name="reason" placeholder="Ej.: control preventivo, vacuna antirrábica">
                 </div>
             </div>
             
-            <button>Enviar solicitud</button>
+            <div class="actions">
+                <button class="btn primary" type="submit">
+                    <i class="fa-solid fa-calendar-check" style="margin-right: 6px;"></i> Enviar solicitud de turno
+                </button>
+            </div>
         </form>
     <?php endif; ?>
 </div>
 
-<div class="card">
-    <h2>Mis solicitudes y turnos</h2>
+<div class="card" style="margin-top: 28px;">
+    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--green); margin-right: 8px;"></i>Mis solicitudes y turnos programados</h2>
+    <p class="muted">Historial de citas solicitadas y confirmadas por tus veterinarias.</p>
     
     <?php if (!$appointments): ?>
-        <p>Todavía no tenés turnos.</p>
+        <p style="padding: 20px 0; color: var(--muted);">Todavía no tenés turnos programados.</p>
     <?php else: ?>
         <table>
             <thead>
                 <tr>
-                    <th>Fecha</th>
+                    <th>Fecha y hora</th>
                     <th>Veterinaria</th>
                     <th>Mascota</th>
                     <th>Motivo</th>
-                    <th>Estado</th>
+                    <th>Estado de la cita</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($appointments as $a): ?>
+                    <?php 
+                        $statusClass = 'badge-info';
+                        if ($a['status'] === 'Confirmado') $statusClass = 'badge-success';
+                        elseif ($a['status'] === 'Solicitado') $statusClass = 'badge-warning';
+                        elseif ($a['status'] === 'Cancelado') $statusClass = 'badge-danger';
+                    ?>
                     <tr>
-                        <td><?= e($a['appointment_at']) ?></td>
-                        <td><?= e($a['clinic_name']) ?></td>
-                        <td><?= e($a['pet_name']) ?></td>
-                        <td><?= e($a['reason']) ?></td>
-                        <td><?= e($a['status']) ?></td>
+                        <td>
+                            <strong><?= date('d/m/Y', strtotime($a['appointment_at'])) ?></strong><br>
+                            <span class="muted"><?= date('H:i', strtotime($a['appointment_at'])) ?> hs</span>
+                        </td>
+                        <td>
+                            <strong class="name-titlecase"><i class="fa-solid fa-hospital" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($a['clinic_name']) ?></strong>
+                        </td>
+                        <td>
+                            <span class="pill name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($a['pet_name']) ?></span>
+                        </td>
+                        <td><?= e($a['reason'] ?: 'Consulta veterinaria') ?></td>
+                        <td>
+                            <span class="badge <?= $statusClass ?>">
+                                <?= e($a['status']) ?>
+                            </span>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

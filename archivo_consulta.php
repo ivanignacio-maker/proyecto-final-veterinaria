@@ -22,7 +22,8 @@ if (!$f) {
 
 // Validar permisos: el usuario debe ser el cliente dueño de la mascota o pertenecer a la clínica
 $allowed = (!empty($_SESSION['client_id']) && (int)$_SESSION['client_id'] === (int)$f['client_id']) || 
-           (!empty($_SESSION['clinic_id']) && (int)$_SESSION['clinic_id'] === (int)$f['clinic_id']);
+           (!empty($_SESSION['clinic_id']) && (int)$_SESSION['clinic_id'] === (int)$f['clinic_id']) ||
+           !empty($_SESSION['admin_id']);
 
 if (!$allowed) {
     http_response_code(403);

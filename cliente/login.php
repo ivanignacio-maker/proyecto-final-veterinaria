@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+header('Location: ' . url('login.php?tipo=cliente'));
+exit;
+
 csrf_check();
 
 $error = '';
@@ -30,29 +33,52 @@ $pageTitle = 'Portal del cliente';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="panel" style="max-width:520px;margin:45px auto">
-    <h1>Portal del cliente</h1>
-    <p>Ingresá con tu DNI y correo registrado.</p>
-    
-    <?php if ($error): ?>
-        <p><?= e($error) ?></p>
-    <?php endif; ?>
-    
-    <form method="post">
-        <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+<div class="auth-wrapper" style="padding: 40px 15px;">
+    <div class="auth-card" style="max-width: 480px; margin: 0 auto;">
+        <div class="auth-header">
+            <div class="auth-badge">
+                <span class="auth-paw"><i class="fa-solid fa-paw"></i></span>
+            </div>
+            <h2>Portal de Tutores</h2>
+            <p class="auth-subtitle">Accedé a las historias clínicas y libreta sanitaria digital de tus mascotas</p>
+        </div>
         
-        <label>DNI</label>
-        <input name="dni" required>
+        <?php if ($error): ?>
+            <div class="notice error">
+                <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                <span><?= e($error) ?></span>
+            </div>
+        <?php endif; ?>
         
-        <label>Correo</label>
-        <input type="email" name="email" required>
+        <form method="post" class="auth-form">
+            <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+            
+            <div class="form-group">
+                <label>DNI del tutor</label>
+                <input name="dni" required placeholder="Número de documento">
+            </div>
+            
+            <div class="form-group" style="margin-top: 14px;">
+                <label>Correo electrónico registrado</label>
+                <input type="email" name="email" required placeholder="tutor@correo.com">
+            </div>
+            
+            <p class="form-note" style="margin: 12px 0 18px; text-align: left; font-size: 13px; color: var(--muted);">
+                <i class="fa-solid fa-circle-info" style="color: var(--green); margin-right: 4px;"></i> No requerís contraseña: tu acceso está vinculado al DNI y email informados en la clínica.
+            </p>
+            
+            <button class="btn primary full" type="submit" style="padding: 13px;">
+                <span>Ver libreta de mis mascotas</span>
+                <span style="margin-left: 6px;">→</span>
+            </button>
+        </form>
         
-        <button>Ingresar</button>
-    </form>
-    
-    <p>
-        <a href="<?= url('login.php') ?>">Acceso veterinaria</a>
-    </p>
+        <div style="text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line);">
+            <a href="<?= url('login.php?tipo=veterinaria') ?>" style="font-size: 13px; font-weight: 700; color: var(--green);">
+                <i class="fa-solid fa-hospital" style="margin-right: 4px;"></i> ¿Sos veterinaria? Ingresá aquí
+            </a>
+        </div>
+    </div>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
