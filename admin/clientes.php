@@ -14,7 +14,94 @@ $old = [
 ];
 
 // Procesamiento de alta de nuevo tutor
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_client') {
+    $clientId = (int)($_POST['client_id'] ?? 0);
+    $uploadFiles = [];
+    $deletedPets = 0;
+
+    try {
+        $pdo = db();
+        $pdo->beginTransaction();
+
+        $clientQuery = $pdo->prepare('SELECT id, full_name, dni, avatar_path FROM clients WHERE id = ? FOR UPDATE');
+        $clientQuery->execute([$clientId]);
+        $clientToDelete = $clientQuery->fetch();
+        if (!$clientToDelete) {
+            throw new RuntimeException('El tutor ya no existe.');
+        }
+
+        $petQuery = $pdo->prepare('SELECT id, photo_path FROM pets WHERE client_id = ? FOR UPDATE');
+        $petQuery->execute([$clientId]);
+        $ownedPets = $petQuery->fetchAll();
+        $deletedPets = count($ownedPets);
+        $uploadFiles[] = $clientToDelete['avatar_path'] ?? null;
+        foreach ($ownedPets as $pet) {
+            $uploadFiles[] = $pet['photo_path'] ?? null;
+        }
+
+        $filesQuery = $pdo->prepare('
+            SELECT cf.stored_name
+            FROM consultation_files cf
+            JOIN consultations co ON co.id = cf.consultation_id
+            JOIN pets p ON p.id = co.pet_id
+            WHERE p.client_id = ?
+        ');
+        $filesQuery->execute([$clientId]);
+        foreach ($filesQuery->fetchAll(PDO::FETCH_COLUMN) as $storedName) {
+            $uploadFiles[] = $storedName;
+        }
+
+        // Borrar primero los registros dependientes para respetar las claves foráneas.
+        $deleteQueries = [
+            'DELETE cf FROM consultation_files cf JOIN consultations co ON co.id = cf.consultation_id JOIN pets p ON p.id = co.pet_id WHERE p.client_id = ?',
+            'DELETE cm FROM consultation_medications cm JOIN consultations co ON co.id = cm.consultation_id JOIN pets p ON p.id = co.pet_id WHERE p.client_id = ?',
+            'DELETE co FROM consultations co JOIN pets p ON p.id = co.pet_id WHERE p.client_id = ?',
+            'DELETE FROM appointments WHERE client_id = ? OR pet_id IN (SELECT id FROM pets WHERE client_id = ?)',
+            'DELETE FROM pet_access_codes WHERE created_by_client_id = ? OR pet_id IN (SELECT id FROM pets WHERE client_id = ?)',
+            'DELETE FROM pet_co_owners WHERE client_id = ? OR pet_id IN (SELECT id FROM pets WHERE client_id = ?)',
+            'DELETE FROM clinic_clients WHERE client_id = ?',
+            "DELETE FROM remember_tokens WHERE user_type = 'client' AND user_id = ?",
+            'DELETE FROM pets WHERE client_id = ?',
+            'DELETE FROM clients WHERE id = ?',
+        ];
+        foreach ($deleteQueries as $index => $sql) {
+            $delete = $pdo->prepare($sql);
+            $delete->execute(in_array($index, [3, 4, 5], true) ? [$clientId, $clientId] : [$clientId]);
+        }
+
+        $pdo->commit();
+
+        // Quitar del disco solo archivos dentro de uploads y después de confirmar el borrado en la BD.
+        $uploadRoot = realpath(ensure_upload_dir());
+        if ($uploadRoot !== false) {
+            $uploadRootPrefix = rtrim($uploadRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            foreach (array_unique(array_filter($uploadFiles, 'is_string')) as $relativePath) {
+                $candidate = realpath($uploadRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath));
+                if ($candidate !== false
+                    && is_file($candidate)
+                    && str_starts_with(strtolower($candidate), strtolower($uploadRootPrefix))) {
+                    @unlink($candidate);
+                }
+            }
+        }
+
+        $petMessage = $deletedPets > 0 ? " y sus {$deletedPets} mascota(s), historiales, turnos y archivos asociados" : '';
+        flash('Se eliminó el tutor' . $petMessage . ' de la base de datos.');
+        $returnType = trim((string)($_POST['return_tipo'] ?? ''));
+        $returnSearch = trim((string)($_POST['return_q'] ?? ''));
+        $returnQuery = http_build_query(array_filter(['tipo' => $returnType, 'q' => $returnSearch], static fn($value) => $value !== ''));
+        header('Location: ' . url('admin/clientes.php') . ($returnQuery !== '' ? '?' . $returnQuery : ''));
+        exit;
+    } catch (Throwable $ex) {
+        if (isset($pdo) && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('Error eliminando cliente desde admin: ' . $ex->getMessage());
+        $error = $ex instanceof RuntimeException
+            ? $ex->getMessage()
+            : 'No se pudo eliminar el tutor. No se aplicaron cambios; revisá los registros asociados e intentá nuevamente.';
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dni      = trim($_POST['dni'] ?? '');
     $fullName = format_name(trim($_POST['full_name'] ?? ''));
     $email    = strtolower(trim($_POST['email'] ?? ''));
@@ -213,7 +300,7 @@ require __DIR__ . '/../includes/header.php';
                     <th>DNI</th>
                     <th>Contacto</th>
                     <th style="white-space: nowrap;">Mascotas a cargo</th>
-                    <th style="min-width: 170px; white-space: nowrap;">Acción</th>
+                    <th style="min-width: 210px; white-space: nowrap;">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -262,6 +349,24 @@ require __DIR__ . '/../includes/header.php';
                                 <a class="btn secondary btn-sm" style="padding: 6px 10px !important; font-size: 12px !important;" href="<?= url('clientes/ver.php?id=' . (int)$c['id']) ?>" title="Ver historial y ficha clínica" target="_blank">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
+                                <?php
+                                    $deleteConfirm = '¿Eliminar permanentemente a ' . format_name($c['full_name']) . ' (ID #' . (int)$c['id'] . ')?';
+                                    if ((int)$c['pets_count'] > 0) {
+                                        $deleteConfirm .= ' También se borrarán sus ' . (int)$c['pets_count'] . ' mascota(s), historiales, turnos y archivos asociados. Esta acción no se puede deshacer.';
+                                    } else {
+                                        $deleteConfirm .= ' Esta acción no se puede deshacer.';
+                                    }
+                                ?>
+                                <form method="post" style="display: inline; margin: 0;" data-confirm="<?= e($deleteConfirm) ?>" onsubmit="return confirm(this.dataset.confirm);">
+                                    <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+                                    <input type="hidden" name="action" value="delete_client">
+                                    <input type="hidden" name="client_id" value="<?= (int)$c['id'] ?>">
+                                    <input type="hidden" name="return_tipo" value="<?= e($searchType) ?>">
+                                    <input type="hidden" name="return_q" value="<?= e($search) ?>">
+                                    <button class="btn danger btn-sm" type="submit" style="width: 34px; height: 34px; padding: 0 !important; font-size: 12px !important;" title="Eliminar tutor" aria-label="Eliminar a <?= e_name($c['full_name']) ?>">
+                                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

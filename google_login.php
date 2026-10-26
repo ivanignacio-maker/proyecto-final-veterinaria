@@ -12,6 +12,7 @@ function google_login_error(string $message, bool $registration = false): void {
 
 function google_request_json(string $url, ?array $postFields = null, ?string $accessToken = null): ?array {
     if (!function_exists('curl_init')) {
+        error_log('Google OAuth unavailable: PHP cURL extension is not loaded.');
         return null;
     }
 
