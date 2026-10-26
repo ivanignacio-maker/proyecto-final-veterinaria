@@ -2240,3 +2240,23 @@ textarea:focus-visible {
         text-align: center;
     }
 }
+
+/* Menú de veterinarias: tiene más enlaces, así que va más compacto y pasa antes al menú desplegable */
+.topbar-vet .desktop-nav {
+    gap: 6px;
+}
+
+.topbar-vet .desktop-nav > a {
+    padding: 7px 9px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1259px) {
+    .topbar-vet nav.desktop-nav {
+        display: none;
+    }
+    .topbar-vet .mobile-menu-toggle {
+        display: flex;
+        flex-shrink: 0;
+    }
+}

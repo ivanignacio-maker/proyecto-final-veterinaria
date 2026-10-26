@@ -10,6 +10,50 @@ if (!defined('DB_USER')) define('DB_USER', 'root');
 if (!defined('DB_PASS')) define('DB_PASS', '');
 if (!defined('APP_NAME')) define('APP_NAME', 'VetCare');
 
+// Hora de Argentina: el php.ini de XAMPP trae Europe/Berlin (4 h adelante) y
+// MySQL ya usa la hora del sistema. Sin esto, "ahora" en PHP no coincide con la base.
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+// Motivos habituales de un turno. "Otro" permite escribir uno a mano.
+const APPOINTMENT_REASONS = [
+    'Consulta general', 'Control', 'Vacunación', 'Desparasitación', 'Castración',
+    'Cirugía', 'Análisis clínicos', 'Dermatología', 'Odontología', 'Urgencia',
+];
+const APPOINTMENT_REASON_OTHER = 'Otro';
+const APPOINTMENT_REASON_MAX = 120;
+
+// Lee el motivo elegido en el formulario (includes/motivo_turno.php).
+// Devuelve el texto a guardar, o null si falta o no es válido.
+function appointment_reason_from_post(): ?string {
+    $option = (string)($_POST['reason_option'] ?? '');
+    if (in_array($option, APPOINTMENT_REASONS, true)) {
+        return $option;
+    }
+    if ($option === APPOINTMENT_REASON_OTHER) {
+        $text = trim((string)preg_replace('/\s+/u', ' ', (string)($_POST['reason_other'] ?? '')));
+        if ($text !== '' && mb_strlen($text) <= APPOINTMENT_REASON_MAX) {
+            return $text;
+        }
+    }
+    return null;
+}
+
+// ============================================================================
+// Correo saliente (recordatorios de vacunas)
+// Los datos reales van en config/mail.local.php (no se sube al repositorio).
+// Sin MAIL_HOST o MAIL_PASS el sistema funciona en "modo prueba": guarda cada correo como
+// archivo .eml en storage/correos/ en lugar de enviarlo.
+// ============================================================================
+if (is_file(__DIR__ . '/mail.local.php')) require __DIR__ . '/mail.local.php';
+if (!defined('MAIL_HOST')) define('MAIL_HOST', '');            // Ej.: 'smtp.gmail.com'
+if (!defined('MAIL_PORT')) define('MAIL_PORT', 587);
+if (!defined('MAIL_USER')) define('MAIL_USER', '');            // Ej.: 'vetcare987@gmail.com'
+if (!defined('MAIL_PASS')) define('MAIL_PASS', '');            // En Gmail: "contraseña de aplicación"
+if (!defined('MAIL_FROM')) define('MAIL_FROM', MAIL_USER ?: 'no-responder@vetcare.local');
+if (!defined('MAIL_FROM_NAME')) define('MAIL_FROM_NAME', 'VetCare');
+// Solo se envía de verdad con servidor y contraseña cargados; si no, modo prueba.
+define('MAIL_ENABLED', MAIL_HOST !== '' && MAIL_PASS !== '');
+
 // Credenciales OAuth 2.0 para el acceso de tutores con Google.
 if (!defined('GOOGLE_CLIENT_ID')) define('GOOGLE_CLIENT_ID', getenv('VETCARE_GOOGLE_CLIENT_ID') ?: '');
 if (!defined('GOOGLE_CLIENT_SECRET')) define('GOOGLE_CLIENT_SECRET', getenv('VETCARE_GOOGLE_CLIENT_SECRET') ?: '');
@@ -31,6 +75,18 @@ if (!defined('BASE_URL')) {
         }
     }
     define('BASE_URL', $detectedBase);
+}
+
+// URL completa del sitio, para los links dentro de los correos.
+// Desde la consola (tarea programada) no hay dominio: se arma con la carpeta dentro de htdocs.
+if (!defined('APP_URL')) {
+    if (!empty($_SERVER['HTTP_HOST'])) {
+        define('APP_URL', (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . BASE_URL);
+    } else {
+        $projectDir = str_replace('\\', '/', dirname(__DIR__));
+        $pos = stripos($projectDir, '/htdocs/');
+        define('APP_URL', 'http://localhost' . ($pos !== false ? substr($projectDir, $pos + 7) : ''));
+    }
 }
 
 // ============================================================================

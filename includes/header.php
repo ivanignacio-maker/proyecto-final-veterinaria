@@ -24,10 +24,10 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
-    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=11">
-    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=17">
+    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=17">
+    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=19">
     <link rel="stylesheet" href="<?= url('assets/dark.generated.css') ?>?v=4">
-    <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=9">
+    <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=11">
     <link rel="icon" href="<?= url('assets/logo.jpg') ?>?v=3" type="image/jpeg">
     <script>
         window.BASE_URL = <?= json_encode(BASE_URL) ?>;
@@ -42,7 +42,7 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
     </script>
 </head>
 <body class="<?= !empty($bodyClass) ? e($bodyClass) : '' ?>">
-    <header class="topbar public-topbar">
+    <header class="topbar public-topbar<?= !empty($_SESSION['clinic_id']) ? ' topbar-vet' : '' ?>">
         <div class="topbar-inner">
             <?php 
             $brandUrl = url('index.php');
@@ -73,9 +73,10 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                 <?php if (!empty($_SESSION['clinic_id'])): ?>
                     <!-- Menú Veterinarias -->
                     <a href="<?= url('dashboard.php') ?>" class="<?= $currentScript === 'dashboard.php' ? 'active-nav' : '' ?>">Inicio</a>
-                    <a href="<?= url('clientes/buscar.php') ?>" class="<?= $currentScript === 'buscar.php' ? 'active-nav' : '' ?>">Buscar cliente</a>
+                    <a href="<?= url('clientes/buscar.php') ?>" class="<?= $currentScript === 'buscar.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/clientes/') !== false ? 'active-nav' : '' ?>">Buscar cliente</a>
+                    <a href="<?= url('mascotas/buscar.php') ?>" class="<?= $currentScript === 'buscar.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/mascotas/') !== false ? 'active-nav' : '' ?>">Buscar mascota</a>
                     <a href="<?= url('clientes/nuevo.php') ?>" class="<?= $currentScript === 'nuevo.php' ? 'active-nav' : '' ?>">+ Nuevo cliente</a>
-                    <a href="<?= url('historial/recientes.php') ?>" class="<?= $currentScript === 'recientes.php' ? 'active-nav' : '' ?>">Recientes</a>
+                    <a href="<?= url('historial/index.php') ?>" class="<?= $currentScript === 'index.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/historial/') !== false ? 'active-nav' : '' ?>">Historial</a>
                     <a href="<?= url('turnos/index.php') ?>" class="<?= $currentScript === 'index.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/turnos/') !== false ? 'active-nav' : '' ?>">Turnos</a>
                     <a href="<?= url('stock/index.php') ?>" class="<?= $currentScript === 'index.php' && strpos($_SERVER['SCRIPT_NAME'] ?? '', '/stock/') !== false ? 'active-nav' : '' ?>">Stock</a>
                     <span class="nav-divider"></span>
@@ -171,8 +172,9 @@ $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
                     </div>
                     <a href="<?= url('dashboard.php') ?>"><i class="fa-solid fa-chart-line"></i> Panel principal</a>
                     <a href="<?= url('clientes/buscar.php') ?>"><i class="fa-solid fa-magnifying-glass"></i> Buscar cliente</a>
+                    <a href="<?= url('mascotas/buscar.php') ?>"><i class="fa-solid fa-paw"></i> Buscar mascota</a>
                     <a href="<?= url('clientes/nuevo.php') ?>"><i class="fa-solid fa-user-plus"></i> Nuevo cliente</a>
-                    <a href="<?= url('historial/recientes.php') ?>"><i class="fa-solid fa-clock-rotate-left"></i> Consultas recientes</a>
+                    <a href="<?= url('historial/index.php') ?>"><i class="fa-solid fa-book-medical"></i> Historial clínico</a>
                     <a href="<?= url('turnos/index.php') ?>"><i class="fa-solid fa-calendar-check"></i> Gestión de turnos</a>
                     <a href="<?= url('stock/index.php') ?>"><i class="fa-solid fa-boxes-stacked"></i> Control de stock</a>
                     <a href="<?= url('logout.php') ?>" class="mobile-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>

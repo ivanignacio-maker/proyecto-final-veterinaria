@@ -585,3 +585,26 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+--
+-- Estructura de tabla para la tabla `vaccine_reminders`
+-- Avisos por correo de renovación de vacunas (includes/recordatorios_vacunas.php).
+-- El sistema también la crea sola la primera vez que corre.
+--
+
+CREATE TABLE IF NOT EXISTS `vaccine_reminders` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `consultation_id` bigint(20) UNSIGNED NOT NULL,
+  `due_date` date NOT NULL,
+  `reminder_number` tinyint(3) UNSIGNED NOT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `delivery` enum('smtp','archivo') NOT NULL,
+  `sent_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_reminder` (`consultation_id`,`due_date`,`reminder_number`),
+  KEY `idx_consultation` (`consultation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Contraseña inicial de los tutores ya registrados: 1234567890
+UPDATE `clients` SET `password_hash` = '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y';

@@ -199,6 +199,14 @@
                 </div>
 
                 <div class="contact-info-block">
+                    <div class="contact-info-icon"><i class="fa-solid fa-location-dot" style="font-size: 18px; color: var(--green);"></i></div>
+                    <div class="contact-info-text">
+                        <strong>Nuestra Oficina</strong>
+                        <p>París 532, B1706EAH Haedo<br>Provincia de Buenos Aires, Argentina<br><a href="#ubicacion" style="font-size: 12px; color: var(--green); font-weight: 700;">Ver en el mapa ↓</a></p>
+                    </div>
+                </div>
+
+                <div class="contact-info-block">
                     <div class="contact-info-icon"><i class="fa-brands fa-whatsapp" style="font-size: 20px; color: #25D366;"></i></div>
                     <div class="contact-info-text">
                         <strong>WhatsApp de Soporte y Migración</strong>
@@ -251,7 +259,59 @@
                 </div>
             </aside>
         </div>
+
+        <!-- Mapa con nuestra ubicación -->
+        <section class="contact-map-card" id="ubicacion">
+            <div class="contact-map-header">
+                <div>
+                    <h3><i class="fa-solid fa-map-location-dot" style="color: var(--green); margin-right: 8px;"></i>Dónde estamos</h3>
+                    <p>París 532, B1706EAH Haedo, Provincia de Buenos Aires, Argentina</p>
+                </div>
+                <a class="contact-social-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=-34.6404287,-58.6015669" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-diamond-turn-right" style="color: var(--green); font-size: 15px;"></i> Cómo llegar
+                </a>
+            </div>
+            <div id="contactMap" role="region" aria-label="Mapa con la ubicación de nuestra oficina en Haedo"></div>
+        </section>
     </div>
 </div>
+
+<!-- Leaflet: librería gratuita de mapas (la misma que usa "Veterinarias cercanas"). -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+    .contact-map-card { margin-top: 36px; background: var(--white); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 12px 36px rgba(24, 59, 53, 0.05); scroll-margin-top: 90px; }
+    .contact-map-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .contact-map-header h3 { font: 800 20px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 4px; }
+    .contact-map-header p { font-size: 13px; color: var(--muted); margin: 0; }
+    #contactMap { height: 400px; border-radius: 16px; border: 1px solid var(--line); z-index: 0; }
+    .contact-map-pin { color: var(--green); font-size: 36px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35); line-height: 1; }
+    @media (max-width: 700px) {
+        .contact-map-card { padding: 16px; }
+        #contactMap { height: 300px; }
+    }
+</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+    const OFFICE = [-34.6404287, -58.6015669];   // París 532, Haedo
+
+    // scrollWheelZoom desactivado: así la rueda del mouse sigue bajando la página.
+    const map = L.map('contactMap', { scrollWheelZoom: false }).setView(OFFICE, 16);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const pinIcon = L.divIcon({
+        className: '',
+        html: '<div class="contact-map-pin"><i class="fa-solid fa-location-dot"></i></div>',
+        iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -34]
+    });
+
+    L.marker(OFFICE, { icon: pinIcon }).addTo(map)
+        .bindPopup('<strong><?= e(APP_NAME) ?></strong><br>París 532, Haedo<br>Provincia de Buenos Aires')
+        .openPopup();
+})();
+</script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

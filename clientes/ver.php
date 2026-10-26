@@ -41,9 +41,20 @@ $q = db()->prepare("
 ");
 $q->execute([$_SESSION['clinic_id'], $id]);
 
-// 3. Obtener el listado de mascotas asociadas a este cliente
-$q = db()->prepare("SELECT * FROM pets WHERE client_id = ? ORDER BY name");
-$q->execute([$id]);
+// 3. Obtener el listado de mascotas asociadas a este cliente (propias y como co-titular)
+$q = db()->prepare("
+    SELECT p.*, 0 is_co_owner, NULL owner_id, NULL owner_name
+    FROM pets p
+    WHERE p.client_id = ?
+    UNION ALL
+    SELECT p.*, 1, o.id, o.full_name
+    FROM pet_co_owners pco
+    JOIN pets p ON p.id = pco.pet_id
+    JOIN clients o ON o.id = p.client_id
+    WHERE pco.client_id = ? AND p.client_id <> ?
+    ORDER BY is_co_owner, name
+");
+$q->execute([$id, $id, $id]);
 $pets = $q->fetchAll();
 
 $pageTitle = e_name($c['full_name']) . ' | Ficha de Cliente';
@@ -121,6 +132,7 @@ require __DIR__ . '/../includes/header.php';
             </a>
         </div>
     <?php else: ?>
+        <div style="overflow-x: auto;">
         <table>
             <thead>
                 <tr>
@@ -142,6 +154,12 @@ require __DIR__ . '/../includes/header.php';
                         <td>
                             <strong style="font-size: 15px; color: var(--ink);"><?= e_name($p['name']) ?></strong>
                             <div class="muted" style="font-size: 12px;">ID #<?= (int)$p['id'] ?></div>
+                            <?php if ($p['is_co_owner']): ?>
+                                <div class="pet-coowner-note">
+                                    <span class="badge badge-info"><i class="fa-solid fa-user-group"></i> Co-titular</span>
+                                    <span class="muted">Titular: <a href="<?= url('clientes/ver.php?id=' . (int)$p['owner_id']) ?>"><?= e_name($p['owner_name']) ?></a></span>
+                                </div>
+                            <?php endif; ?>
                         </td>
                         <td><span class="pill"><?= e_name($p['animal_type']) ?></span></td>
                         <td>
@@ -169,6 +187,7 @@ require __DIR__ . '/../includes/header.php';
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     <?php endif; ?>
 </div>
 

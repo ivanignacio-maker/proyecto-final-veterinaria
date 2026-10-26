@@ -10,11 +10,6 @@ $q = db()->prepare("SELECT id, username, email FROM vet_users WHERE id = ?");
 $q->execute([$vetUserId]);
 $vetUser = $q->fetch();
 
-// Obtener cantidad de clientes vinculados a la clínica
-$q = db()->prepare("SELECT COUNT(*) FROM clinic_clients WHERE clinic_id = ?");
-$q->execute([$cid]);
-$clients = $q->fetchColumn();
-
 // Obtener cantidad de turnos próximos solicitados o confirmados
 $q = db()->prepare("SELECT COUNT(*) FROM appointments WHERE clinic_id = ? AND status IN ('Solicitado', 'Confirmado') AND appointment_at >= NOW()");
 $q->execute([$cid]);
@@ -65,39 +60,36 @@ require __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<!-- Contadores: cada tarjeta lleva directo a la sección correspondiente -->
 <div class="grid">
-    <div class="card" style="border-top-color: var(--green);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p class="muted" style="margin: 0;">Clientes vinculados</p>
-            <i class="fa-solid fa-users" style="color: var(--green); font-size: 18px;"></i>
+    <a class="card stat-card" href="<?= url('turnos/index.php') ?>" style="border-top-color: #2b7bc4;">
+        <span class="stat-icon" style="color: #2b7bc4; background: rgba(43, 123, 196, 0.12);"><i class="fa-solid fa-calendar-days"></i></span>
+        <div class="stat-body">
+            <p class="muted">Turnos próximos</p>
+            <h2><?= (int)$turnos ?></h2>
+            <span class="stat-hint">Solicitados o confirmados desde hoy</span>
         </div>
-        <h2 style="margin: 8px 0 0;"><?= (int)$clients ?></h2>
-    </div>
-    
-    <div class="card" style="border-top-color: #2b7bc4;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p class="muted" style="margin: 0;">Turnos próximos</p>
-            <i class="fa-solid fa-calendar-days" style="color: #2b7bc4; font-size: 18px;"></i>
+        <span class="stat-link">Gestionar <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="card stat-card" href="<?= url('historial/index.php?estado=En+proceso') ?>" style="border-top-color: var(--gold);">
+        <span class="stat-icon" style="color: var(--gold); background: rgba(228, 185, 107, 0.18);"><i class="fa-solid fa-stethoscope"></i></span>
+        <div class="stat-body">
+            <p class="muted">Consultas en proceso</p>
+            <h2><?= (int)$open ?></h2>
+            <span class="stat-hint">Pacientes sin alta médica todavía</span>
         </div>
-        <h2 style="margin: 8px 0 0;"><?= (int)$turnos ?></h2>
-    </div>
-    
-    <div class="card" style="border-top-color: var(--gold);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p class="muted" style="margin: 0;">Consultas en proceso</p>
-            <i class="fa-solid fa-stethoscope" style="color: var(--gold); font-size: 18px;"></i>
-        </div>
-        <h2 style="margin: 8px 0 0;"><?= (int)$open ?></h2>
-    </div>
+        <span class="stat-link">Ver consultas <span aria-hidden="true">→</span></span>
+    </a>
 </div>
 
 <div class="card">
     <h2><i class="fa-solid fa-cubes-stacked" style="color: var(--green); margin-right: 8px;"></i>Módulos y Operaciones Clínicas</h2>
     <p class="muted" style="margin-bottom: 16px;">Accesos directos al historial general y farmacia de tu veterinaria.</p>
     <div class="actions">
-        <a class="btn secondary" href="<?= url('historial/recientes.php') ?>">
-            <i class="fa-solid fa-clock-rotate-left" style="margin-right: 6px;"></i>
-            <span>Pacientes y consultas recientes</span>
+        <a class="btn secondary" href="<?= url('historial/index.php') ?>">
+            <i class="fa-solid fa-book-medical" style="margin-right: 6px;"></i>
+            <span>Historial clínico</span>
             <span style="margin-left: 4px;">→</span>
         </a>
         <a class="btn secondary" href="<?= url('stock/index.php') ?>">

@@ -115,3 +115,7 @@
     <script src="<?= url('assets/app.js') ?>?v=7"></script>
 </body>
 </html>
+<?php
+// Recordatorios de vacunas: una vez por día, después de entregar la página.
+require_once __DIR__ . '/recordatorios_vacunas.php';
+maybe_run_daily_vaccine_reminders();

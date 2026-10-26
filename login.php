@@ -32,24 +32,36 @@ $googlePending = $_SESSION['google_pending'] ?? null;
 $googleRegistration = $tipo === 'cliente' && is_array($googlePending);
 
 $identity = '';
-$dni = '';
-$email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = ($_POST['tipo'] ?? 'veterinaria') === 'cliente' ? 'cliente' : 'veterinaria';
     $remember = !empty($_POST['remember']);
 
     if ($tipo === 'cliente') {
-        $dni = trim($_POST['dni'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        // El tutor entra con su DNI o su correo, más la contraseña
+        $identity = trim($_POST['identity'] ?? '');
+        $password = $_POST['password'] ?? '';
 
-        if ($dni === '' || $email === '') {
-            $error = 'Por favor ingresá tu DNI y el correo electrónico registrado.';
+        if ($identity === '' || $password === '') {
+            $error = 'Por favor ingresá tu DNI o correo y tu contraseña.';
         } else {
             try {
-                $q = db()->prepare("SELECT * FROM clients WHERE dni = ? AND LOWER(email) = LOWER(?) LIMIT 1");
-                $q->execute([$dni, $email]);
-                $c = $q->fetch();
+                if (strpos($identity, '@') !== false) {
+                    $q = db()->prepare("SELECT * FROM clients WHERE LOWER(email) = LOWER(?)");
+                    $q->execute([$identity]);
+                } else {
+                    // Acepta el DNI con o sin puntos
+                    $q = db()->prepare("SELECT * FROM clients WHERE dni IN (?, ?)");
+                    $q->execute([$identity, preg_replace('/\D+/', '', $identity)]);
+                }
+
+                $c = null;
+                foreach ($q->fetchAll() as $row) {
+                    if (!empty($row['password_hash']) && password_verify($password, $row['password_hash'])) {
+                        $c = $row;
+                        break;
+                    }
+                }
 
                 if ($c) {
                     session_regenerate_id(true);
@@ -63,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
 
-                $error = 'No se encontró ningún tutor registrado con ese DNI y correo electrónico. Verificá los datos con tu clínica veterinaria.';
+                $error = 'El DNI o correo y la contraseña no coinciden. Si creaste tu cuenta con Google, usá "Continuar con Google".';
             } catch (Throwable $e) {
                 $error = 'Error de conexión con la base de datos. Verificá que el servicio MySQL esté activo.';
             }
@@ -181,16 +193,17 @@ require __DIR__ . '/includes/header.php';
                         <button type="button" class="tc-eye" id="tc-eye" aria-label="Mostrar contraseña"><i class="fa-solid fa-eye"></i></button>
                     </div>
                 <?php else: ?>
-                    <label class="tc-l" for="dni">DNI del tutor <span>*</span></label>
+                    <label class="tc-l" for="client-identity">DNI o correo <span>*</span></label>
                     <div class="tc-field">
-                        <input id="dni" name="dni" value="<?= e($dni) ?>" required inputmode="numeric" placeholder="Número de documento" autofocus>
+                        <input id="client-identity" name="identity" value="<?= e($identity) ?>" required autocomplete="username" placeholder="Número de documento o tutor@correo.com" autofocus>
                     </div>
 
-                    <label class="tc-l" for="email">Correo registrado <span>*</span></label>
+                    <label class="tc-l" for="tc-password">Contraseña <span>*</span></label>
                     <div class="tc-field">
-                        <input id="email" type="email" name="email" value="<?= e($email) ?>" required autocomplete="email" placeholder="tutor@correo.com">
+                        <input id="tc-password" type="password" name="password" required autocomplete="current-password" placeholder="Ingresá tu contraseña">
+                        <button type="button" class="tc-eye" id="tc-eye" aria-label="Mostrar contraseña"><i class="fa-solid fa-eye"></i></button>
                     </div>
-                    <p class="tc-note"><i class="fa-solid fa-circle-info"></i> Como tutor no necesitás contraseña: tu acceso está vinculado al DNI y correo informados en tu veterinaria.</p>
+                    <p class="tc-note"><i class="fa-solid fa-circle-info"></i> Podés ingresar con tu DNI o con el correo registrado en tu veterinaria.</p>
                 <?php endif; ?>
 
                 <label class="tc-remember">

@@ -19,6 +19,17 @@ if (!$p) {
     exit('Mascota no encontrada');
 }
 
+// Co-titulares de la mascota (si tiene)
+$q = db()->prepare("
+    SELECT c.id, c.full_name, c.dni
+    FROM pet_co_owners pco
+    JOIN clients c ON c.id = pco.client_id
+    WHERE pco.pet_id = ? AND c.id <> ?
+    ORDER BY pco.id
+");
+$q->execute([$id, $p['client_id']]);
+$coOwners = $q->fetchAll();
+
 // 2. Obtener el historial clínico (consultas en todas las clínicas vinculadas)
 $q = db()->prepare("
     SELECT co.*, cl.name clinic_name, vu.username 
@@ -51,13 +62,23 @@ require __DIR__ . '/../includes/header.php';
             <h1 style="margin: 0 0 6px; font-size: 30px;"><?= e_name($p['name']) ?></h1>
             
             <!-- Dueño responsable situado inmediatamente debajo del nombre -->
-            <p style="margin: 0 0 18px; font-size: 15px; color: var(--ink);">
-                <strong><i class="fa-solid fa-user" style="color: var(--green); margin-right: 4px;"></i> Tutor responsable:</strong> 
-                <a href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>" style="color: var(--green); text-decoration: underline; font-weight: 700;">
-                    <?= e_name($p['full_name']) ?>
-                </a> 
+            <p style="margin: 0 0 <?= $coOwners ? '8px' : '18px' ?>; font-size: 15px; color: var(--ink);">
+                <strong><i class="fa-solid fa-user" style="color: var(--green); margin-right: 4px;"></i> Tutor responsable:</strong>
+                <a href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>" style="color: var(--green); text-decoration: underline; font-weight: 700;"><?= e_name($p['full_name']) ?></a>
                 (DNI: <strong><?= e($p['dni']) ?></strong>)
             </p>
+
+            <?php if ($coOwners): ?>
+                <!-- Co-titulares que comparten la mascota -->
+                <p style="margin: 0 0 18px; font-size: 15px; color: var(--ink);">
+                    <strong><i class="fa-solid fa-user-group" style="color: var(--green); margin-right: 4px;"></i> <?= count($coOwners) === 1 ? 'Co-titular:' : 'Co-titulares:' ?></strong>
+                    <?php foreach ($coOwners as $i => $co): ?>
+                        <?= $i > 0 ? ' · ' : '' ?>
+                        <a href="<?= url('clientes/ver.php?id=' . (int)$co['id']) ?>" style="color: var(--green); text-decoration: underline; font-weight: 700;"><?= e_name($co['full_name']) ?></a>
+                        (DNI: <strong><?= e($co['dni']) ?></strong>)
+                    <?php endforeach; ?>
+                </p>
+            <?php endif; ?>
             
             <!-- Datos del animal situados uno arriba del otro -->
             <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; max-width: 480px; display: flex; flex-direction: column; gap: 10px;">

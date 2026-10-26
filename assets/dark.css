@@ -201,3 +201,13 @@ html[data-theme="dark"] button.tc-eye:active {
     background: transparent !important;
 }
 
+
+/* Buscador del historial clínico */
+html[data-theme="dark"] .historial-modes legend {
+    color: #b6cdc5;
+}
+
+/* Bienvenida del panel de veterinarias: un solo color, sin el tramo anaranjado del degradé */
+html[data-theme="dark"] .dashboard-hero {
+    background: #172a1f;
+}

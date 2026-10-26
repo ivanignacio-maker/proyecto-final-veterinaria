@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $clinic = (int)($_POST['clinic_id'] ?? 0);
     $pet = (int)($_POST['pet_id'] ?? 0);
     $dt = str_replace('T', ' ', $_POST['appointment_at'] ?? '');
-    $reason = trim($_POST['reason'] ?? '');
-    
+    $reason = appointment_reason_from_post();
+
     // Validar que el cliente haya visitado esa clínica previamente
     $q = db()->prepare("
         SELECT 1 
@@ -49,13 +49,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validar permisos y que la fecha sea futura
     if (!$visited || !$owned || !$dt || strtotime($dt) <= time()) {
         $error = 'Elegí una veterinaria visitada, una mascota propia y una fecha futura.';
+    } elseif ($reason === null) {
+        $error = 'Elegí el motivo del turno (si elegís "Otro", escribilo).';
     } else {
         // Insertar el turno con estado "Solicitado"
         $q = db()->prepare("
             INSERT INTO appointments(clinic_id, client_id, pet_id, requested_by, appointment_at, reason, status) 
             VALUES(?, ?, ?, 'cliente', ?, ?, 'Solicitado')
         ");
-        $q->execute([$clinic, $clientId, $pet, $dt, $reason ?: null]);
+        $q->execute([$clinic, $clientId, $pet, $dt, $reason]);
         
         flash('Solicitud enviada. La veterinaria debe confirmarla.');
         header('Location: ' . url('cliente/turnos.php'));
@@ -125,8 +127,11 @@ require __DIR__ . '/../includes/header.php';
                 </div>
                 
                 <div>
-                    <label>Motivo de la consulta</label>
-                    <input name="reason" placeholder="Ej.: control preventivo, vacuna antirrábica">
+                    <?php
+                        $motivoSel = (string)($_POST['reason_option'] ?? '');
+                        $motivoOtro = (string)($_POST['reason_other'] ?? '');
+                        require __DIR__ . '/../includes/motivo_turno.php';
+                    ?>
                 </div>
             </div>
             

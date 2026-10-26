@@ -23,7 +23,7 @@ require __DIR__ . '/../includes/header.php';
 
 <div class="panel">
     <h1><i class="fa-solid fa-magnifying-glass" style="color: var(--green); margin-right: 8px;"></i>Buscar cliente</h1>
-    <p class="muted">Ingresá el número de DNI para localizar al tutor y el historial médico unificado de sus mascotas.</p>
+    <p class="muted">Ingresá el número de DNI para localizar al tutor y ver su ficha. Para buscar una mascota por nombre o ID, usá <a href="<?= url('mascotas/buscar.php') ?>" style="color: var(--green); font-weight: 700;">Buscar mascota</a>.</p>
     
     <form method="get" style="margin-top: 18px;">
         <label for="dni_input">DNI del tutor / responsable</label>

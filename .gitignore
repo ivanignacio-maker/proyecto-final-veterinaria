@@ -1,0 +1,5 @@
+# Datos del correo saliente (contraseña SMTP)
+config/mail.local.php
+
+# Correos guardados en modo prueba y archivos de control
+storage/
