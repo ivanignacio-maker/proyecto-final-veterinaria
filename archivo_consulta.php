@@ -22,7 +22,8 @@ if (!$f) {
 
 // Validar permisos: el usuario debe ser el cliente dueño de la mascota o pertenecer a la clínica
 $allowed = (!empty($_SESSION['client_id']) && (int)$_SESSION['client_id'] === (int)$f['client_id']) || 
-           (!empty($_SESSION['clinic_id']) && (int)$_SESSION['clinic_id'] === (int)$f['clinic_id']);
+           (!empty($_SESSION['clinic_id']) && (int)$_SESSION['clinic_id'] === (int)$f['clinic_id']) ||
+           !empty($_SESSION['admin_id']);
 
 if (!$allowed) {
     http_response_code(403);
@@ -41,15 +42,19 @@ if (!is_file($path)) {
 // Verificar que el tipo MIME sea seguro (solo PDF, JPEG y PNG permitidos)
 $mime = (new finfo(FILEINFO_MIME_TYPE))->file($path);
 
-if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/png'], true)) {
+if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'], true)) {
     http_response_code(415);
     exit;
 }
 
-// Configurar cabeceras HTTP para forzar la descarga del archivo de forma segura
+// Mostrar en línea al previsualizar; descargar solo cuando se solicita desde el visor.
+$download = ($_GET['download'] ?? '') === '1';
+$preview = ($_GET['preview'] ?? '') === '1';
+$disposition = $download || !$preview ? 'attachment' : 'inline';
+$originalName = basename(str_replace(["\r", "\n"], '', (string)$f['original_name']));
 header('Content-Type: ' . $mime);
 header('X-Content-Type-Options: nosniff');
-header('Content-Disposition: attachment; filename="' . str_replace('"', '', basename($f['original_name'])) . '"');
+header('Content-Disposition: ' . $disposition . '; filename="' . str_replace('"', '', $originalName) . '"; filename*=UTF-8\'\'' . rawurlencode($originalName));
 
 // Enviar el contenido del archivo
 readfile($path);
