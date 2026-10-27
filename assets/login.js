@@ -9,7 +9,6 @@
   const map = canvas.parentElement;
   const mapText = map.querySelector('.tc-map-text');
   const compactViewport = window.matchMedia('(max-width: 768px)');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let nodes = [];
   let backgroundDots = [[], [], []];
@@ -18,6 +17,9 @@
   let height = 0;
   let lastFrame = 0;
   let lastObstacleRefresh = 0;
+  // Opacidad de cada conexión ("i-j"), para que aparezcan y desaparezcan con fundido.
+  const edgeAlpha = new Map();
+  const FADE_SECONDS = 0.6;
 
   function refreshObstacles() {
     obstacles = [];
@@ -97,14 +99,22 @@
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       phase: Math.random() * Math.PI * 2,
-      radius: 1.8 + Math.random() * 0.8
+      radius: 1.8 + Math.random() * 0.8,
+      alpha: 0
     };
   }
 
   function resize() {
+    const newWidth = canvas.clientWidth;
+    const newHeight = canvas.clientHeight;
+    // ResizeObserver y el evento resize disparan seguido aunque el tamaño no cambie.
+    if (newWidth === width && newHeight === height) return;
+
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    width = canvas.clientWidth;
-    height = canvas.clientHeight;
+    const scaleX = width ? newWidth / width : 1;
+    const scaleY = height ? newHeight / height : 1;
+    width = newWidth;
+    height = newHeight;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -115,7 +125,20 @@
       52,
       Math.max(compact ? 14 : 28, Math.round((width * height) / (compact ? 6000 : 5000)))
     );
-    nodes = Array.from({ length: targetCount }, createNode);
+
+    // Conservar los nodos existentes (reubicados a escala) en vez de sortear una red nueva.
+    nodes.forEach((node) => {
+      node.x *= scaleX;
+      node.y *= scaleY;
+    });
+    while (nodes.length < targetCount) nodes.push(createNode());
+    if (nodes.length > targetCount) {
+      nodes.length = targetCount;
+      edgeAlpha.forEach((_, key) => {
+        const [i, j] = key.split('-').map(Number);
+        if (i >= targetCount || j >= targetCount) edgeAlpha.delete(key);
+      });
+    }
 
     backgroundDots = [[], [], []];
     const spacing = compact ? 13 : 15;
@@ -137,8 +160,6 @@
   }
 
   function moveNodes(delta) {
-    if (reducedMotion.matches) return;
-
     nodes.forEach((node) => {
       const nextX = node.x + node.vx * delta;
       const nextY = node.y + node.vy * delta;
@@ -149,7 +170,8 @@
       const x = Math.max(7, Math.min(width - 7, node.x + node.vx * delta));
       const y = Math.max(7, Math.min(height - 7, node.y + node.vy * delta));
 
-      if (pointIsBlocked(x, y)) {
+      // Si el texto se acomodó encima de un nodo, dejarlo salir en vez de atraparlo.
+      if (pointIsBlocked(x, y) && !pointIsBlocked(node.x, node.y)) {
         node.vx *= -1;
         node.vy *= -1;
         return;
@@ -172,11 +194,13 @@
         const b = nodes[j];
         const distance = Math.hypot(b.x - a.x, b.y - a.y);
         if (distance > reach || pointIsBlocked(b.x, b.y) || connectionIsBlocked(a, b)) continue;
-        candidates.push({ i, j, distance });
+        // Las conexiones visibles tienen prioridad para no reemplazarlas por otra apenas más corta.
+        const rank = edgeAlpha.has(i + '-' + j) ? distance * 0.8 : distance;
+        candidates.push({ i, j, distance, rank });
       }
     }
 
-    candidates.sort((a, b) => a.distance - b.distance);
+    candidates.sort((a, b) => a.rank - b.rank);
     const degree = new Uint8Array(nodes.length);
     const connections = [];
     const maxConnections = compact ? 3 : 4;
@@ -216,14 +240,39 @@
     });
   }
 
-  function drawConnections(now, compact, connections, reach) {
+  function drawConnections(now, delta, compact, connections, reach) {
     const baseOpacity = compact ? 0.5 : 0.38;
+    const step = delta / FADE_SECONDS;
 
+    // Las conexiones activas suben de opacidad y las que se cortaron bajan, sin saltos.
+    const active = new Set();
     connections.forEach((edge) => {
-      const a = nodes[edge.i];
-      const b = nodes[edge.j];
-      const strength = 1 - edge.distance / reach;
-      const opacity = baseOpacity * (0.55 + strength * 0.6);
+      const key = edge.i + '-' + edge.j;
+      active.add(key);
+      edgeAlpha.set(key, Math.min(1, (edgeAlpha.get(key) || 0) + step));
+    });
+    edgeAlpha.forEach((alpha, key) => {
+      if (active.has(key)) return;
+      const [i, j] = key.split('-').map(Number);
+      // Si la conexión ahora cruza el texto, se apaga más rápido para no taparlo.
+      const fall = connectionIsBlocked(nodes[i], nodes[j]) ? step * 4 : step;
+      if (alpha - fall <= 0) edgeAlpha.delete(key);
+      else edgeAlpha.set(key, alpha - fall);
+    });
+
+    edgeAlpha.forEach((alpha, key) => {
+      const [i, j] = key.split('-').map(Number);
+      const a = nodes[i];
+      const b = nodes[j];
+      const distance = Math.hypot(b.x - a.x, b.y - a.y);
+      const strength = Math.max(0, 1 - distance / reach);
+      // Se desvanecen al acercarse al alcance máximo en vez de cortarse de golpe.
+      const edgeFade = Math.min(1, strength / 0.3);
+      const eased = alpha * alpha * (3 - 2 * alpha);
+      const visibility = eased * edgeFade * Math.min(a.alpha, b.alpha);
+      if (visibility <= 0.001) return;
+      const opacity = baseOpacity * (0.55 + strength * 0.6) * visibility;
+      const edge = { i, j };
 
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
@@ -239,30 +288,36 @@
         const y = a.y + (b.y - a.y) * progress;
         ctx.beginPath();
         ctx.arc(x, y, compact ? 1.8 : 1.6, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(37, 120, 99, ' + (0.5 + strength * 0.25).toFixed(3) + ')';
+        ctx.fillStyle = 'rgba(37, 120, 99, ' + ((0.5 + strength * 0.25) * visibility).toFixed(3) + ')';
         ctx.fill();
       }
     });
   }
 
+  function updateNodeAlpha(delta) {
+    const step = delta / FADE_SECONDS;
+    nodes.forEach((node) => {
+      const target = pointIsBlocked(node.x, node.y) ? 0 : 1;
+      node.alpha = target > node.alpha
+        ? Math.min(target, node.alpha + step)
+        : Math.max(target, node.alpha - step);
+    });
+  }
+
   function drawNodes(now, compact) {
     nodes.forEach((node) => {
-      if (pointIsBlocked(node.x, node.y)) return;
+      if (node.alpha <= 0.001) return;
 
-      const pulse = reducedMotion.matches
-        ? 0.5
-        : (Math.sin(now / 850 + node.phase) + 1) / 2;
+      const pulse = (Math.sin(now / 850 + node.phase) + 1) / 2;
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.radius + pulse * 0.45, 0, Math.PI * 2);
-      ctx.fillStyle = compact
-        ? 'rgba(48, 133, 109, 0.8)'
-        : 'rgba(48, 133, 109, 0.72)';
+      ctx.fillStyle = 'rgba(48, 133, 109, ' + ((compact ? 0.8 : 0.72) * node.alpha).toFixed(3) + ')';
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.radius + 2 + pulse * 1.2, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(57, 137, 114, ' + (0.12 + pulse * 0.12).toFixed(3) + ')';
+      ctx.strokeStyle = 'rgba(57, 137, 114, ' + ((0.12 + pulse * 0.12) * node.alpha).toFixed(3) + ')';
       ctx.lineWidth = 0.8;
       ctx.stroke();
     });
@@ -280,35 +335,26 @@
     }
 
     const compact = compactViewport.matches;
-    const delta = lastFrame && !reducedMotion.matches
+    const delta = lastFrame
       ? Math.min((now - lastFrame) / 1000, 0.04)
       : 0;
     lastFrame = now;
 
     moveNodes(delta);
+    updateNodeAlpha(delta);
     ctx.clearRect(0, 0, width, height);
     drawBackgroundDots(compact);
     const graph = buildConnections(compact);
-    drawConnections(now, compact, graph.connections, graph.reach);
+    drawConnections(now, delta, compact, graph.connections, graph.reach);
     drawNodes(now, compact);
 
-    if (!reducedMotion.matches) requestAnimationFrame(frame);
-  }
-
-  function handleResize() {
-    resize();
-    if (reducedMotion.matches) frame(performance.now());
+    requestAnimationFrame(frame);
   }
 
   resize();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener('resize', resize);
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(handleResize).observe(map);
-  }
-  if (typeof reducedMotion.addEventListener === 'function') {
-    reducedMotion.addEventListener('change', () => {
-      if (!reducedMotion.matches) requestAnimationFrame(frame);
-    });
+    new ResizeObserver(resize).observe(map);
   }
   frame(performance.now());
 
