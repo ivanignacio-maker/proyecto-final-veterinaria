@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-10-2026 a las 00:36:55
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 28-10-2026 a las 13:35:34
+-- Versión del servidor: 10.11.16-MariaDB
+-- Versión de PHP: 8.3.36
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -91,7 +91,8 @@ INSERT INTO `audit_log` (`id`, `clinic_id`, `vet_user_id`, `entity_type`, `entit
 (1, 1, 1, 'pet', 1, 'created', '{\"name\":\"tobi\",\"client_id\":1}', '2026-10-16 16:24:51'),
 (2, 2, 2, 'pet', 2, 'created', '{\"name\":\"Apolo\",\"client_id\":2}', '2026-10-21 03:17:32'),
 (3, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"}}', '2026-10-21 12:33:42'),
-(4, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"Dado de Alta\"}}', '2026-10-21 13:01:13');
+(4, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"Dado de Alta\"}}', '2026-10-21 13:01:13'),
+(5, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-10-28 05:21:25');
 
 -- --------------------------------------------------------
 
@@ -116,11 +117,11 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `avatar_path`, `password_hash`, `created_at`, `updated_at`) VALUES
-(1, '44649955', 'Ivan I. Bruno', 'ivan@gmail.com', '11 4455-6677', NULL, NULL, '2026-10-16 16:24:10', '2026-10-21 12:57:13'),
-(2, '464646', 'Ivan Brunoo', 'ivanignaciobruno@gmail.com', '111111', 'avatars/client_2_da0f267cb2094843.webp', '$2y$10$NgAgLT051d9iu8PlpAjAoOcajCL0sOjHu63Zk/5ZV3KzfxTFe0ITS', '2026-10-21 03:12:47', '2026-10-24 21:09:04'),
-(4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '222222', NULL, '$2y$10$vj.37LdHj6EVphuGBb5s8OxVvMEyYbDk/hocfPEoYyLnc9P4mu5DW', '2026-10-21 03:16:58', '2026-10-21 03:16:58'),
-(5, '123', 'Pedro', 'aaaa@gmail.com', '1111', NULL, '$2y$10$0W1zQ5iMAN20AYjA0RqAv.bzofQhGQ56N86kW2sCL6f8AG0wTg2Pi', '2026-10-21 14:59:44', '2026-10-21 14:59:44'),
-(6, '123456', 'Thiago Mantoani', 'thiagomantoani@gmail.com', '11223344', NULL, '$2y$10$vGTL.TVsZMlsGynLU46zhubsv0syBxChSDTXd6KXxb6HeHFMjm5KS', '2026-10-21 23:59:45', '2026-10-21 23:59:45');
+(1, '44649955', 'Ivan I. Bruno', 'ivan@gmail.com', '11 4455-6677', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-16 16:24:10', '2026-10-27 23:18:07'),
+(2, '464646', 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'avatars/client_2_4846352e9bdb7cd9.jpg', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-10-28 00:00:13'),
+(4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '222222', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-10-28 05:22:17'),
+(5, '123', 'Pedro', 'aaaa@gmail.com', '1111', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-10-27 23:18:07'),
+(6, '123456', 'Thiago Mantoani', 'thiagomantoani@gmail.com', '11223344', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 23:59:45', '2026-10-27 23:18:07');
 
 -- --------------------------------------------------------
 
@@ -151,7 +152,7 @@ CREATE TABLE `clinics` (
 
 INSERT INTO `clinics` (`id`, `name`, `email`, `street`, `city`, `province`, `active`, `created_at`, `cuit`, `phone`, `opening_hours`, `available_days`, `opening_time`, `closing_time`) VALUES
 (1, 'Mau', 'mau@gmail.com', 'Belgrano 3747', 'San Martín', 'Buenos Aires', 1, '2026-10-16 16:23:03', NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Chau', 'Haedo', 'Buenos Aires', 1, '2026-10-21 03:06:45', NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Plaza Belgrano', 'La Plata', 'Buenos Aires', 1, '2026-10-21 03:06:45', '404045', '444444', NULL, 'Lunes a Viernes', '08:00:00', '22:00:00'),
 (3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '555', '11111', NULL, 'lun mar', '21:16:00', '17:18:00');
 
 -- --------------------------------------------------------
@@ -174,7 +175,7 @@ CREATE TABLE `clinic_clients` (
 INSERT INTO `clinic_clients` (`clinic_id`, `client_id`, `first_seen_at`, `last_seen_at`) VALUES
 (1, 1, '2026-10-16 16:24:10', '2026-10-16 16:39:06'),
 (1, 4, '2026-10-21 23:38:33', '2026-10-21 23:39:49'),
-(2, 2, '2026-10-21 03:12:47', '2026-10-24 21:23:03'),
+(2, 2, '2026-10-21 03:12:47', '2026-10-28 01:44:27'),
 (2, 4, '2026-10-21 03:16:58', '2026-10-21 03:16:58'),
 (3, 2, '2026-10-21 03:31:48', '2026-10-21 14:53:25'),
 (3, 4, '2026-10-21 12:26:23', '2026-10-21 12:26:23'),
@@ -299,8 +300,9 @@ CREATE TABLE `pets` (
 
 INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `weight_kg`, `height_cm`, `birth_date`, `photo_path`, `created_at`) VALUES
 (1, 1, 'Tobi', 'Perro', NULL, 'Beagle', 21.00, 41.50, '2021-03-10', NULL, '2026-10-16 16:24:51'),
-(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 8.00, NULL, 'pets/6564d94bdb8e863ab3d2a6b5a1d37ca406792dab.jpg', '2026-10-21 03:17:32'),
-(3, 2, 'Chocolate', 'Perro', NULL, 'Salchicha', 0.08, 0.80, '2026-10-23', NULL, '2026-10-21 12:38:40');
+(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
+(3, 2, 'Chocolate', 'Perro', 'Macho', 'Salchicha', 0.08, 0.80, '2026-10-23', 'pets/aef5eaf2de35e0917828d6b20a01eb45bfe47de5.jpg', '2026-10-21 12:38:40'),
+(5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53');
 
 -- --------------------------------------------------------
 
@@ -333,7 +335,9 @@ INSERT INTO `pet_access_codes` (`id`, `pet_id`, `code`, `action_type`, `created_
 (6, 2, '171325', 'modify_history', 2, NULL, NULL, '2026-10-24 23:51:06', '2026-10-24 21:21:06'),
 (7, 2, '399164', 'modify_history', 2, NULL, NULL, '2026-10-24 23:51:07', '2026-10-24 21:21:07'),
 (8, 2, '544696', 'modify_history', 2, NULL, NULL, '2026-10-24 23:51:07', '2026-10-24 21:21:07'),
-(9, 2, '474794', 'modify_history', 2, 2, '2026-10-24 18:23:44', '2026-10-24 23:51:07', '2026-10-24 21:21:07');
+(9, 2, '474794', 'modify_history', 2, 2, '2026-10-24 18:23:44', '2026-10-24 23:51:07', '2026-10-24 21:21:07'),
+(10, 2, '613049', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:18', '2026-10-28 00:03:18'),
+(11, 2, '904586', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:21', '2026-10-28 00:03:21');
 
 -- --------------------------------------------------------
 
@@ -377,7 +381,24 @@ CREATE TABLE `remember_tokens` (
 --
 
 INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `selector`, `validator_hash`, `expires_at`, `created_at`) VALUES
-(0, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
+(1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vaccine_reminders`
+--
+
+CREATE TABLE `vaccine_reminders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `consultation_id` bigint(20) UNSIGNED NOT NULL,
+  `due_date` date NOT NULL,
+  `reminder_number` tinyint(3) UNSIGNED NOT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `delivery` enum('smtp','archivo') NOT NULL,
+  `sent_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -517,6 +538,14 @@ ALTER TABLE `remember_tokens`
   ADD KEY `vet_user_id` (`vet_user_id`);
 
 --
+-- Indices de la tabla `vaccine_reminders`
+--
+ALTER TABLE `vaccine_reminders`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_reminder` (`consultation_id`,`due_date`,`reminder_number`),
+  ADD KEY `idx_consultation` (`consultation_id`);
+
+--
 -- Indices de la tabla `vet_users`
 --
 ALTER TABLE `vet_users`
@@ -543,7 +572,7 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT de la tabla `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `clients`
@@ -564,16 +593,46 @@ ALTER TABLE `consultations`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de la tabla `consultation_files`
+--
+ALTER TABLE `consultation_files`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `medications`
+--
+ALTER TABLE `medications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `pets`
+--
+ALTER TABLE `pets`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
 --
 ALTER TABLE `pet_access_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_co_owners`
 --
 ALTER TABLE `pet_co_owners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `remember_tokens`
+--
+ALTER TABLE `remember_tokens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `vaccine_reminders`
+--
+ALTER TABLE `vaccine_reminders`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `vet_users`
@@ -585,26 +644,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
---
--- Estructura de tabla para la tabla `vaccine_reminders`
--- Avisos por correo de renovación de vacunas (includes/recordatorios_vacunas.php).
--- El sistema también la crea sola la primera vez que corre.
---
-
-CREATE TABLE IF NOT EXISTS `vaccine_reminders` (
-  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `consultation_id` bigint(20) UNSIGNED NOT NULL,
-  `due_date` date NOT NULL,
-  `reminder_number` tinyint(3) UNSIGNED NOT NULL,
-  `client_id` bigint(20) UNSIGNED NOT NULL,
-  `email` varchar(190) NOT NULL,
-  `delivery` enum('smtp','archivo') NOT NULL,
-  `sent_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_reminder` (`consultation_id`,`due_date`,`reminder_number`),
-  KEY `idx_consultation` (`consultation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Contraseña inicial de los tutores ya registrados: 1234567890
-UPDATE `clients` SET `password_hash` = '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y';
