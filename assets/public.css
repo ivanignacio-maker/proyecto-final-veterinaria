@@ -1828,15 +1828,24 @@
     display: grid;
     grid-template-columns: 1.25fr 0.75fr;
     gap: 36px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .contact-card-form {
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
     border: 1px solid var(--line);
     border-radius: 22px;
     padding: 36px;
     box-shadow: 0 12px 36px rgba(24, 59, 53, 0.05);
+}
+
+.contact-card-form > .auth-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .user-type-selector {
