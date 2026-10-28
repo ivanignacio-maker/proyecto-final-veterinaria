@@ -31,8 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? 'En proceso';
     
     // Validar campos obligatorios
+    $authCode = trim($_POST['auth_code'] ?? '');
+
     if (!$reason || !$notes || !in_array($status, ['En proceso', 'Dado de Alta'], true)) {
         $error = 'Revisá los campos obligatorios.';
+    } elseif ($authCode === '') {
+        $error = 'Por favor solicitale al tutor el código de autorización generado en su libreta digital.';
+    } elseif (!verify_and_use_pet_access_code((int)$c['pet_id'], $authCode, (int)$_SESSION['vet_user_id'])) {
+        $error = 'El código de autorización es inválido, ya fue utilizado o ha expirado. Solicitale al dueño que te dicte el código activo de su pantalla.';
     } else {
         // Preparar estado anterior para el registro de auditoría
         $before = [
@@ -81,27 +87,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Editar consulta';
+$pageTitle = 'Editar consulta | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Editar consulta</h1>
+    <h1><i class="fa-solid fa-pen-to-square" style="color: var(--green); margin-right: 8px;"></i>Editar consulta clínica</h1>
     
     <p class="muted">
-        Mascota: <?= e($c['pet_name']) ?> · ID consulta #<?= (int)$id ?>
+        Paciente: <strong class="name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($c['pet_name']) ?></strong> · ID de consulta #<?= (int)$id ?>
     </p>
-    <p>Las modificaciones quedan registradas en auditoría.</p>
+    <p class="muted" style="font-size: 13px;"><i class="fa-solid fa-shield-halved" style="color: var(--green); margin-right: 4px;"></i> Las modificaciones quedan registradas en el libro de auditoría médica.</p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
     <form method="post">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
         <input type="hidden" name="id" value="<?= (int)$id ?>">
         
-        <label>Motivo</label>
+        <label>Motivo de atención</label>
         <select name="reason">
             <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Otro'] as $r): ?>
                 <option <?= $c['reason'] === $r ? 'selected' : '' ?>>
@@ -112,7 +121,7 @@ require __DIR__ . '/../includes/header.php';
         
         <div class="form-grid">
             <div>
-                <label>Estado</label>
+                <label>Estado del paciente</label>
                 <select name="status">
                     <option <?= $c['status'] === 'En proceso' ? 'selected' : '' ?>>En proceso</option>
                     <option <?= $c['status'] === 'Dado de Alta' ? 'selected' : '' ?>>Dado de Alta</option>
@@ -120,27 +129,29 @@ require __DIR__ . '/../includes/header.php';
             </div>
             
             <div>
-                <label>Vencimiento de vacuna</label>
+                <label>Vencimiento de vacuna (si aplica)</label>
                 <input type="date" name="vaccine_expiry" value="<?= e($c['vaccine_expiry']) ?>">
             </div>
             
             <div>
-                <label>Próxima dosis</label>
+                <label>Próxima dosis sugerida</label>
                 <input type="date" name="next_dose" value="<?= e($c['next_dose']) ?>">
             </div>
         </div>
         
-        <label>Notas</label>
-        <textarea name="notes" required><?= e($c['notes']) ?></textarea>
+        <label>Evolución y notas clínicas</label>
+        <textarea name="notes" rows="4" required><?= e($c['notes']) ?></textarea>
         
-        <label>Diagnóstico</label>
-        <textarea name="diagnosis"><?= e($c['diagnosis']) ?></textarea>
+        <label>Diagnóstico presuntivo o definitivo</label>
+        <textarea name="diagnosis" rows="3"><?= e($c['diagnosis']) ?></textarea>
         
-        <label>Tratamiento</label>
-        <textarea name="treatment"><?= e($c['treatment']) ?></textarea>
+        <label>Indicaciones y tratamiento farmacológico</label>
+        <textarea name="treatment" rows="3"><?= e($c['treatment']) ?></textarea>
         
         <div class="actions">
-            <button>Guardar cambios</button>
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i> Guardar cambios
+            </button>
             <a class="btn secondary" href="<?= url('consultas/ver.php?id=' . $id) ?>">Cancelar</a>
         </div>
     </form>

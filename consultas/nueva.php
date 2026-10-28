@@ -29,9 +29,14 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reason = $_POST['motivo'] ?? '';
     $notes = trim($_POST['notes'] ?? '');
+    $authCode = trim($_POST['auth_code'] ?? '');
     
     if (!$reason || !$notes) {
         $error = 'Motivo y descripción son obligatorios.';
+    } elseif ($authCode === '') {
+        $error = 'Por favor solicitale al tutor el código de autorización generado en su libreta digital.';
+    } elseif (!verify_and_use_pet_access_code($petId, $authCode, (int)$_SESSION['vet_user_id'])) {
+        $error = 'El código de autorización es inválido, ya fue utilizado o ha expirado. Solicitale al dueño que te dicte el código activo de su pantalla.';
     } else {
         // Preparar fechas solo si el motivo es vacunación
         $expiry = $reason === 'Vacuna' ? ($_POST['vaccine_expiry'] ?: null) : null;
@@ -97,37 +102,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Nueva consulta';
+$pageTitle = 'Asentar Consulta Médica | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Agregar consulta</h1>
-    <p>
-        Mascota: <strong><?= e($pet['name']) ?></strong> · 
-        Responsable: <?= e($pet['full_name']) ?>
+    <h1><i class="fa-solid fa-stethoscope" style="color: var(--green); margin-right: 8px;"></i>Asentar consulta médica</h1>
+    <p class="muted">
+        Paciente: <strong class="name-titlecase"><i class="fa-solid fa-paw" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($pet['name']) ?></strong> · 
+        Tutor: <strong><?= e_name($pet['full_name']) ?></strong>
     </p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
-    <form method="post">
+    <form method="post" style="margin-top: 18px;">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+
+        <div style="background: #f0f7f4; border: 1.5px solid #cce8d5; border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+            <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div style="font-size: 26px; color: var(--green); margin-top: 2px;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 4px; display: block;">
+                        Código de autorización del tutor *
+                    </label>
+                    <p class="muted" style="margin: 0 0 10px; font-size: 13px;">
+                        Para asentar esta consulta médica, solicitale al dueño de <strong><?= e_name($pet['name']) ?></strong> el código temporal de 6 dígitos que figura en su libreta sanitaria o sección "Mis mascotas".
+                    </p>
+                    <div style="max-width: 240px;">
+                        <input type="text" name="auth_code" maxlength="10" placeholder="Ej. 749281" required style="font-size: 18px; font-weight: 700; letter-spacing: 3px; font-family: monospace; text-align: center; margin: 0; background: #fff;">
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="form-grid">
             <div>
                 <label>Motivo / tipo de consulta</label>
-                <select name="motivo" required>
-                    <option value="">Seleccionar</option>
-                    <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Otro'] as $r): ?>
+                <select name="motivo" required id="motivo_select">
+                    <option value="">Seleccionar motivo...</option>
+                    <?php foreach (['Consulta general', 'Vacuna', 'Control', 'Cirugía', 'Urgencia', 'Desparasitación', 'Dermatología', 'Otro'] as $r): ?>
                         <option><?= e($r) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             
             <div>
-                <label>Estado</label>
+                <label>Estado clínico</label>
                 <select name="status">
                     <option>En proceso</option>
                     <option>Dado de Alta</option>
@@ -148,36 +175,51 @@ require __DIR__ . '/../includes/header.php';
             </div>
         </div>
         
-        <label>Notas / motivo detallado</label>
-        <textarea name="notes" required></textarea>
+        <label>Notas / motivo detallado del cuadro</label>
+        <textarea name="notes" placeholder="Describa síntomas, examen físico, constantes..." required></textarea>
         
         <label>Diagnóstico</label>
-        <textarea name="diagnosis"></textarea>
+        <textarea name="diagnosis" placeholder="Diagnóstico presuntivo o definitivo..."></textarea>
         
-        <label>Tratamiento indicado</label>
-        <textarea name="treatment"></textarea>
+        <label>Tratamiento indicado y posología</label>
+        <textarea name="treatment" placeholder="Instrucciones para el tutor, fármacos, frecuencia..."></textarea>
         
-        <label>Medicamento del stock</label>
+        <label>Medicamento del stock de la veterinaria</label>
         <select name="medicamento_id">
-            <option value="">No corresponde</option>
+            <option value="">No corresponde / Ninguno</option>
             <?php foreach ($meds as $m): ?>
                 <option value="<?= (int)$m['id'] ?>" <?= $m['quantity'] < 1 ? 'disabled' : '' ?>>
                     <?= e($m['name']) ?> — stock: <?= (int)$m['quantity'] ?>
                 </option>
             <?php endforeach; ?>
-            <option value="otro">Otro (comprar)</option>
+            <option value="otro">Otro (comprar en farmacia)</option>
         </select>
         
         <div id="otro-medicamento" hidden>
-            <label>Medicamento a obtener</label>
-            <input name="other_medication">
+            <label>Medicamento a comprar</label>
+            <input name="other_medication" placeholder="Nombre comercial o genérico">
         </div>
         
         <div class="actions">
-            <button>Guardar consulta</button>
+            <button type="submit" class="btn primary">
+                <span>Guardar consulta</span>
+                <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+            </button>
             <a class="btn secondary" href="<?= url('mascotas/ver.php?id=' . $petId) ?>">Cancelar</a>
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const motivoSelect = document.getElementById('motivo_select');
+    const vacunaFields = document.getElementById('vacuna-fields');
+    if (motivoSelect && vacunaFields) {
+        motivoSelect.addEventListener('change', function() {
+            vacunaFields.hidden = (this.value !== 'Vacuna');
+        });
+    }
+});
+</script>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
