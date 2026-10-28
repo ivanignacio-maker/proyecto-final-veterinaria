@@ -177,7 +177,7 @@
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; border: none; cursor: pointer; padding: 16px;">
                             <span>Enviar mensaje a nuestro equipo</span>
-                            <i class="fa-solid fa-paper-plane" style="margin-left: 8px;"></i>
+                            
                         </button>
                     </div>
 
