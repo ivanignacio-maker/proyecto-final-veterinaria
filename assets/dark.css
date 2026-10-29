@@ -1,0 +1,402 @@
+/* Modo oscuro: variables y ajustes manuales.
+   Los colores fijos del resto del CSS se convierten en dark.generated.css
+   (scripts/generar_dark_css.py). Este archivo se carga después y tiene la última palabra. */
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e3eee9;
+    --muted: #9fb5ad;
+    --green: #2a8f75;
+    --green-dark: #237765;
+    --mint: #183029;
+    --paper: #0f1916;
+    --line: #263a33;
+    --white: #16221f;
+    --gold: #e4b96b;
+    --red: #e07a73;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+}
+
+/* Usa las fotos preparadas para el tema oscuro y conserva las originales en el claro. */
+html[data-theme="dark"] .hero-side-pet-light {
+    display: none;
+}
+
+html[data-theme="dark"] .hero-side-pet-dark {
+    display: block;
+    filter: none;
+    mix-blend-mode: normal;
+    opacity: 1;
+}
+
+html[data-theme="dark"] body.page-bg-follow .bg-paper {
+    background-color: transparent;
+}
+
+html[data-theme="dark"] body.page-bg-follow .contact-bg {
+    background: transparent;
+}
+
+html[data-theme="dark"] body.page-bg-follow > footer.public-footer {
+    background-color: #17382e;
+}
+
+html[data-theme="dark"] body.page-bg-migration::before {
+    filter: grayscale(1) invert(1) contrast(1.08);
+    mix-blend-mode: screen;
+    opacity: .35;
+}
+
+html[data-theme="dark"] body.page-bg-migration::after {
+    background: linear-gradient(to bottom, rgba(15, 25, 22, .18) 0%, rgba(15, 25, 22, .32) 45%, rgba(15, 25, 22, .72) 62%, #0f1916 75%);
+}
+
+html[data-theme="dark"] body.page-bg-about::before {
+    filter: grayscale(1) invert(1) contrast(1.08);
+    mix-blend-mode: screen;
+    opacity: .28;
+}
+
+html[data-theme="dark"] body.page-bg-about::after {
+    background:
+        linear-gradient(to right, rgba(15, 25, 22, 0) 0%, rgba(15, 25, 22, .28) 20%, rgba(15, 25, 22, .86) 42%, #0f1916 50%, rgba(15, 25, 22, .86) 58%, rgba(15, 25, 22, .28) 80%, rgba(15, 25, 22, 0) 100%),
+        linear-gradient(to bottom, rgba(15, 25, 22, .12) 0%, rgba(15, 25, 22, .3) 38%, rgba(15, 25, 22, .76) 53%, var(--paper) 66%);
+}
+
+html[data-theme="dark"] body.page-bg-plans::before {
+    background:
+        linear-gradient(#fff, #fff),
+        url('fondo_planes.webp?v=4') center top / cover no-repeat;
+    background-blend-mode: difference, normal;
+    opacity: .78;
+    mix-blend-mode: normal;
+}
+
+html[data-theme="dark"] body.page-bg-plans::after {
+    background: linear-gradient(to bottom, rgba(15, 25, 22, .4) 0%, rgba(15, 25, 22, .58) 24%, rgba(15, 25, 22, .82) 45%, rgba(15, 25, 22, .96) 58%, var(--paper) 66%);
+}
+
+html[data-theme="dark"] body.page-bg-contact::before {
+    background:
+        linear-gradient(#fff, #fff),
+        url('contacto-fondo.webp?v=1') top center / 612px repeat;
+    background-blend-mode: difference, normal;
+}
+
+html[data-theme="dark"] body.page-bg-contact::after {
+    background: linear-gradient(to bottom, rgba(15, 25, 22, .72) 0%, rgba(15, 25, 22, .88) 20%, rgba(15, 25, 22, .96) 35%, var(--paper) 50%);
+}
+
+@media (max-width: 768px) {
+    html[data-theme="dark"] body.page-bg-about::before {
+        background-size: auto 620px;
+    }
+
+    html[data-theme="dark"] body.page-bg-about::after {
+        background:
+            linear-gradient(to right, rgba(15, 25, 22, .25) 0%, rgba(15, 25, 22, .75) 28%, rgba(15, 25, 22, .96) 50%, rgba(15, 25, 22, .75) 72%, rgba(15, 25, 22, .25) 100%),
+            linear-gradient(to bottom, rgba(15, 25, 22, .15) 0%, rgba(15, 25, 22, .42) 38%, rgba(15, 25, 22, .78) 53%, var(--paper) 66%);
+    }
+
+    html[data-theme="dark"] body.page-bg-plans::before {
+        background-size: 100% auto;
+    }
+
+    html[data-theme="dark"] body.page-bg-plans::after {
+        background: linear-gradient(to bottom, rgba(15, 25, 22, .85) 0%, rgba(15, 25, 22, .94) 59%, var(--paper) 66%);
+    }
+
+    html[data-theme="dark"] body.page-bg-contact::after {
+        background: linear-gradient(to bottom, rgba(15, 25, 22, .85) 0, rgba(15, 25, 22, .94) 220px, var(--paper) 480px);
+    }
+
+    html[data-theme="dark"] body.page-bg-contact::before {
+        background:
+            linear-gradient(#fff, #fff),
+            url('contacto-fondo.webp?v=1') top center / 360px repeat;
+        background-blend-mode: difference, normal;
+    }
+}
+
+/* Mantener legible el menú desplegable nativo en formularios y filtros. */
+html[data-theme="dark"] select,
+html[data-theme="dark"] select option {
+    color: #e3eee9;
+    background-color: #16221f;
+}
+
+/* Botón para cambiar de tema */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: -22px;
+}
+
+.desktop-nav {
+    margin-left: auto;
+}
+
+/* Selector doble para ganarle a la regla genérica de button (también en oscuro) */
+.topbar .theme-toggle,
+html[data-theme="dark"] .topbar .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 16px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background .2s, color .2s, transform .2s;
+}
+
+.topbar .theme-toggle:hover,
+html[data-theme="dark"] .topbar .theme-toggle:hover {
+    background: var(--mint);
+    color: var(--green);
+    box-shadow: none;
+    transform: rotate(-15deg);
+}
+
+.theme-toggle .fa-sun,
+html[data-theme="dark"] .theme-toggle .fa-moon {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .fa-sun {
+    display: inline-block;
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .topbar-actions {
+        margin-left: 0;
+    }
+}
+
+html[data-theme="dark"] .contact-social-link {
+    background: #1a2a25;
+    border-color: #355146;
+    color: var(--ink);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .22);
+}
+
+html[data-theme="dark"] .contact-social-link:hover {
+    background: #2b493d;
+    border-color: #54a78a;
+    color: #f0fff8;
+}
+
+/* Mapa de Leaflet: atenuar los mosaicos claros */
+html[data-theme="dark"] .leaflet-tile-pane {
+    filter: brightness(.75) contrast(1.1) saturate(.8);
+}
+
+/* Transición suave al cambiar de tema (la clase la pone el botón solo durante el cambio) */
+html.theme-switching,
+html.theme-switching * {
+    transition: background-color .3s ease, border-color .3s ease, color .3s ease !important;
+}
+
+/* Fondo general del modo oscuro. */
+html[data-theme="dark"] body {
+    background-color: var(--paper);
+}
+
+/* Login: título "VetCare" con degradado más claro para que se lea sobre el panel oscuro */
+html[data-theme="dark"] .tc-map-text h2 {
+    background: linear-gradient(90deg, #7fd8b9, #3fae92);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+
+/* Adaptación del componente Attachments en modo oscuro */
+html[data-theme="dark"] .attachment-dropzone {
+    background: #14221e;
+    border-color: #2b4239;
+}
+
+html[data-theme="dark"] .attachment-dropzone:hover,
+html[data-theme="dark"] .attachment-dropzone.is-dragover {
+    background: #182b26;
+    border-color: var(--green);
+}
+
+html[data-theme="dark"] .attachment-preview-card {
+    background: #172420;
+    border-color: #2c443b;
+}
+
+html[data-theme="dark"] .attachment-remove-btn {
+    background: #20312b;
+    border-color: #2f493f;
+    color: var(--muted);
+}
+
+html[data-theme="dark"] .attachment-remove-btn:hover {
+    background: #3c1c1b;
+    border-color: #632d2c;
+    color: #ff8e88;
+}
+
+html[data-theme="dark"] .attachment-progress-wrapper {
+    background: #20312b;
+}
+
+
+/* Botón de cámara en modo oscuro */
+html[data-theme="dark"] .tutor-avatar-camera-btn {
+    border-color: #16221f !important;
+    background: var(--green) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Perritos decorativos del login en modo oscuro */
+html[data-theme="dark"] .tc-wrap::before,
+html[data-theme="dark"] .tc-wrap::after {
+    filter: invert(1);
+    opacity: 0.1;
+}
+
+/* Ojo de contraseña login (evitar que se mueva en hover / active) */
+button.tc-eye,
+button.tc-eye:hover,
+button.tc-eye:focus,
+button.tc-eye:active,
+html[data-theme="dark"] button.tc-eye,
+html[data-theme="dark"] button.tc-eye:hover,
+html[data-theme="dark"] button.tc-eye:focus,
+html[data-theme="dark"] button.tc-eye:active {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+
+/* Buscador del historial clínico */
+html[data-theme="dark"] .historial-modes legend {
+    color: #b6cdc5;
+}
+
+/* Bienvenida del panel de veterinarias: un solo color, sin el tramo anaranjado del degradé */
+html[data-theme="dark"] .dashboard-hero {
+    background: #172a1f;
+}
+
+html[data-theme="dark"] .pet-profile-header .pet-photo {
+    border: 0;
+    box-shadow: none;
+}
+
+html[data-theme="dark"] #clientTopographyBackground {
+    opacity: .92;
+}
+
+html[data-theme="dark"] #portalInteractiveGridBackground {
+    color: #73c9a7;
+    opacity: .72;
+}
+
+@media (max-width: 768px) {
+    html[data-theme="dark"] #clientTopographyBackground {
+        opacity: .72;
+    }
+
+    html[data-theme="dark"] #portalInteractiveGridBackground {
+        opacity: .58;
+    }
+}
+
+
+
+/* Relieve de tarjetas para modo oscuro */
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .client-card,
+html[data-theme="dark"] .history-panel,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .stat-item-box,
+html[data-theme="dark"] .attachment-preview-card,
+html[data-theme="dark"] .attachment-viewer-panel,
+html[data-theme="dark"] .feature-card-clean,
+html[data-theme="dark"] .pricing-card,
+html[data-theme="dark"] .value-card,
+html[data-theme="dark"] .about-side-card,
+html[data-theme="dark"] .migration-card,
+html[data-theme="dark"] .faq-item,
+html[data-theme="dark"] .pricing-guarantee-card,
+html[data-theme="dark"] .about-story-card,
+html[data-theme="dark"] .legal-article-card,
+html[data-theme="dark"] .final-cta-box,
+html[data-theme="dark"] .migration-banner-container,
+html[data-theme="dark"] .migration-steps-box,
+html[data-theme="dark"] .mockup-card-main,
+html[data-theme="dark"] .contact-card-form,
+html[data-theme="dark"] .contact-sidebar-card,
+html[data-theme="dark"] .contact-map-card {
+    border-color: #35564a;
+    box-shadow: 8px 8px 0 rgba(42, 143, 117, .38), 0 16px 32px rgba(0, 0, 0, .28);
+}
+
+html[data-theme="dark"] .pricing-card.featured,
+html[data-theme="dark"] .btn-pricing-cta.primary-cta {
+    --pricing-glow-1: #6ee7b7;
+    --pricing-glow-2: #67e8f9;
+    --pricing-glow-3: #a5b4fc;
+    --pricing-glow-4: #f0abfc;
+    --pricing-glow-5: #fda4af;
+    --pricing-glow-6: #fde68a;
+    --pricing-glow-7: #bef264;
+}
+
+html[data-theme="dark"] .pricing-card.featured {
+    border-color: transparent;
+    background-color: var(--white);
+    background-clip: padding-box;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, .35), 0 0 26px rgba(69, 205, 167, .12);
+}
+
+html[data-theme="dark"] .btn-pricing-cta.primary-cta {
+    border-color: transparent;
+    background-clip: padding-box;
+}
+
+/* Acento verde propio para la cabecera y el pie del sitio público. */
+html[data-theme="dark"] .public-topbar {
+    background: rgba(23, 56, 46, .98);
+}
+
+html[data-theme="dark"] .public-footer {
+    background: #17382e;
+}
+
+html[data-theme="dark"] .footer-bottom {
+    background: #112a22;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    html[data-theme="dark"] .main-landing :is(.card, .panel, .feature-card-clean, .pricing-card, .pricing-guarantee-card, .value-card, .about-story-card, .about-side-card, .migration-card, .migration-step-row, .faq-item, .mockup-card-main, .migration-banner-container, .migration-steps-box, .final-cta-box, .contact-card-form, .contact-sidebar-card, .contact-map-card, .stat-item-box):hover,
+    html[data-theme="dark"] body.page-bg-follow :is(.card, .panel, .feature-card-clean, .pricing-card, .pricing-guarantee-card, .value-card, .about-story-card, .about-side-card, .migration-card, .migration-step-row, .faq-item, .mockup-card-main, .migration-banner-container, .migration-steps-box, .final-cta-box, .contact-card-form, .contact-sidebar-card, .contact-map-card, .stat-item-box):hover {
+        border-color: #42c99e !important;
+        box-shadow: 8px 8px 0 rgba(49, 202, 153, .46), 0 20px 40px rgba(42, 143, 117, .3), 0 0 26px rgba(49, 202, 153, .2);
+    }
+
+    html[data-theme="dark"] body.page-bg-migration .migration-process-card:hover .migration-step-number {
+        background: #43c99e;
+        color: #10251e;
+        box-shadow: 0 0 0 4px rgba(67, 201, 158, .16), 0 0 26px rgba(67, 201, 158, .62);
+    }
+}
