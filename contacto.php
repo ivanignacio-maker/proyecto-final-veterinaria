@@ -1,0 +1,318 @@
+<?php
+    require_once __DIR__ . '/config/config.php';
+
+    $msgSuccess = '';
+    $msgError = '';
+
+    // Parámetros opcionales para prellenado inteligente (CRO)
+    $presetMotivo = $_GET['motivo'] ?? '';
+    $presetPlan = $_GET['plan'] ?? '';
+    
+    $defaultAsunto = 'Consulta general';
+    $defaultTipoUsuario = 'veterinaria';
+
+    if ($presetMotivo === 'migracion') {
+        $defaultAsunto = 'Solicitud de Migración Asistida de Pacientes (Sin Costo)';
+        $defaultTipoUsuario = 'veterinaria';
+    } elseif ($presetPlan) {
+        $defaultAsunto = 'Consulta sobre Plan ' . ucfirst(e($presetPlan));
+        $defaultTipoUsuario = 'veterinaria';
+    } elseif (($_GET['tipo'] ?? '') === 'particular') {
+        $defaultTipoUsuario = 'particular';
+    }
+
+    $nombre = '';
+    $email = '';
+    $telefono = '';
+    $asunto = $defaultAsunto;
+    $tipoUsuario = $defaultTipoUsuario;
+    $mensaje = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        verify_csrf();
+
+        $nombre = trim($_POST['nombre'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $telefono = trim($_POST['telefono'] ?? '');
+        $asunto = trim($_POST['asunto'] ?? '');
+        $tipoUsuario = ($_POST['tipo_usuario'] ?? 'veterinaria') === 'particular' ? 'particular' : 'veterinaria';
+        $mensaje = trim($_POST['mensaje'] ?? '');
+
+        if ($nombre === '' || $email === '' || $mensaje === '') {
+            $msgError = 'Por favor completá los campos obligatorios (Nombre, Correo electrónico y Mensaje).';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $msgError = 'Por favor ingresá un correo electrónico válido.';
+        } else {
+            // En un sistema en producción aquí se enviaría un correo o webhook hacia el CRM/Slack
+            $msgSuccess = '¡Gracias por comunicarte con ' . APP_NAME . '! Recibimos tu consulta con éxito. Un asesor de nuestro equipo se pondrá en contacto a la brevedad.';
+            // Limpiar campos tras éxito
+            $nombre = '';
+            $email = '';
+            $telefono = '';
+            $mensaje = '';
+        }
+    }
+
+    $pageTitle = 'Contacto y Soporte Especializado';
+    $pageDescription = 'Contactate con el equipo de ' . APP_NAME . '. Solicitá tu migración asistida sin costo, consultá por planes para veterinarias o recibí asistencia técnica personalizada.';
+    $isLanding = true;
+    $bodyClass = 'page-bg-follow page-bg-contact';
+    require __DIR__ . '/includes/header.php';
+?>
+
+<div class="bg-paper section-padding-sm contact-bg">
+    <div class="public-container">
+        <!-- Encabezado de Página -->
+        <div class="page-intro-header">
+            <span class="section-eyebrow">Atención Personalizada</span>
+            <h1>Estamos para ayudarte a dar el siguiente paso</h1>
+            <p>
+                Ya sea para migrar tu base de datos de pacientes, resolver dudas técnicas o conocer en detalle nuestros planes, nuestro equipo responde a la brevedad.
+            </p>
+        </div>
+
+        <div class="contact-grid">
+            <!-- Formulario Principal -->
+            <div class="contact-card-form">
+                <?php if ($msgSuccess): ?>
+                    <div class="notice ok" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; background: #eaf7ee; color: #1e6348; border: 1px solid #cce8d5;">
+                        <span style="font-size: 22px; color: #1e6348;"><i class="fa-solid fa-circle-check"></i></span>
+                        <div>
+                            <strong style="display: block; font-size: 15px; margin-bottom: 2px;">¡Mensaje enviado con éxito!</strong>
+                            <span style="font-size: 13px;"><?= e($msgSuccess) ?></span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($msgError): ?>
+                    <div class="notice error" style="padding: 16px 20px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; background: #fff0ee; color: #a63e39; border: 1px solid #fbdcd9;">
+                        <span style="font-size: 22px; color: #a63e39;"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                        <div>
+                            <strong style="display: block; font-size: 15px; margin-bottom: 2px;">Atención</strong>
+                            <span style="font-size: 13px;"><?= e($msgError) ?></span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <form method="post" action="contacto.php" class="auth-form" autocomplete="on">
+                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                    <input type="hidden" name="tipo_usuario" id="user_type_hidden" value="<?= e($tipoUsuario) ?>">
+
+                    <!-- Selector de Tipo de Usuario (Veterinaria vs Particular) -->
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>
+                            <span>Tipo de Usuario o Interesado</span>
+                            <span class="label-hint">Seleccioná tu perfil</span>
+                        </label>
+                        <div class="user-type-selector">
+                            <div class="user-type-option <?= $tipoUsuario === 'veterinaria' ? 'selected' : '' ?>" data-value="veterinaria">
+                                <span style="font-size: 18px; color: var(--green);"><i class="fa-solid fa-hospital"></i></span>
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 700;">Clínica o Veterinario</div>
+                                    <div style="font-size: 11px; color: var(--muted); font-weight: 400;">Gestión médica y stock</div>
+                                </div>
+                            </div>
+                            <div class="user-type-option <?= $tipoUsuario === 'particular' ? 'selected' : '' ?>" data-value="particular">
+                                <span style="font-size: 18px; color: #2b7bc4;"><i class="fa-solid fa-paw"></i></span>
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 700;">Tutor de Mascota</div>
+                                    <div style="font-size: 11px; color: var(--muted); font-weight: 400;">Libreta sanitaria digital</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label for="nombre">
+                                <span>Nombre y Apellido *</span>
+                            </label>
+                            <div class="input-icon-wrapper">
+                                <span class="field-icon"><i class="fa-solid fa-user"></i></span>
+                                <input id="nombre" name="nombre" value="<?= e($nombre) ?>" required placeholder="Ej. Dra. Valeria Rossi" autocomplete="name">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">
+                                <span>Correo electrónico *</span>
+                            </label>
+                            <div class="input-icon-wrapper">
+                                <span class="field-icon"><i class="fa-solid fa-envelope"></i></span>
+                                <input id="email" type="email" name="email" value="<?= e($email) ?>" required placeholder="contacto@veterinaria.com" autocomplete="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px;">
+                        <div class="form-group">
+                            <label for="telefono">
+                                <span>Teléfono / WhatsApp</span>
+                                <span class="label-hint">(Opcional)</span>
+                            </label>
+                            <div class="input-icon-wrapper">
+                                <span class="field-icon"><i class="fa-solid fa-phone"></i></span>
+                                <input id="telefono" type="tel" name="telefono" value="<?= e($telefono) ?>" placeholder="+54 9 11 2345-6789" autocomplete="tel">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="asunto">
+                                <span>Asunto o Motivo</span>
+                            </label>
+                            <div class="input-icon-wrapper">
+                                <span class="field-icon"><i class="fa-solid fa-tag"></i></span>
+                                <input id="asunto" name="asunto" value="<?= e($asunto) ?>" required placeholder="Ej. Migración de pacientes o consulta de plan">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 14px;">
+                        <label for="mensaje">
+                            <span>Mensaje o Consulta *</span>
+                            <span class="label-hint">Contanos sobre tu consulta o necesidad</span>
+                        </label>
+                        <textarea id="mensaje" name="mensaje" rows="5" required placeholder="Escribí aquí los detalles de tu consulta (por ejemplo: cantidad aproximada de pacientes a migrar, software actual que utilizás o dudas técnicas)..." style="width: 100%; border-radius: 12px; padding: 12px 14px; border: 1px solid #dbe6de; background: #fbfdfb; font-family: inherit; font-size: 14px; color: var(--ink); resize: vertical;"><?= e($mensaje) ?></textarea>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button type="submit" class="btn-hero-primary" style="width: 100%; justify-content: center; border: none; cursor: pointer; padding: 16px;">
+                            <span>Enviar mensaje a nuestro equipo</span>
+                            
+                        </button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 14px; font-size: 12px; color: var(--muted);">
+                        <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> Tus datos están resguardados bajo estricta confidencialidad médica y no serán compartidos con terceros.
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sidebar de Canales Directos y Redes Sociales -->
+            <aside class="contact-sidebar-card">
+                <div>
+                    <h3 style="font: 800 20px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 8px;">
+                        Canales Directos
+                    </h3>
+                    <p style="font-size: 13px; color: var(--muted); margin: 0;">
+                        Respondemos con agilidad para que tu centro veterinario nunca se detenga.
+                    </p>
+                </div>
+
+                <div class="contact-info-block">
+                    <div class="contact-info-icon"><i class="fa-solid fa-location-dot" style="font-size: 18px; color: var(--green);"></i></div>
+                    <div class="contact-info-text">
+                        <strong>Nuestra Oficina</strong>
+                        <p>París 532, B1706EAH Haedo<br>Provincia de Buenos Aires, Argentina<br><a href="#ubicacion" style="font-size: 12px; color: var(--green); font-weight: 700;">Ver en el mapa ↓</a></p>
+                    </div>
+                </div>
+
+                <div class="contact-info-block">
+                    <div class="contact-info-icon"><i class="fa-brands fa-whatsapp" style="font-size: 20px; color: #25D366;"></i></div>
+                    <div class="contact-info-text">
+                        <strong>WhatsApp de Soporte y Migración</strong>
+                        <p>+54 (11) 5820-4100<br><span style="font-size: 11px; color: var(--green); font-weight: 700;">● Guardias de soporte activas</span></p>
+                    </div>
+                </div>
+
+                <div class="contact-info-block">
+                    <div class="contact-info-icon"><i class="fa-solid fa-envelope" style="font-size: 18px; color: var(--green);"></i></div>
+                    <div class="contact-info-text">
+                        <strong>Correo Institucional</strong>
+                        <p>soporte@vetcompartido.com<br>info@vetcompartido.com</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-block">
+                    <div class="contact-info-icon"><i class="fa-solid fa-clock" style="font-size: 18px; color: var(--green);"></i></div>
+                    <div class="contact-info-text">
+                        <strong>Horario de Atención Comercial</strong>
+                        <p>Lunes a Viernes de 8:00 a 19:00 hs.<br>Sábados de 9:00 a 14:00 hs.</p>
+                    </div>
+                </div>
+
+                <div class="contact-highlight-box">
+                    <strong style="display: block; font-size: 13px; color: var(--green); margin-bottom: 4px;">
+                        <i class="fa-solid fa-truck-ramp-box" style="margin-right: 4px;"></i> Compromiso de Migración Gratuita
+                    </strong>
+                    Si tenés dudas sobre cómo exportar los datos de tu software actual o planillas, coordinamos una videollamada para orientarte paso a paso.
+                </div>
+
+                <!-- Bloque de Redes Sociales -->
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);">
+                    <h4 style="font: 700 15px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 12px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-share-nodes" style="color: var(--green);"></i> Redes Sociales y Comunidad
+                    </h4>
+                    <p style="font-size: 12px; color: var(--muted); margin: 0 0 14px; line-height: 1.5;">
+                        Seguinos para novedades sobre salud animal, actualizaciones del sistema y capacitaciones veterinarias:
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a class="contact-social-link" href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-instagram" style="color: #E4405F; font-size: 16px;"></i> Instagram
+                        </a>
+                        <a class="contact-social-link" href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-facebook" style="color: #1877F2; font-size: 16px;"></i> Facebook
+                        </a>
+                        <a class="contact-social-link" href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-linkedin" style="color: #0A66C2; font-size: 16px;"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Mapa con nuestra ubicación -->
+        <section class="contact-map-card" id="ubicacion">
+            <div class="contact-map-header">
+                <div>
+                    <h3><i class="fa-solid fa-map-location-dot" style="color: var(--green); margin-right: 8px;"></i>Dónde estamos</h3>
+                    <p>París 532, B1706EAH Haedo, Provincia de Buenos Aires, Argentina</p>
+                </div>
+                <a class="contact-social-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=-34.6404287,-58.6015669" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-diamond-turn-right" style="color: var(--green); font-size: 15px;"></i> Cómo llegar
+                </a>
+            </div>
+            <div id="contactMap" role="region" aria-label="Mapa con la ubicación de nuestra oficina en Haedo"></div>
+        </section>
+    </div>
+</div>
+
+<!-- Leaflet: librería gratuita de mapas (la misma que usa "Veterinarias cercanas"). -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+    .contact-map-card { margin-top: 36px; background: var(--white); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 12px 36px rgba(24, 59, 53, 0.05); scroll-margin-top: 90px; }
+    .contact-map-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .contact-map-header h3 { font: 800 20px 'Manrope', sans-serif; color: var(--ink); margin: 0 0 4px; }
+    .contact-map-header p { font-size: 13px; color: var(--muted); margin: 0; }
+    #contactMap { height: 400px; border-radius: 16px; border: 1px solid var(--line); z-index: 0; }
+    .contact-map-pin { color: var(--green); font-size: 36px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35); line-height: 1; }
+    @media (max-width: 700px) {
+        .contact-map-card { padding: 16px; }
+        #contactMap { height: 300px; }
+    }
+</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+    const OFFICE = [-34.6404287, -58.6015669];   // París 532, Haedo
+
+    // scrollWheelZoom desactivado: así la rueda del mouse sigue bajando la página.
+    const map = L.map('contactMap', { scrollWheelZoom: false }).setView(OFFICE, 16);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const pinIcon = L.divIcon({
+        className: '',
+        html: '<div class="contact-map-pin"><i class="fa-solid fa-location-dot"></i></div>',
+        iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -34]
+    });
+
+    L.marker(OFFICE, { icon: pinIcon }).addTo(map)
+        .bindPopup('<strong><?= e(APP_NAME) ?></strong><br>París 532, Haedo<br>Provincia de Buenos Aires')
+        .openPopup();
+})();
+</script>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>
