@@ -60,6 +60,18 @@ $resolvedBodyClass = trim((string)($bodyClass ?? '') . ($isClientPortal ? ' clie
             if (!empty($_SESSION['clinic_id'])) $brandUrl = vet_home_url($vetRole);
             elseif (!empty($_SESSION['client_id'])) $brandUrl = url('cliente/mascotas.php');
             elseif (!empty($_SESSION['admin_id'])) $brandUrl = url('admin/veterinarias.php');
+
+            // Contadores del menú del administrador (solicitudes de alta nuevas y mensajes de soporte sin resolver).
+            $adminNewRequests = 0;
+            $adminNewMessages = 0;
+            if (!empty($_SESSION['admin_id'])) {
+                try {
+                    $adminNewRequests = (int)db()->query("SELECT COUNT(*) FROM plan_requests WHERE status = 'nueva'")->fetchColumn();
+                    $adminNewMessages = (int)db()->query("SELECT COUNT(*) FROM support_messages WHERE status = 'nuevo'")->fetchColumn();
+                } catch (Throwable $e) {
+                    // si las tablas todavía no existen, el menú se muestra igual sin contadores
+                }
+            }
             ?>
             <a class="brand" href="<?= $brandUrl ?>" title="<?= APP_NAME ?> - Gestión Veterinaria">
                     <img src="<?= url('assets/logo.webp') ?>?v=4" alt="<?= APP_NAME ?>" class="brand-icon-img">
@@ -132,6 +144,12 @@ $resolvedBodyClass = trim((string)($bodyClass ?? '') . ($isClientPortal ? ' clie
                     </a>
                     <a href="<?= url('admin/clientes.php') ?>" class="<?= in_array($currentScript, ['clientes.php', 'editar_cliente.php'], true) ? 'active-nav' : '' ?>">
                         <i class="fa-solid fa-users" style="margin-right: 5px;"></i> Dueños / Tutores
+                    </a>
+                    <a href="<?= url('admin/solicitudes.php') ?>" class="<?= $currentScript === 'solicitudes.php' ? 'active-nav' : '' ?>">
+                        <i class="fa-solid fa-file-signature" style="margin-right: 5px;"></i> Solicitudes<?= $adminNewRequests ? ' (' . $adminNewRequests . ')' : '' ?>
+                    </a>
+                    <a href="<?= url('admin/mensajes.php') ?>" class="<?= $currentScript === 'mensajes.php' ? 'active-nav' : '' ?>">
+                        <i class="fa-solid fa-headset" style="margin-right: 5px;"></i> Mensajes<?= $adminNewMessages ? ' (' . $adminNewMessages . ')' : '' ?>
                     </a>
                     <span class="nav-divider"></span>
                     <div class="user-profile-header">
@@ -211,6 +229,8 @@ $resolvedBodyClass = trim((string)($bodyClass ?? '') . ($isClientPortal ? ' clie
                 <?php elseif (!empty($_SESSION['admin_id'])): ?>
                     <a href="<?= url('admin/veterinarias.php') ?>" class="<?= in_array($currentScript, ['veterinarias.php', 'editar_veterinaria.php', 'soporte_veterinaria.php'], true) ? 'active' : '' ?>"><i class="fa-solid fa-hospital"></i> Gestión de veterinarias</a>
                     <a href="<?= url('admin/clientes.php') ?>" class="<?= in_array($currentScript, ['clientes.php', 'editar_cliente.php'], true) ? 'active' : '' ?>"><i class="fa-solid fa-users"></i> Gestión de dueños / tutores</a>
+                    <a href="<?= url('admin/solicitudes.php') ?>" class="<?= $currentScript === 'solicitudes.php' ? 'active' : '' ?>"><i class="fa-solid fa-file-signature"></i> Solicitudes de alta<?= $adminNewRequests ? ' (' . $adminNewRequests . ')' : '' ?></a>
+                    <a href="<?= url('admin/mensajes.php') ?>" class="<?= $currentScript === 'mensajes.php' ? 'active' : '' ?>"><i class="fa-solid fa-headset"></i> Mensajes de soporte<?= $adminNewMessages ? ' (' . $adminNewMessages . ')' : '' ?></a>
                     <a href="<?= url('admin/logout.php') ?>" class="mobile-nav-logout"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>
 
                 <?php else: ?>

@@ -72,7 +72,7 @@
                     </li>
                 </ul>
 
-                <a href="contacto.php?plan=clinicas" class="btn-pricing-cta primary-cta">Probar 14 días gratis</a>
+                <a href="contratar.php" class="btn-pricing-cta primary-cta" id="hirePlanCta">Contratar plan</a>
             </div>
 
         </div>
@@ -96,5 +96,14 @@
         </div>
     </div>
 </div>
+
+<script>
+// El botón "Contratar plan" lleva la facturación elegida en el interruptor (anual activo = 'anual').
+document.getElementById('hirePlanCta').addEventListener('click', function (ev) {
+    const sw = document.getElementById('pricingSwitch');
+    const billing = sw && sw.classList.contains('active') ? 'anual' : 'mensual';
+    this.href = 'contratar.php?facturacion=' + billing;
+});
+</script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

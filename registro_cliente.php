@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($dni === '' || $fullName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Por favor, completá el DNI, nombre y un correo electrónico válido.';
-    } elseif (strlen($password) < 8) {
-        $error = 'La contraseña debe tener al menos 8 caracteres.';
+    } elseif (($passError = password_policy_error($password)) !== null) {
+        $error = $passError;   // mínimo 8, mayúscula, minúscula y número (includes/password_policy.php)
     } elseif ($password !== $confirm) {
         $error = 'Las contraseñas no coinciden.';
     } else {
@@ -110,7 +110,8 @@ require __DIR__ . '/includes/header.php';
 
         <div class="form-group" style="margin-bottom: 16px;">
             <label style="display: block; font-weight: 700; font-size: 13px; margin-bottom: 6px; color: var(--ink);">Contraseña *</label>
-            <input type="password" name="password" class="form-control" minlength="8" required placeholder="Mínimo 8 caracteres" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px;">
+            <input type="password" name="password" class="form-control" minlength="8" required placeholder="Mínimo 8 caracteres" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}" title="<?= e(password_policy_hint()) ?>" autocomplete="new-password" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px;">
+            <small style="display: block; margin-top: 5px; color: var(--muted); font-size: 12px;"><?= e(password_policy_hint()) ?></small>
         </div>
 
         <div class="form-group" style="margin-bottom: 24px;">
