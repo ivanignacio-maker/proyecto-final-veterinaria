@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2026 a las 13:35:34
--- Versión del servidor: 10.11.16-MariaDB
--- Versión de PHP: 8.3.36
+-- Tiempo de generación: 02-11-2026 a las 21:57:55
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -52,6 +52,7 @@ CREATE TABLE `appointments` (
   `clinic_id` bigint(20) UNSIGNED NOT NULL,
   `client_id` bigint(20) UNSIGNED NOT NULL,
   `pet_id` bigint(20) UNSIGNED NOT NULL,
+  `vet_user_id` int(11) DEFAULT NULL,
   `requested_by` enum('cliente','veterinaria') NOT NULL,
   `appointment_at` datetime NOT NULL,
   `reason` varchar(255) DEFAULT NULL,
@@ -63,8 +64,8 @@ CREATE TABLE `appointments` (
 -- Volcado de datos para la tabla `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `clinic_id`, `client_id`, `pet_id`, `requested_by`, `appointment_at`, `reason`, `status`, `created_at`) VALUES
-(1, 3, 2, 2, 'veterinaria', '2026-10-22 09:29:00', 'vacunacion', 'Atendido', '2026-10-21 12:29:18');
+INSERT INTO `appointments` (`id`, `clinic_id`, `client_id`, `pet_id`, `vet_user_id`, `requested_by`, `appointment_at`, `reason`, `status`, `created_at`) VALUES
+(1, 3, 2, 2, NULL, 'veterinaria', '2026-10-22 09:29:00', 'vacunacion', 'Atendido', '2026-10-21 12:29:18');
 
 -- --------------------------------------------------------
 
@@ -92,7 +93,8 @@ INSERT INTO `audit_log` (`id`, `clinic_id`, `vet_user_id`, `entity_type`, `entit
 (2, 2, 2, 'pet', 2, 'created', '{\"name\":\"Apolo\",\"client_id\":2}', '2026-10-21 03:17:32'),
 (3, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"}}', '2026-10-21 12:33:42'),
 (4, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"Dado de Alta\"}}', '2026-10-21 13:01:13'),
-(5, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-10-28 05:21:25');
+(5, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-10-28 05:21:25'),
+(6, NULL, NULL, 'pet', 3, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-01 21:58:25');
 
 -- --------------------------------------------------------
 
@@ -121,7 +123,7 @@ INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `avatar_path`
 (2, '464646', 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'avatars/client_2_4846352e9bdb7cd9.jpg', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-10-28 00:00:13'),
 (4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '222222', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-10-28 05:22:17'),
 (5, '123', 'Pedro', 'aaaa@gmail.com', '1111', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-10-27 23:18:07'),
-(6, '123456', 'Thiago Mantoani', 'thiagomantoani@gmail.com', '11223344', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 23:59:45', '2026-10-27 23:18:07');
+(9, '45219568', 'Thiago Mantoani', 'thiagomantoani0122@gmail.com', '1111', NULL, '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-01 22:06:28');
 
 -- --------------------------------------------------------
 
@@ -301,7 +303,6 @@ CREATE TABLE `pets` (
 INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `weight_kg`, `height_cm`, `birth_date`, `photo_path`, `created_at`) VALUES
 (1, 1, 'Tobi', 'Perro', NULL, 'Beagle', 21.00, 41.50, '2021-03-10', NULL, '2026-10-16 16:24:51'),
 (2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
-(3, 2, 'Chocolate', 'Perro', 'Macho', 'Salchicha', 0.08, 0.80, '2026-10-23', 'pets/aef5eaf2de35e0917828d6b20a01eb45bfe47de5.jpg', '2026-10-21 12:38:40'),
 (5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53');
 
 -- --------------------------------------------------------
@@ -386,23 +387,6 @@ INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `sel
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `vaccine_reminders`
---
-
-CREATE TABLE `vaccine_reminders` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `consultation_id` bigint(20) UNSIGNED NOT NULL,
-  `due_date` date NOT NULL,
-  `reminder_number` tinyint(3) UNSIGNED NOT NULL,
-  `client_id` bigint(20) UNSIGNED NOT NULL,
-  `email` varchar(190) NOT NULL,
-  `delivery` enum('smtp','archivo') NOT NULL,
-  `sent_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `vet_users`
 --
 
@@ -411,6 +395,7 @@ CREATE TABLE `vet_users` (
   `clinic_id` bigint(20) UNSIGNED NOT NULL,
   `username` varchar(100) NOT NULL,
   `email` varchar(190) NOT NULL,
+  `role` enum('jefe','doctor','recepcionista') NOT NULL DEFAULT 'jefe',
   `password_hash` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -420,11 +405,11 @@ CREATE TABLE `vet_users` (
 -- Volcado de datos para la tabla `vet_users`
 --
 
-INSERT INTO `vet_users` (`id`, `clinic_id`, `username`, `email`, `password_hash`, `active`, `created_at`) VALUES
-(1, 1, 'Ana', 'ana@gmail.com', '$2y$10$sRBl3iVgFqU1KNS09FnhYOoLNhmq.EmioZGVP810HKmHA2STMKXbC', 1, '2026-10-16 16:23:03'),
-(2, 2, 'Teresa', 'teresalasanta@gmail.com', '$2y$10$WN7VOFtdf33QMSwUJV8IU.7jK9nA5FkvF5tRUwWRvhHVWqM/D03A.', 1, '2026-10-21 03:06:45'),
-(3, 3, 'Martin', 'martindoc@gmail.com', '$2y$10$V85fHxC/U.KZ9lBFQy66ZuWgp09wJkXWsMp9OT7j.mVRATHU.p8wS', 1, '2026-10-21 03:08:40'),
-(4, 1, 'Thiago Mantoani', 'thiago@gmail.com', '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38');
+INSERT INTO `vet_users` (`id`, `clinic_id`, `username`, `email`, `role`, `password_hash`, `active`, `created_at`) VALUES
+(1, 1, 'Ana', 'ana@gmail.com', 'jefe', '$2y$10$sRBl3iVgFqU1KNS09FnhYOoLNhmq.EmioZGVP810HKmHA2STMKXbC', 1, '2026-10-16 16:23:03'),
+(2, 2, 'Teresa', 'teresalasanta@gmail.com', 'jefe', '$2y$10$WN7VOFtdf33QMSwUJV8IU.7jK9nA5FkvF5tRUwWRvhHVWqM/D03A.', 1, '2026-10-21 03:06:45'),
+(3, 3, 'Martin', 'martindoc@gmail.com', 'jefe', '$2y$10$V85fHxC/U.KZ9lBFQy66ZuWgp09wJkXWsMp9OT7j.mVRATHU.p8wS', 1, '2026-10-21 03:08:40'),
+(4, 1, 'Thiago Mantoani', 'thiago@gmail.com', 'jefe', '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38');
 
 --
 -- Índices para tablas volcadas
@@ -538,14 +523,6 @@ ALTER TABLE `remember_tokens`
   ADD KEY `vet_user_id` (`vet_user_id`);
 
 --
--- Indices de la tabla `vaccine_reminders`
---
-ALTER TABLE `vaccine_reminders`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uq_reminder` (`consultation_id`,`due_date`,`reminder_number`),
-  ADD KEY `idx_consultation` (`consultation_id`);
-
---
 -- Indices de la tabla `vet_users`
 --
 ALTER TABLE `vet_users`
@@ -572,13 +549,13 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT de la tabla `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `clinics`
@@ -608,7 +585,7 @@ ALTER TABLE `medications`
 -- AUTO_INCREMENT de la tabla `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
@@ -626,13 +603,7 @@ ALTER TABLE `pet_co_owners`
 -- AUTO_INCREMENT de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de la tabla `vaccine_reminders`
---
-ALTER TABLE `vaccine_reminders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `vet_users`
