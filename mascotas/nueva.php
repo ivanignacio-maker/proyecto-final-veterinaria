@@ -39,28 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Obtener el tipo MIME real del archivo
         $mime = $f['error'] === UPLOAD_ERR_OK ? (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']) : '';
         
-        $allowed = [
-            'image/jpeg' => 'jpg',
-            'image/png'  => 'png',
-            'image/webp' => 'webp'
-        ];
+        $allowed = ['image/jpeg', 'image/png', 'image/webp'];
 
-        // Validar que el archivo subió correctamente, pesa hasta 3 MB y es un formato permitido
-        if ($f['error'] !== UPLOAD_ERR_OK || $f['size'] > 3 * 1024 * 1024 || !isset($allowed[$mime])) {
-            $error = 'La foto debe ser JPG, PNG o WEBP y pesar hasta 3 MB.';
+        // Validar que el archivo subió correctamente, pesa hasta 5 MB y es un formato permitido
+        if ($f['error'] !== UPLOAD_ERR_OK || $f['size'] > 5 * 1024 * 1024 || !in_array($mime, $allowed, true)) {
+            $error = 'La foto debe ser JPG, PNG o WEBP y pesar hasta 5 MB.';
         } else {
-            // Asegurar que el directorio de mascotas existe
-            $dir = ensure_upload_dir() . DIRECTORY_SEPARATOR . 'pets';
-            if (!is_dir($dir)) {
-                mkdir($dir, 0750, true);
-            }
-            
-            // Generar nombre de archivo único
-            $photo = 'pets/' . bin2hex(random_bytes(20)) . '.' . $allowed[$mime];
-            
-            // Mover archivo a su ruta final
-            if (!move_uploaded_file($f['tmp_name'], ensure_upload_dir() . DIRECTORY_SEPARATOR . $photo)) {
-                $error = 'No se pudo guardar la foto.';
+            $saved = save_uploaded_image_as_webp($f, 'pets', bin2hex(random_bytes(20)));
+            if ($saved !== null) {
+                $photo = $saved;
+            } else {
+                $error = 'No se pudo procesar la foto en formato WebP.';
             }
         }
     }
