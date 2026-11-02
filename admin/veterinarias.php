@@ -13,6 +13,30 @@ $old = [
     'province' => '', 'username' => '', 'user_email' => '',
 ];
 
+// ---- Alta a partir de una solicitud de contratación (admin/solicitudes.php → "Registrar veterinaria") ----
+$solicitudId = (int)($_GET['solicitud'] ?? $_POST['solicitud_id'] ?? 0);
+$solicitud = null;
+if ($solicitudId > 0) {
+    $qs = db()->prepare("SELECT * FROM plan_requests WHERE id = ? AND status = 'nueva'");
+    $qs->execute([$solicitudId]);
+    $solicitud = $qs->fetch() ?: null;
+    if (!$solicitud) {
+        flash('Esa solicitud ya fue registrada o descartada.');
+        header('Location: ' . url('admin/solicitudes.php'));
+        exit;
+    }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        // Se completan los campos con lo que cargó la veterinaria; el administrador solo revisa y define la contraseña.
+        $old = [
+            'name' => $solicitud['clinic_name'], 'clinic_email' => $solicitud['clinic_email'], 'cuit' => $solicitud['cuit'],
+            'phone' => (string)$solicitud['phone'], 'available_days' => (string)$solicitud['available_days'],
+            'opening_time' => (string)$solicitud['opening_time'], 'closing_time' => (string)$solicitud['closing_time'],
+            'street' => $solicitud['street'], 'city' => $solicitud['city'], 'province' => $solicitud['province'],
+            'username' => $solicitud['responsible_name'], 'user_email' => $solicitud['responsible_email'],
+        ];
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = format_name(trim($_POST['name'] ?? ''));
     $clinicEmail = trim($_POST['clinic_email'] ?? '');
@@ -36,8 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'province' => $province, 'username' => $username, 'user_email' => $email,
     ];
 
-    if (!$name || !filter_var($clinicEmail, FILTER_VALIDATE_EMAIL) || !$username || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($pass) < 10) {
-        $error = 'Completá los datos y usá una contraseña de al menos 10 caracteres.';
+    if (!$name || !filter_var($clinicEmail, FILTER_VALIDATE_EMAIL) || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$username) {
+        $error = 'Completá el nombre de la veterinaria, su correo y los datos del usuario inicial.';
+    } elseif (($passError = password_policy_error($pass)) !== null) {
+        $error = $passError;
     } elseif ($street === '' || $city === '' || !in_array($province, ar_provinces(), true)
               || mb_strlen($street) > 180 || mb_strlen($city) > 120) {
         $error = 'Completá la dirección: provincia, localidad y calle con número.';
@@ -50,8 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $q->execute([$name, $clinicEmail, $cuit, $phone ?: null, $availableDays ?: null, $openingTime, $closingTime, $street, $city, $province]);
             $id = (int)$pdo->lastInsertId();
 
-            $q = $pdo->prepare("INSERT INTO vet_users(clinic_id, username, email, password_hash) VALUES(?, ?, ?, ?)");
+            // El primer usuario de una clínica siempre es el Jefe (todos los permisos).
+            $q = $pdo->prepare("INSERT INTO vet_users(clinic_id, username, email, role, password_hash) VALUES(?, ?, ?, 'jefe', ?)");
             $q->execute([$id, $username, $email, password_hash($pass, PASSWORD_DEFAULT)]);
+
+            // Si venía de una solicitud de contratación, queda marcada como registrada y enlazada a la clínica.
+            if ($solicitud) {
+                $pdo->prepare("UPDATE plan_requests SET status = 'registrada', clinic_id = ? WHERE id = ? AND status = 'nueva'")
+                    ->execute([$id, (int)$solicitud['id']]);
+            }
 
             $pdo->commit();
 
@@ -122,6 +155,19 @@ require __DIR__ . '/../includes/header.php';
 
     <form method="post">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+        <?php if ($solicitud): ?>
+            <input type="hidden" name="solicitud_id" value="<?= (int)$solicitud['id'] ?>">
+            <div class="notice" style="margin-bottom: 16px;">
+                <span class="notice-icon"><i class="fa-solid fa-file-signature"></i></span>
+                <span>
+                    Alta a partir de la <strong>solicitud #<?= (int)$solicitud['id'] ?></strong>
+                    (<?= e(plan_payment_label($solicitud['payment_status'])) ?>).
+                    Revisá los datos, definí una contraseña inicial y comunicásela al responsable
+                    (<?= e($solicitud['responsible_email']) ?>).
+                    <a href="<?= url('admin/solicitudes.php') ?>">Volver a las solicitudes</a>
+                </span>
+            </div>
+        <?php endif; ?>
         <h2 style="font-size: 20px; margin-bottom: 16px;">Alta de nueva clínica veterinaria</h2>
 
         <div class="form-grid">
@@ -214,8 +260,12 @@ require __DIR__ . '/../includes/header.php';
             </div>
 
             <div>
-                <label>Contraseña inicial (mín. 10 caracteres)</label>
-                <input type="password" name="password" minlength="10" placeholder="••••••••••••" required>
+                <label>Contraseña inicial</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="password" id="newClinicPass" minlength="8" placeholder="Mayúscula, minúscula y número" required autocomplete="new-password" style="margin: 0; flex: 1;">
+                    <button type="button" class="btn secondary btn-sm" id="genPass">Generar</button>
+                </div>
+                <small class="muted"><?= e(password_policy_hint()) ?></small>
             </div>
         </div>
 
@@ -350,6 +400,16 @@ provinceSelect.addEventListener('change', function() {
 if (provinceSelect.value) {
     updateCities(provinceSelect.value, oldCity);
 }
+
+// Genera una contraseña aleatoria que cumple la política (sin letras que se confunden: 0/O, 1/l/I).
+document.getElementById('genPass').addEventListener('click', function () {
+    const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghijkmnpqrstuvwxyz', D = '23456789', ALL = U + L + D;
+    const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+    const chars = [U[rnd(U.length)], L[rnd(L.length)], D[rnd(D.length)]];
+    while (chars.length < 12) chars.push(ALL[rnd(ALL.length)]);
+    for (let i = chars.length - 1; i > 0; i--) { const j = rnd(i + 1); [chars[i], chars[j]] = [chars[j], chars[i]]; }
+    document.getElementById('newClinicPass').value = chars.join('');
+});
 </script>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

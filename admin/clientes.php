@@ -118,6 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
     if ($dni === '' || $fullName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Completá DNI, nombre y un correo electrónico válido.';
+    } elseif ($password !== '' && ($passError = password_policy_error($password)) !== null) {
+        $error = $passError;
     } else {
         try {
             $pdo = db();
@@ -126,14 +128,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             if ($chk->fetch()) {
                 $error = 'El DNI ingresado ya está registrado para otro tutor.';
             } else {
-                $pwHash = password_hash($password !== '' ? $password : $dni, PASSWORD_DEFAULT);
+                // Si no se escribe contraseña se genera una segura (antes se usaba el DNI, que es fácil de adivinar).
+                $generatedPassword = $password === '' ? generate_strong_password() : null;
+                $pwHash = password_hash($generatedPassword ?? $password, PASSWORD_DEFAULT);
                 $q = $pdo->prepare("INSERT INTO clients(dni, full_name, email, phone, password_hash) VALUES(?, ?, ?, ?, ?)");
                 $q->execute([$dni, $fullName, $email, $phone, $pwHash]);
                 $newClientId = (int)$pdo->lastInsertId();
 
                 audit_log('client', $newClientId, 'admin_created', ['dni' => $dni, 'full_name' => $fullName]);
 
-                flash('Tutor / Dueño registrado con éxito.');
+                flash('Tutor / Dueño registrado con éxito.' . ($generatedPassword !== null
+                    ? ' Contraseña inicial generada: ' . $generatedPassword . ' (anotala y comunicásela: no se vuelve a mostrar).'
+                    : ''));
                 header('Location: ' . url('admin/editar_cliente.php?id=' . $newClientId));
                 exit;
             }
@@ -236,7 +242,8 @@ require __DIR__ . '/../includes/header.php';
 
             <div>
                 <label>Contraseña de acceso (opcional)</label>
-                <input type="password" name="password" minlength="6" placeholder="Por defecto será su DNI" autocomplete="new-password">
+                <input type="password" name="password" minlength="8" placeholder="Vacía = se genera una segura" title="<?= e(password_policy_hint()) ?>" autocomplete="new-password">
+                <small class="muted" style="display: block; margin-top: 4px; font-size: 12px;"><?= e(password_policy_hint()) ?></small>
             </div>
         </div>
 

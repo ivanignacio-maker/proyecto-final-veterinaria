@@ -163,8 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Completá el nombre completo, el DNI y un correo electrónico válido.';
             } elseif ($dniOccupied) {
                 $error = 'Ese número de DNI ya está asignado a otro tutor en el sistema.';
-            } elseif ($form['password'] !== '' && strlen($form['password']) < 6) {
-                $error = 'La nueva contraseña debe contener al menos 6 caracteres.';
+            } elseif ($form['password'] !== '' && ($passError = password_policy_error($form['password'])) !== null) {
+                $error = $passError;
             } else {
                 // Obtener mascotas actuales para actualizar cambios inline
                 $qPets = db()->prepare("SELECT id, name, animal_type, sexo, breed, birth_date, photo_path FROM pets WHERE client_id = ? ORDER BY id");
@@ -412,7 +412,8 @@ require __DIR__ . '/../includes/header.php';
 
             <div>
                 <label>Nueva contraseña (opcional)</label>
-                <input type="password" name="password" minlength="6" placeholder="Dejala vacía para no modificarla" autocomplete="new-password">
+                <input type="password" name="password" minlength="8" placeholder="Dejala vacía para no modificarla" title="<?= e(password_policy_hint()) ?>" autocomplete="new-password">
+                <small class="muted" style="display: block; margin-top: 4px; font-size: 12px;"><?= e(password_policy_hint()) ?></small>
             </div>
         </div>
 

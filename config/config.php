@@ -347,6 +347,10 @@ ensure_pet_co_owners_and_codes_tables();
 // Roles de la veterinaria (jefe / doctor / recepcionista) y profesional elegido en los turnos
 require_once __DIR__ . '/../includes/roles.php';
 
+// Política de contraseñas, solicitudes de alta/pago (Mercado Pago) y mensajes de soporte
+require_once __DIR__ . '/../includes/password_policy.php';
+require_once __DIR__ . '/../includes/solicitudes.php';
+
 // Comprueba si un cliente es dueño o co-dueño de una mascota
 function is_client_pet_owner(int $clientId, int $petId): bool {
     try {
