@@ -1,146 +1,355 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/geocoding.php';
 require_admin();
 csrf_check();
 
 $error = '';
 
-// 1. Procesar la creación de una nueva veterinaria y su primer usuario
+$old = [
+    'name' => '', 'clinic_email' => '', 'cuit' => '', 'phone' => '',
+    'available_days' => '', 'opening_time' => '', 'closing_time' => '',
+    'street' => '', 'city' => '',
+    'province' => '', 'username' => '', 'user_email' => '',
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
+    $name = format_name(trim($_POST['name'] ?? ''));
     $clinicEmail = trim($_POST['clinic_email'] ?? '');
-    $username = trim($_POST['username'] ?? '');
+    $cuit = trim($_POST['cuit'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $availableDays = trim($_POST['available_days'] ?? '');
+    $openingTime = ($_POST['opening_time'] ?? '') !== '' ? $_POST['opening_time'] : null;
+    $closingTime = ($_POST['closing_time'] ?? '') !== '' ? $_POST['closing_time'] : null;
+    $street = trim($_POST['street'] ?? '');
+    $city = format_name(trim($_POST['city'] ?? ''));
+    $province = trim($_POST['province'] ?? '');
+    $username = format_name(trim($_POST['username'] ?? ''));
     $email = trim($_POST['user_email'] ?? '');
     $pass = $_POST['password'] ?? '';
 
-    // Validar formato de correos, campos vacíos y longitud de contraseña
+
+    $old = [
+        'name' => $name, 'clinic_email' => $clinicEmail, 'cuit' => $cuit, 'phone' => $phone,
+        'available_days' => $availableDays, 'opening_time' => $openingTime ?? '',
+        'closing_time' => $closingTime ?? '', 'street' => $street, 'city' => $city,
+        'province' => $province, 'username' => $username, 'user_email' => $email,
+    ];
+
     if (!$name || !filter_var($clinicEmail, FILTER_VALIDATE_EMAIL) || !$username || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($pass) < 10) {
         $error = 'Completá los datos y usá una contraseña de al menos 10 caracteres.';
+    } elseif ($street === '' || $city === '' || !in_array($province, ar_provinces(), true)
+              || mb_strlen($street) > 180 || mb_strlen($city) > 120) {
+        $error = 'Completá la dirección: provincia, localidad y calle con número.';
     } else {
         try {
             $pdo = db();
             $pdo->beginTransaction();
 
-            // Insertar la nueva clínica
-            $q = $pdo->prepare("INSERT INTO clinics(name, email) VALUES(?, ?)");
-            $q->execute([$name, $clinicEmail]);
+            $q = $pdo->prepare("INSERT INTO clinics(name, email, cuit, phone, available_days, opening_time, closing_time, street, city, province) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $q->execute([$name, $clinicEmail, $cuit, $phone ?: null, $availableDays ?: null, $openingTime, $closingTime, $street, $city, $province]);
             $id = (int)$pdo->lastInsertId();
 
-            // Insertar el usuario administrador de esa clínica
             $q = $pdo->prepare("INSERT INTO vet_users(clinic_id, username, email, password_hash) VALUES(?, ?, ?, ?)");
             $q->execute([$id, $username, $email, password_hash($pass, PASSWORD_DEFAULT)]);
 
-            // Confirmar ambos registros
             $pdo->commit();
-            
-            flash('Veterinaria y usuario creados.');
+
+            flash('Veterinaria y usuario creados con éxito.');
             header('Location: ' . url('admin/veterinarias.php'));
             exit;
-            
+
         } catch (Throwable $ex) {
-            // Si algo falla, revertir los cambios para no dejar datos a medias
             if (isset($pdo) && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
+            error_log('Alta de veterinaria fallida: ' . $ex->getMessage());
             $error = 'No se pudo crear. Revisá que el nombre y correo no estén repetidos.';
         }
     }
 }
 
-// 2. Procesar la activación/desactivación de una clínica
 if (isset($_GET['toggle'])) {
     $q = db()->prepare("UPDATE clinics SET active = 1 - active WHERE id = ?");
     $q->execute([(int)$_GET['toggle']]);
-    
+
+    flash('Estado de la veterinaria modificado.');
     header('Location: ' . url('admin/veterinarias.php'));
     exit;
 }
 
-// 3. Obtener el listado de todas las veterinarias y la cantidad de usuarios que tienen
-$rows = db()->query("
-    SELECT c.*, COUNT(u.id) users 
-    FROM clinics c 
-    LEFT JOIN vet_users u ON u.clinic_id = c.id 
-    GROUP BY c.id 
-    ORDER BY c.name
-")->fetchAll();
+$search = trim($_GET['q'] ?? '');
+
+if ($search !== '') {
+    $q = db()->prepare("
+        SELECT c.*, COUNT(u.id) users
+        FROM clinics c
+        LEFT JOIN vet_users u ON u.clinic_id = c.id
+        WHERE c.id = ? OR c.name LIKE ? OR c.email LIKE ? OR c.cuit LIKE ? OR c.city LIKE ?
+        GROUP BY c.id
+        ORDER BY c.name
+    ");
+    $term = "%{$search}%";
+    $searchId = is_numeric($search) ? (int)$search : 0;
+    $q->execute([$searchId, $term, $term, $term, $term]);
+    $rows = $q->fetchAll();
+} else {
+    $rows = db()->query("
+        SELECT c.*, COUNT(u.id) users
+        FROM clinics c
+        LEFT JOIN vet_users u ON u.clinic_id = c.id
+        GROUP BY c.id
+        ORDER BY c.name
+    ")->fetchAll();
+}
+
+$provincesCities = ar_provinces_cities();
 
 $pageTitle = 'Administrar veterinarias';
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Administrar veterinarias</h1>
-    <p>Las clínicas no se registran por su cuenta. El administrador crea la clínica y su primer usuario.</p>
-    
+    <h1><i class="fa-solid fa-building" style="color: var(--green); margin-right: 8px;"></i>Administración de Veterinarias</h1>
+    <p class="muted">El superadministrador crea la clínica, define su dirección y habilita su usuario inicial.</p>
+
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
-    
+
     <form method="post">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
-        <h2>Nueva veterinaria</h2>
-        
+        <h2 style="font-size: 20px; margin-bottom: 16px;">Alta de nueva clínica veterinaria</h2>
+
         <div class="form-grid">
+    <div>
+        <label>Nombre de la veterinaria *</label>
+        <input type="text" name="name" maxlength="150" value="<?= e($old['name'] ?? '') ?>" required>
+    </div>
+    
+    <div>
+        <label>CUIT *</label>
+        <input type="text" name="cuit" maxlength="20" placeholder="Ej. 20-12345678-9" value="<?= e($old['cuit'] ?? '') ?>" required>
+    </div>
+
+    <div>
+        <label>Correo electrónico *</label>
+        <input type="email" name="clinic_email" maxlength="190" value="<?= e($old['clinic_email']) ?>" required>
+    </div>
+
+    <div>
+        <label>Teléfono de contacto</label>
+        <input type="text" name="phone" maxlength="50" placeholder="Ej. 11 1234-5678" value="<?= e($old['phone'] ?? '') ?>">
+    </div>
+
+    <div>
+        <label>Días disponibles</label>
+        <select name="available_days">
+            <option value="">Elegí los días de atención</option>
+            <?php 
+            $daysOpts = [
+                'Lunes a Viernes',
+                'Lunes a Sábados',
+                'Lunes a Domingos',
+                'Lunes, Miércoles y Viernes',
+                'Martes, Jueves y Sábados',
+                'Fines de semana (Sábados y Domingos)',
+                'Todos los días (incluye feriados)',
+                'Guardia 24 hs'
+            ];
+            $curDays = $old['available_days'] ?? '';
+            ?>
+            <?php foreach ($daysOpts as $dOpt): ?>
+                <option value="<?= e($dOpt) ?>" <?= $curDays === $dOpt ? 'selected' : '' ?>><?= e($dOpt) ?></option>
+            <?php endforeach; ?>
+            <?php if ($curDays !== '' && !in_array($curDays, $daysOpts, true)): ?>
+                <option value="<?= e($curDays) ?>" selected><?= e($curDays) ?></option>
+            <?php endif; ?>
+        </select>
+    </div>
+
+    <div class="clinic-hours-grid">
+        <div>
+            <label>Hora de apertura</label>
+            <input type="time" name="opening_time" value="<?= e($old['opening_time'] ?? '') ?>">
+        </div>
+        <div>
+            <label>Hora de cierre</label>
+            <input type="time" name="closing_time" value="<?= e($old['closing_time'] ?? '') ?>">
+        </div>
+    </div>
             <div>
-                <label>Nombre de veterinaria</label>
-                <input name="name" required>
+                <label>Provincia</label>
+                <select name="province" id="provinceSelect" required>
+                    <option value="">Elegí una provincia</option>
+                    <?php foreach (ar_provinces() as $prov): ?>
+                        <option value="<?= e($prov) ?>" <?= $old['province'] === $prov ? 'selected' : '' ?>><?= e($prov) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-            
+
             <div>
-                <label>Correo de la veterinaria</label>
-                <input type="email" name="clinic_email" required>
+                <label>Localidad / Ciudad</label>
+                <select name="city" id="citySelect" required>
+                    <option value="">Primero elegí una provincia</option>
+                </select>
             </div>
-            
+
             <div>
-                <label>Nombre de usuario</label>
-                <input name="username" required>
+                <label>Calle y número</label>
+                <input name="street" maxlength="180" placeholder="Ej. Av. Rivadavia 1234" value="<?= e($old['street']) ?>" required>
             </div>
-            
+
             <div>
-                <label>Correo de inicio de sesión</label>
-                <input type="email" name="user_email" required>
+                <label>Nombre de usuario del veterinario</label>
+                <input name="username" placeholder="Ej. Dr. Martínez" value="<?= e($old['username']) ?>" required>
             </div>
-            
+
             <div>
-                <label>Contraseña inicial (mínimo 10 caracteres)</label>
-                <input type="password" name="password" minlength="10" required>
+                <label>Correo de acceso (login)</label>
+                <input type="email" name="user_email" placeholder="martinez@veterinaria.com" value="<?= e($old['user_email']) ?>" required>
+            </div>
+
+            <div>
+                <label>Contraseña inicial (mín. 10 caracteres)</label>
+                <input type="password" name="password" minlength="10" placeholder="••••••••••••" required>
             </div>
         </div>
-        
-        <div class="actions">
-            <button>Crear veterinaria</button>
+
+        <div class="actions" style="margin-top: 20px;">
+            <button class="btn primary" type="submit">
+                <i class="fa-solid fa-building-circle-check" style="margin-right: 6px;"></i> Crear veterinaria y usuario
+            </button>
         </div>
     </form>
 </div>
 
-<div class="card">
-    <h2>Veterinarias existentes</h2>
-    
+<div class="card" style="margin-top: 28px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;">
+        <div>
+            <h2 style="margin: 0 0 4px;">Clínicas veterinarias registradas (<?= count($rows) ?>)</h2>
+            <p class="muted" style="margin: 0;">Listado del ecosistema de centros y consultorios activos en la plataforma.</p>
+        </div>
+
+        <!-- Buscador de Veterinarias por Nombre o ID -->
+        <form method="get" action="<?= url('admin/veterinarias.php') ?>" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 0;">
+            <div style="position: relative; width: 280px;">
+                <input type="text" name="q" value="<?= e($search) ?>" placeholder="Buscar por nombre o ID..." style="margin: 0; padding-left: 36px; font-size: 14px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;"></i>
+            </div>
+            <button type="submit" class="btn primary btn-sm" style="padding: 9px 15px !important;">
+                Buscar
+            </button>
+            <?php if ($search !== ''): ?>
+                <a href="<?= url('admin/veterinarias.php') ?>" class="btn secondary btn-sm" style="padding: 9px 12px !important;" title="Limpiar búsqueda">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            <?php endif; ?>
+        </form>
+    </div>
+
+    <?php if ($search !== ''): ?>
+        <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(35, 119, 101, 0.08); border: 1px solid rgba(35, 119, 101, 0.2); border-radius: 8px; font-size: 13.5px; display: flex; justify-content: space-between; align-items: center;">
+            <span><i class="fa-solid fa-filter" style="color: var(--green); margin-right: 6px;"></i> Resultados para: <strong>"<?= e($search) ?>"</strong> (<?= count($rows) ?> encontrada<?= count($rows) === 1 ? '' : 's' ?>)</span>
+            <a href="<?= url('admin/veterinarias.php') ?>" style="color: var(--green); text-decoration: underline; font-weight: 600;">Limpiar filtro</a>
+        </div>
+    <?php endif; ?>
+
+    <div style="overflow-x: auto;">
     <table>
         <thead>
             <tr>
+                <th style="width: 70px;">ID</th>
                 <th>Veterinaria</th>
-                <th>Correo</th>
-                <th>Usuarios</th>
+                <th>Correo de contacto</th>
+                <th>Dirección</th>
+                <th style="min-width: 150px; white-space: nowrap;">Veterinarios</th>
                 <th>Estado</th>
-                <th></th>
+                <th style="min-width: 270px; white-space: nowrap;">Acción</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($rows as $r): ?>
+            <?php if (empty($rows)): ?>
                 <tr>
-                    <td><?= e($r['name']) ?></td>
-                    <td><?= e($r['email']) ?></td>
-                    <td><?= (int)$r['users'] ?></td>
-                    <td><?= $r['active'] ? 'Activa' : 'Suspendida' ?></td>
+                    <td colspan="7" style="text-align: center; padding: 32px 16px; color: var(--muted);">
+                        <i class="fa-solid fa-circle-question" style="font-size: 28px; margin-bottom: 8px; display: block; color: var(--muted);"></i>
+                        No se encontraron veterinarias que coincidan con la búsqueda<?= $search !== '' ? ' "<strong>' . e($search) . '</strong>"' : '' ?>.
+                    </td>
+                </tr>
+            <?php endif; ?>
+            <?php foreach ($rows as $r): ?>
+                <?php
+                $isActive = (bool)$r['active'];
+                $address = clinic_full_address($r);
+                ?>
+                <tr>
                     <td>
-                        <a class="btn secondary" href="<?= url('admin/veterinarias.php?toggle=' . (int)$r['id']) ?>" data-confirm="¿Cambiar estado de esta veterinaria?">Cambiar estado</a>
+                        <span class="pill" style="font-family: monospace; font-weight: 700;">#<?= (int)$r['id'] ?></span>
+                    </td>
+                    <td>
+                        <strong class="name-titlecase"><i class="fa-solid fa-hospital" style="color: var(--green); margin-right: 4px;"></i> <?= e_name($r['name']) ?></strong>
+                    </td>
+                    <td><?= e($r['email']) ?></td>
+                    <td><?= $address !== '' ? e($address) : '<span class="muted">Sin dirección</span>' ?></td>
+                    <td style="white-space: nowrap;">
+                        <span class="pill pill-users"><i class="fa-solid fa-user-doctor" style="color: var(--green);"></i> <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
+                    </td>
+                    <td>
+                        <span class="badge <?= $isActive ? 'badge-success' : 'badge-danger' ?>">
+                            <?= $isActive ? 'Activa' : 'Suspendida' ?>
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; white-space: nowrap;">
+                            <a class="btn secondary btn-sm" style="padding: 6px 9px !important; font-size: 12px !important;" href="<?= url('admin/soporte_veterinaria.php?id=' . (int)$r['id']) ?>" rel="noopener">
+                                Ver
+                            </a>
+                            <a class="btn primary btn-sm" style="padding: 6px 9px !important; font-size: 12px !important;" href="<?= url('admin/editar_veterinaria.php?id=' . (int)$r['id']) ?>">
+                                Editar
+                            </a>
+                            <a class="btn secondary btn-sm" style="padding: 6px 9px !important; font-size: 12px !important;" href="<?= url('admin/veterinarias.php?toggle=' . (int)$r['id']) ?>" data-confirm="¿Cambiar estado de esta veterinaria?">
+                                <?= $isActive ? 'Suspender' : 'Activar' ?>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </div>
+
+<script>
+const provincesData = <?= json_encode($provincesCities, JSON_UNESCAPED_UNICODE) ?>;
+const provinceSelect = document.getElementById('provinceSelect');
+const citySelect = document.getElementById('citySelect');
+const oldCity = <?= json_encode($old['city']) ?>;
+
+function updateCities(selectedProvince, selectedCity = '') {
+    citySelect.innerHTML = '<option value="">Elegí una localidad</option>';
+    if (provincesData[selectedProvince]) {
+        provincesData[selectedProvince].forEach(city => {
+            const opt = document.createElement('option');
+            opt.value = city;
+            opt.textContent = city;
+            if (city === selectedCity) {
+                opt.selected = true;
+            }
+            citySelect.appendChild(opt);
+        });
+    }
+}
+
+provinceSelect.addEventListener('change', function() {
+    updateCities(this.value);
+});
+
+if (provinceSelect.value) {
+    updateCities(provinceSelect.value, oldCity);
+}
+</script>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
