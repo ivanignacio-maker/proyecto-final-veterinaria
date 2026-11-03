@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/mensajes.php — Mensajes que tutores y veterinarias envían desde "Ayuda y soporte".
+ * admin/mensajes.php — Mensajes enviados desde Ayuda y desde el contacto público.
  * El administrador los lee, responde por correo (botón "Responder") y los marca como resueltos.
  */
 require_once __DIR__ . '/../config/config.php';
@@ -48,7 +48,7 @@ require __DIR__ . '/../includes/header.php';
 
 <div class="panel">
     <h1><i class="fa-solid fa-headset" style="color: var(--green); margin-right: 8px;"></i>Mensajes de soporte</h1>
-    <p class="muted">Consultas enviadas desde la sección de ayuda por tutores y veterinarias.</p>
+    <p class="muted">Consultas enviadas desde la sección de ayuda y el formulario público de contacto.</p>
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
         <a class="btn <?= $filter === 'nuevo' ? 'primary' : 'secondary' ?> btn-sm" href="<?= url('admin/mensajes.php?estado=nuevo') ?>">Nuevos (<?= $counts['nuevo'] ?>)</a>
         <a class="btn <?= $filter === 'resuelto' ? 'primary' : 'secondary' ?> btn-sm" href="<?= url('admin/mensajes.php?estado=resuelto') ?>">Resueltos (<?= $counts['resuelto'] ?>)</a>
@@ -71,13 +71,18 @@ require __DIR__ . '/../includes/header.php';
                 <span class="muted" style="font-size: 13px;">
                     <?= date('d/m/Y H:i', strtotime($m['created_at'])) ?> hs ·
                     <strong><?= e($m['name']) ?></strong>
-                    (<?= $m['sender_type'] === 'tutor' ? 'tutor' : 'veterinaria' . ($m['clinic_name'] ? ': ' . e($m['clinic_name']) : '') ?>)
+                    (<?= $m['sender_type'] === 'publico' ? 'contacto público' : ($m['sender_type'] === 'tutor' ? 'tutor' : 'clínica' . ($m['clinic_name'] ? ': ' . e($m['clinic_name']) : '')) ?>)
                 </span>
             </div>
             <span class="badge <?= $m['status'] === 'nuevo' ? 'badge-warning' : 'badge-success' ?>"><?= $m['status'] === 'nuevo' ? 'Nuevo' : 'Resuelto' ?></span>
         </div>
 
         <p style="margin: 14px 0; font-size: 14px; line-height: 1.6; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px;"><?= nl2br(e($m['message'])) ?></p>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; margin: 0 0 14px; font-size: 13px;">
+            <span><strong>Correo:</strong> <?= e($m['email']) ?></span>
+            <?php if ($m['phone']): ?><span><strong>Teléfono:</strong> <?= e($m['phone']) ?></span><?php endif; ?>
+        </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px;">
             <a class="btn primary btn-sm" href="mailto:<?= e($m['email']) ?>?subject=<?= rawurlencode('Re: ' . $m['subject'] . ' (soporte ' . APP_NAME . ')') ?>">
