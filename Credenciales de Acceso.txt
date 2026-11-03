@@ -1,0 +1,99 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║                    CREDENCIALES DE ACCESO                    ║
+║                Sistema de Gestión Veterinaria                ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Contraseña inicial para todos los usuarios: 1234567890
+  (se recomienda cambiarla en el primer ingreso)
+
+
+════════════════════════════════════════════════════════════════
+  1. ADMINISTRADOR
+════════════════════════════════════════════════════════════════
+
+Se accede estando en http://localhost/proyecto-final-veterinaria/login.php
+cambiando el URL por: http://localhost/proyecto-final-veterinaria/admin/login.php
+
+  Correo:       vetcare987@gmail.com
+
+  Contraseña:   vetcare987
+
+
+════════════════════════════════════════════════════════════════
+  2. USUARIOS VETERINARIOS
+     Ingreso con correo + contraseña
+════════════════════════════════════════════════════════════════
+
+  ┌─ Veterinaria Santa Teresita (Clínica #2)
+  │
+  │  Usuario:      Teresa
+  │  Rol:          Jefe/a de la clínica
+  │  Correo:       teresalasanta@gmail.com
+  │  Contraseña:   1234567890
+  │
+  └──────────────────────────────────────────────────────────
+
+  ┌─ Veterinaria La Matanza (Clínica #3)
+  │
+  │  Usuario:      Martin
+  │  Rol:          Jefe/a de la clínica
+  │  Correo:       martindoc@gmail.com
+  │  Contraseña:   1234567890
+  │
+  └──────────────────────────────────────────────────────────
+
+
+════════════════════════════════════════════════════════════════
+  3. TUTORES / DUEÑOS
+     Ingreso con Correo o ID + contraseña
+════════════════════════════════════════════════════════════════
+
+  ┌─ Ivan Bruno (Con mas mascotas)
+  │
+  │  ID (usuario): 2
+  │  Contraseña:   1234567890
+  │  Correo:       ivanignaciobruno@gmail.com
+  │
+  └──────────────────────────────────────────────────────────
+
+  ┌─ Ricardo Rickenbacher (Co-tutor con segunda mayor cantidad de mascotas)
+  │
+  │  ID (usuario): 4
+  │  Contraseña:   1234567890
+  │  Correo:       ricardorickenbacher@gmail.com
+  │
+  └──────────────────────────────────────────────────────────
+════════════════════════════════════════════════════════════════
+  4. TUTORES / DUEÑOS (secundarios)
+     Ingreso con Correo o ID + contraseña
+════════════════════════════════════════════════════════════════
+
+  ┌─ Ivana Di Bruneli
+  │
+  │  ID (usuario): 1
+  │  Contraseña:   1234567890
+  │  Correo:       ivanabruneli@gmail.com
+  │
+  └──────────────────────────────────────────────────────────
+  
+  ┌─ Pedro Smith
+  │
+  │  ID (usuario): 5
+  │  Contraseña:   1234567890
+  │  Correo:       pedro@gmail.com
+  │
+  └──────────────────────────────────────────────────────────
+ 
+  ┌─ Thiago Mantoani
+  │
+  │  ID (usuario): 9
+  │  Contraseña:   1234567890
+  │  Correo:       thiagomantoani0122@gmail.com
+  │
+  └──────────────────────────────────────────────────────────
+ 
+════════════════════════════════════════════════════════════════
+  Documento confidencial · Uso exclusivo de la entrega de accesos
+════════════════════════════════════════════════════════════════
