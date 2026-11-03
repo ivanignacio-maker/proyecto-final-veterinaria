@@ -95,7 +95,7 @@ function ensure_solicitudes_tables(): void {
             $pdo->exec("
                 CREATE TABLE IF NOT EXISTS support_messages (
                     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    sender_type ENUM('tutor','veterinaria') NOT NULL,
+                    sender_type ENUM('tutor','veterinaria','publico') NOT NULL,
                     client_id INT NULL,
                     vet_user_id INT NULL,
                     clinic_id INT NULL,
@@ -110,6 +110,10 @@ function ensure_solicitudes_tables(): void {
                     KEY idx_sender (sender_type)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             ");
+        }
+        $senderType = $pdo->query("SHOW COLUMNS FROM support_messages LIKE 'sender_type'")->fetch();
+        if ($senderType && strpos((string)$senderType['Type'], "'publico'") === false) {
+            $pdo->exec("ALTER TABLE support_messages MODIFY sender_type ENUM('tutor','veterinaria','publico') NOT NULL");
         }
     } catch (Throwable $e) {
         error_log('Schema ensure solicitudes/soporte: ' . $e->getMessage());

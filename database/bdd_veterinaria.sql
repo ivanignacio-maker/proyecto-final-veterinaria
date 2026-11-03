@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-11-2026 a las 21:57:55
+-- Tiempo de generación: 03-11-2026 a las 15:41:27
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -301,9 +301,9 @@ CREATE TABLE `pets` (
 --
 
 INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `weight_kg`, `height_cm`, `birth_date`, `photo_path`, `created_at`) VALUES
-(1, 1, 'Tobi', 'Perro', NULL, 'Beagle', 21.00, 41.50, '2021-03-10', NULL, '2026-10-16 16:24:51'),
-(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
-(5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53');
+(1, 1, 'Tobi', 'Perro', NULL, 'Beagle', '21.00', '41.50', '2021-03-10', NULL, '2026-10-16 16:24:51'),
+(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', '8.50', '0.20', '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
+(5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', '10.00', '10.00', '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53');
 
 -- --------------------------------------------------------
 
@@ -338,7 +338,9 @@ INSERT INTO `pet_access_codes` (`id`, `pet_id`, `code`, `action_type`, `created_
 (8, 2, '544696', 'modify_history', 2, NULL, NULL, '2026-10-24 23:51:07', '2026-10-24 21:21:07'),
 (9, 2, '474794', 'modify_history', 2, 2, '2026-10-24 18:23:44', '2026-10-24 23:51:07', '2026-10-24 21:21:07'),
 (10, 2, '613049', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:18', '2026-10-28 00:03:18'),
-(11, 2, '904586', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:21', '2026-10-28 00:03:21');
+(11, 2, '904586', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:21', '2026-10-28 00:03:21'),
+(12, 2, '332838', 'modify_history', 2, NULL, '2026-11-03 11:33:34', '2026-11-03 12:02:24', '2026-11-03 14:32:24'),
+(13, 2, '662226', 'modify_history', 2, NULL, NULL, '2026-11-03 12:03:34', '2026-11-03 14:33:34');
 
 -- --------------------------------------------------------
 
@@ -363,6 +365,45 @@ INSERT INTO `pet_co_owners` (`id`, `pet_id`, `client_id`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `plan_requests`
+--
+
+CREATE TABLE `plan_requests` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `token` char(32) NOT NULL,
+  `plan_code` varchar(30) NOT NULL,
+  `billing` enum('mensual','anual') NOT NULL,
+  `amount` decimal(12,2) NOT NULL,
+  `clinic_name` varchar(150) NOT NULL,
+  `cuit` varchar(20) NOT NULL,
+  `clinic_email` varchar(190) NOT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `available_days` varchar(100) DEFAULT NULL,
+  `opening_time` varchar(5) DEFAULT NULL,
+  `closing_time` varchar(5) DEFAULT NULL,
+  `province` varchar(60) NOT NULL,
+  `city` varchar(120) NOT NULL,
+  `street` varchar(180) NOT NULL,
+  `responsible_name` varchar(120) NOT NULL,
+  `responsible_email` varchar(190) NOT NULL,
+  `responsible_phone` varchar(50) DEFAULT NULL,
+  `staff_count` tinyint(3) UNSIGNED DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `payment_status` enum('pendiente','en_proceso','aprobado','rechazado','cancelado') NOT NULL DEFAULT 'pendiente',
+  `mp_preference_id` varchar(80) DEFAULT NULL,
+  `mp_payment_id` varchar(40) DEFAULT NULL,
+  `mp_status_detail` varchar(80) DEFAULT NULL,
+  `paid_at` datetime DEFAULT NULL,
+  `status` enum('nueva','registrada','descartada') NOT NULL DEFAULT 'nueva',
+  `clinic_id` int(11) DEFAULT NULL,
+  `admin_note` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `remember_tokens`
 --
 
@@ -383,6 +424,57 @@ CREATE TABLE `remember_tokens` (
 
 INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `selector`, `validator_hash`, `expires_at`, `created_at`) VALUES
 (1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `support_messages`
+--
+
+CREATE TABLE `support_messages` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `sender_type` enum('tutor','veterinaria','publico') NOT NULL,
+  `client_id` int(11) DEFAULT NULL,
+  `vet_user_id` int(11) DEFAULT NULL,
+  `clinic_id` int(11) DEFAULT NULL,
+  `name` varchar(120) NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `subject` varchar(150) NOT NULL,
+  `message` text NOT NULL,
+  `status` enum('nuevo','resuelto') NOT NULL DEFAULT 'nuevo',
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `support_messages`
+--
+
+INSERT INTO `support_messages` (`id`, `sender_type`, `client_id`, `vet_user_id`, `clinic_id`, `name`, `email`, `phone`, `subject`, `message`, `status`, `created_at`) VALUES
+(1, 'publico', NULL, NULL, NULL, 'grogu', 'grogu@gmail.com', NULL, 'Consulta general', 'hola soy grogu', 'nuevo', '2026-11-03 13:56:58'),
+(2, 'tutor', NULL, NULL, NULL, 'grogu', 'grogu@gmail.com', NULL, 'Consulta general', 'hola soy grogu', 'nuevo', '2026-11-03 14:07:22'),
+(3, 'tutor', NULL, NULL, NULL, 'grogu', 'grogu@gmail.com', NULL, 'Consulta general', 'hola soy grogu', 'nuevo', '2026-11-03 14:07:46'),
+(4, 'veterinaria', NULL, NULL, NULL, 'Pedro Pascal', 'pedro@gmail.com', '123123123123', 'Consulta coso', 'hola soy Pedro Pascal', 'nuevo', '2026-11-03 14:08:21'),
+(5, 'veterinaria', NULL, NULL, NULL, 'Pedro Pascal', 'pedro@gmail.com', '123123123123', 'Consulta coso', 'hola soy Pedro Pascal', 'nuevo', '2026-11-03 14:08:39'),
+(6, 'tutor', NULL, NULL, NULL, 'Lattafa', 'lattafa@gmail.com', '12312123', 'Pregunta', 'hola soy Lattafa', 'nuevo', '2026-11-03 14:11:59'),
+(7, 'tutor', 2, NULL, NULL, 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'Problema con mis mascotas o su historial', 'ayudaaaaaaaaaaaaaaaaaaaaaaa', 'nuevo', '2026-11-03 14:22:55');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vaccine_reminders`
+--
+
+CREATE TABLE `vaccine_reminders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `consultation_id` bigint(20) UNSIGNED NOT NULL,
+  `due_date` date NOT NULL,
+  `reminder_number` tinyint(3) UNSIGNED NOT NULL,
+  `client_id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `delivery` enum('smtp','archivo') NOT NULL,
+  `sent_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -515,12 +607,37 @@ ALTER TABLE `pet_co_owners`
   ADD KEY `client_id` (`client_id`);
 
 --
+-- Indices de la tabla `plan_requests`
+--
+ALTER TABLE `plan_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_token` (`token`),
+  ADD KEY `idx_payment` (`payment_status`),
+  ADD KEY `idx_status` (`status`);
+
+--
 -- Indices de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `selector` (`selector`),
   ADD KEY `vet_user_id` (`vet_user_id`);
+
+--
+-- Indices de la tabla `support_messages`
+--
+ALTER TABLE `support_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_sender` (`sender_type`);
+
+--
+-- Indices de la tabla `vaccine_reminders`
+--
+ALTER TABLE `vaccine_reminders`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_reminder` (`consultation_id`,`due_date`,`reminder_number`),
+  ADD KEY `idx_consultation` (`consultation_id`);
 
 --
 -- Indices de la tabla `vet_users`
@@ -591,7 +708,7 @@ ALTER TABLE `pets`
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
 --
 ALTER TABLE `pet_access_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_co_owners`
@@ -600,10 +717,28 @@ ALTER TABLE `pet_co_owners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de la tabla `plan_requests`
+--
+ALTER TABLE `plan_requests`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT de la tabla `support_messages`
+--
+ALTER TABLE `support_messages`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `vaccine_reminders`
+--
+ALTER TABLE `vaccine_reminders`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `vet_users`

@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . '/config/config.php';
+    require_once __DIR__ . '/includes/solicitudes.php';
 
     $msgSuccess = '';
     $msgError = '';
@@ -28,6 +29,11 @@
     $tipoUsuario = $defaultTipoUsuario;
     $mensaje = '';
 
+    if (!empty($_SESSION['contacto_sent'])) {
+        unset($_SESSION['contacto_sent']);
+        $msgSuccess = '¡Gracias por comunicarte con ' . APP_NAME . '! Recibimos tu consulta con éxito. Un asesor de nuestro equipo se pondrá en contacto a la brevedad.';
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         verify_csrf();
 
@@ -43,13 +49,17 @@
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $msgError = 'Por favor ingresá un correo electrónico válido.';
         } else {
-            // En un sistema en producción aquí se enviaría un correo o webhook hacia el CRM/Slack
-            $msgSuccess = '¡Gracias por comunicarte con ' . APP_NAME . '! Recibimos tu consulta con éxito. Un asesor de nuestro equipo se pondrá en contacto a la brevedad.';
-            // Limpiar campos tras éxito
-            $nombre = '';
-            $email = '';
-            $telefono = '';
-            $mensaje = '';
+            try {
+                db()->prepare('INSERT INTO support_messages (sender_type, name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?, ?)')
+                    ->execute([$tipoUsuario === 'particular' ? 'tutor' : 'veterinaria', $nombre, $email, $telefono ?: null, $asunto ?: 'Consulta general', $mensaje]);
+                $_SESSION['contacto_sent'] = 1;
+                $redirect = 'contacto.php' . ($tipoUsuario === 'particular' ? '?tipo=particular' : '');
+                header('Location: ' . url($redirect));
+                exit;
+            } catch (Throwable $e) {
+                error_log('contacto.php: ' . $e->getMessage());
+                $msgError = 'No pudimos guardar tu consulta. Probá de nuevo en unos minutos.';
+            }
         }
     }
 
