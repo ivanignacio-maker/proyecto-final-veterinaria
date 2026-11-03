@@ -1,0 +1,106 @@
+.vc-date-source {
+    display: none !important;
+}
+
+/* En la edición de mascotas, reservar ancho suficiente para los tres selectores
+   de fecha y para el nombre del archivo, evitando que se monten entre sí. */
+.admin-pet-edit-grid > .admin-pet-date-field,
+.admin-pet-edit-grid > .admin-pet-photo-field {
+    grid-column: span 2;
+    min-width: 0;
+}
+
+.admin-pet-edit-grid .vc-date-picker,
+.admin-pet-edit-grid input[type="file"] {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 560px) {
+    .admin-pet-edit-grid > .admin-pet-date-field,
+    .admin-pet-edit-grid > .admin-pet-photo-field {
+        grid-column: 1 / -1;
+    }
+}
+
+.vc-date-picker,
+.vc-appointment-picker {
+    display: grid;
+    grid-template-columns: minmax(70px, .8fr) minmax(125px, 1.5fr) minmax(90px, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin-top: 0;
+}
+
+.vc-date-picker select,
+.vc-appointment-picker select {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10px 11px;
+    color: var(--ink);
+    background-color: var(--white, #fcfdfc);
+    border: 1px solid var(--line, #dce7df);
+    border-radius: 10px;
+    font: 400 14px 'DM Sans', sans-serif;
+}
+
+.vc-date-picker select:focus,
+.vc-appointment-picker select:focus {
+    border-color: var(--green, #237765);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--green, #237765) 15%, transparent);
+}
+
+.vc-date-picker select:invalid,
+.vc-appointment-picker select:invalid {
+    border-color: var(--line, #dce7df);
+}
+
+.historial-dates .vc-date-picker {
+    grid-template-columns: minmax(48px, .8fr) minmax(90px, 1.45fr) minmax(64px, 1fr);
+    gap: 6px;
+}
+
+.historial-dates .vc-date-picker select {
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+.vc-appointment-picker {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    align-items: stretch;
+    margin-top: 0;
+}
+
+.vc-appointment-date {
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.45fr) minmax(0, 1fr);
+    margin-top: 0;
+}
+
+.vc-appointment-date select {
+    padding: 10px 7px;
+    font-size: 13px;
+}
+
+.vc-appointment-time {
+    appearance: auto;
+}
+
+@media (max-width: 520px) {
+    .vc-date-picker,
+    .vc-appointment-picker {
+        gap: 6px;
+    }
+
+    .vc-date-picker select,
+    .vc-appointment-picker select {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .vc-appointment-date {
+        grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+}
