@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2026 a las 15:41:27
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.7
+-- Tiempo de generación: 03-11-2026 a las 21:39:37
+-- Versión del servidor: 10.11.16-MariaDB
+-- Versión de PHP: 8.3.36
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -94,7 +94,46 @@ INSERT INTO `audit_log` (`id`, `clinic_id`, `vet_user_id`, `entity_type`, `entit
 (3, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"}}', '2026-10-21 12:33:42'),
 (4, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"Dado de Alta\"}}', '2026-10-21 13:01:13'),
 (5, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-10-28 05:21:25'),
-(6, NULL, NULL, 'pet', 3, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-01 21:58:25');
+(6, NULL, NULL, 'pet', 3, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-01 21:58:25'),
+(7, 2, 2, 'consultation', 4, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"7\",\"diagnosis\":\"1\",\"treatment\":\"1\",\"status\":\"Dado de Alta\"},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.\",\"diagnosis\":\"Paciente clínico sano apto para inmunización profiláctica anual.\",\"treatment\":\"Aplicación de vacuna séxtuple anual (realizada en consultorio).\\r\\n\\r\\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.\",\"status\":\"Dado de Alta\"}}', '2026-11-03 18:28:38'),
+(8, 3, 3, 'consultation', 3, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dfdf\",\"diagnosis\":\"sdfsdfsd\",\"treatment\":\"sdfsdfsdf\",\"status\":\"En proceso\"},\"after\":{\"reason\":\"Control\",\"notes\":\"Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.\",\"diagnosis\":\"Paciente en buen estado general de salud \\/ Control periódico de rutina sin hallazgos patológicos de relevancia.\",\"treatment\":\"Mantenimiento de dieta equilibrada habitual.\\r\\n\\r\\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\\r\\n\\r\\nPróximo control general sugerido en 6 meses.\",\"status\":\"En proceso\"}}', '2026-11-03 18:46:56'),
+(9, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"dolor fisico\",\"diagnosis\":\"dolor estomacal\",\"treatment\":\"Penisilina cada 3 dias\",\"status\":\"Dado de Alta\"},\"after\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\"}}', '2026-11-03 18:51:34'),
+(10, 3, 3, 'consultation', 3, 'updated', '{\"before\":{\"reason\":\"Control\",\"notes\":\"Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.\",\"diagnosis\":\"Paciente en buen estado general de salud \\/ Control periódico de rutina sin hallazgos patológicos de relevancia.\",\"treatment\":\"Mantenimiento de dieta equilibrada habitual.\\r\\n\\r\\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\\r\\n\\r\\nPróximo control general sugerido en 6 meses.\",\"status\":\"En proceso\",\"medication\":\"penisilina\",\"medication_id\":1,\"purchase_needed\":0},\"after\":{\"reason\":\"Control\",\"notes\":\"Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.\",\"diagnosis\":\"Paciente en buen estado general de salud \\/ Control periódico de rutina sin hallazgos patológicos de relevancia.\",\"treatment\":\"Mantenimiento de dieta equilibrada habitual.\\r\\n\\r\\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\\r\\n\\r\\nPróximo control general sugerido en 6 meses.\",\"status\":\"En proceso\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0}}', '2026-11-03 18:58:18'),
+(11, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":\"penisilina\",\"medication_id\":1,\"purchase_needed\":0},\"after\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0}}', '2026-11-03 18:58:44'),
+(12, 3, 3, 'medication', 1, 'deleted', '{\"name\":\"penisilina\",\"quantity_at_deletion\":3,\"consultations_preserved\":0}', '2026-11-03 19:12:45'),
+(13, 3, 3, 'medication', 4, 'created', '{\"name\":\"Meloxicam\",\"initial_quantity\":10}', '2026-11-03 19:14:43'),
+(14, 3, 3, 'medication', 5, 'created', '{\"name\":\"Amoxicilina + Ácido Clavulánico\",\"initial_quantity\":20}', '2026-11-03 19:15:17'),
+(15, 3, 3, 'medication', 6, 'created', '{\"name\":\"Carprofeno\",\"initial_quantity\":15}', '2026-11-03 19:15:37'),
+(16, 3, 3, 'medication', 7, 'created', '{\"name\":\"Prednisona \\/ Prednisolona\",\"initial_quantity\":15}', '2026-11-03 19:15:57'),
+(17, 3, 3, 'medication', 8, 'created', '{\"name\":\"Afoxolaner \\/ Fluralaner\",\"initial_quantity\":0}', '2026-11-03 19:16:43'),
+(18, 3, 3, 'consultation', 3, 'updated', '{\"before\":{\"reason\":\"Control\",\"notes\":\"Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.\",\"diagnosis\":\"Paciente en buen estado general de salud \\/ Control periódico de rutina sin hallazgos patológicos de relevancia.\",\"treatment\":\"Mantenimiento de dieta equilibrada habitual.\\r\\n\\r\\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\\r\\n\\r\\nPróximo control general sugerido en 6 meses.\",\"status\":\"En proceso\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0},\"after\":{\"reason\":\"Control\",\"notes\":\"Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.\",\"diagnosis\":\"Paciente en buen estado general de salud \\/ Control periódico de rutina sin hallazgos patológicos de relevancia.\",\"treatment\":\"Mantenimiento de dieta equilibrada habitual.\\r\\n\\r\\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\\r\\n\\r\\nPróximo control general sugerido en 6 meses.\",\"status\":\"En proceso\",\"medication\":\"Amoxicilina + Ácido Clavulánico\",\"medication_id\":5,\"purchase_needed\":0}}', '2026-11-03 19:32:14'),
+(19, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0},\"after\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0}}', '2026-11-03 19:33:22'),
+(20, 3, 3, 'consultation', 2, 'updated', '{\"before\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":null,\"medication_id\":null,\"purchase_needed\":0},\"after\":{\"reason\":\"Desparasitación\",\"notes\":\"Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.\",\"diagnosis\":\"Protocolo preventivo de desparasitación al día \\/ Sin alteraciones digestivas aparentes.\",\"treatment\":\"Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel \\/ Pirantel \\/ Febantel) según franja de peso correspondiente.\\r\\n\\r\\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\\r\\n\\r\\nRepetir esquema trimestralmente según fecha sugerida.\",\"status\":\"Dado de Alta\",\"medication\":\"Carprofeno\",\"medication_id\":6,\"purchase_needed\":0}}', '2026-11-03 19:33:49'),
+(21, 3, 3, 'medication', 8, 'details_updated', '{\"name\":\"Afoxolaner \\/ Fluralaner\",\"brand\":\"\",\"purpose\":\"\"}', '2026-11-03 19:37:30'),
+(22, 3, 3, 'medication', 5, 'details_updated', '{\"name\":\"Amoxicilina + Ácido Clavulánico\",\"brand\":\"Synulox\",\"purpose\":\"Antibiótico de amplio espectro.\"}', '2026-11-03 19:38:00'),
+(23, 3, 3, 'medication', 6, 'details_updated', '{\"name\":\"Carprofeno\",\"brand\":\"\",\"purpose\":\"\"}', '2026-11-03 19:38:24'),
+(24, 3, 3, 'medication', 8, 'details_updated', '{\"name\":\"Afoxolaner \\/ Fluralaner\",\"brand\":\"NexGard\",\"purpose\":\"Antiparasitario oral\"}', '2026-11-03 19:38:40'),
+(25, 3, 3, 'medication', 6, 'details_updated', '{\"name\":\"Carprofeno\",\"brand\":\"Rimadyl\",\"purpose\":\"Antiinflamatorio no esteroideo (AINE) analgésico.\"}', '2026-11-03 19:39:19'),
+(26, 3, 3, 'medication', 4, 'details_updated', '{\"name\":\"Meloxicam\",\"brand\":\"Metacam\",\"purpose\":\"Antiinflamatorio no esteroideo (AINE).\"}', '2026-11-03 19:39:45'),
+(27, 3, 3, 'medication', 7, 'details_updated', '{\"name\":\"Prednisona \\/ Prednisolona\",\"brand\":\"Deltasona\",\"purpose\":\"Corticosteroide \\/ Antiinflamatorio e inmunosupresor.\"}', '2026-11-03 19:40:16'),
+(28, 2, 2, 'medication', 9, 'created', '{\"name\":\"Oclacitinib\",\"initial_quantity\":10}', '2026-11-03 19:48:01'),
+(29, 2, 2, 'medication', 10, 'created', '{\"name\":\"Cefalexina\",\"initial_quantity\":2}', '2026-11-03 19:48:26'),
+(30, 2, 2, 'medication', 11, 'created', '{\"name\":\"Metronidazol\",\"initial_quantity\":4}', '2026-11-03 19:48:49'),
+(31, 2, 2, 'consultation', 4, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.\",\"diagnosis\":\"Paciente clínico sano apto para inmunización profiláctica anual.\",\"treatment\":\"Aplicación de vacuna séxtuple anual (realizada en consultorio).\\r\\n\\r\\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.\",\"status\":\"Dado de Alta\",\"medication\":\"45\",\"medication_id\":null,\"purchase_needed\":1},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.\",\"diagnosis\":\"Paciente clínico sano apto para inmunización profiláctica anual.\",\"treatment\":\"Aplicación de vacuna séxtuple anual (realizada en consultorio).\\r\\n\\r\\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.\",\"status\":\"Dado de Alta\",\"medication\":\"Metoclopramida (comprar en farmacia)\",\"medication_id\":null,\"purchase_needed\":1}}', '2026-11-03 19:49:33'),
+(32, 2, 2, 'medication', 9, 'details_updated', '{\"name\":\"Oclacitinib\",\"brand\":\"Apoquel\",\"purpose\":\"Inhibidor selectivo de la Janus quinasa (JAK).\"}', '2026-11-03 19:56:34'),
+(33, 2, 2, 'medication', 11, 'details_updated', '{\"name\":\"Metronidazol\",\"brand\":\"Flagyl\",\"purpose\":\"Antibiótico y antiparasitario (nitroimidazol).\"}', '2026-11-03 19:57:00'),
+(34, 2, 2, 'medication', 10, 'details_updated', '{\"name\":\"Cefalexina\",\"brand\":\"Cephatabs\",\"purpose\":\"Antibiótico cefalosporínico de primera generación.\"}', '2026-11-03 19:57:20'),
+(35, 2, 2, 'consultation', 4, 'updated', '{\"before\":{\"reason\":\"Vacuna\",\"notes\":\"Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.\",\"diagnosis\":\"Paciente clínico sano apto para inmunización profiláctica anual.\",\"treatment\":\"Aplicación de vacuna séxtuple anual (realizada en consultorio).\\r\\n\\r\\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.\",\"status\":\"Dado de Alta\",\"medication\":\"Metoclopramida\",\"medication_id\":null,\"purchase_needed\":1},\"after\":{\"reason\":\"Vacuna\",\"notes\":\"Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.\",\"diagnosis\":\"Paciente clínico sano apto para inmunización profiláctica anual.\",\"treatment\":\"Aplicación de vacuna séxtuple anual (realizada en consultorio).\\r\\n\\r\\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.\",\"status\":\"Dado de Alta\",\"medication\":\"Cefalexina\",\"medication_id\":10,\"purchase_needed\":0}}', '2026-11-03 19:58:12'),
+(36, NULL, NULL, 'client', 9, 'admin_update', '{\"full_name\":\"Thiago Mantoani\",\"dni\":\"45219568\",\"email\":\"thiagomantoani0122@gmail.com\"}', '2026-11-03 20:02:21'),
+(37, NULL, NULL, 'client', 5, 'admin_update', '{\"full_name\":\"Pedro Smith\",\"dni\":\"484848\",\"email\":\"pedro@gmail.com\"}', '2026-11-03 20:02:57'),
+(38, NULL, NULL, 'client', 9, 'admin_update', '{\"full_name\":\"Thiago Mantoani\",\"dni\":\"494949\",\"email\":\"thiagomantoani0122@gmail.com\"}', '2026-11-03 20:03:08'),
+(39, NULL, NULL, 'client', 2, 'admin_update', '{\"full_name\":\"Ivan Bruno\",\"dni\":\"464646\",\"email\":\"ivanignaciobruno@gmail.com\"}', '2026-11-03 20:07:28'),
+(40, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-11-03 20:07:40'),
+(41, NULL, NULL, 'client', 5, 'admin_update', '{\"full_name\":\"Pedro Smith\",\"dni\":\"484848\",\"email\":\"pedro@gmail.com\"}', '2026-11-03 20:07:49'),
+(42, NULL, NULL, 'client', 9, 'admin_update', '{\"full_name\":\"Thiago Mantoani\",\"dni\":\"494949\",\"email\":\"thiagomantoani0122@gmail.com\"}', '2026-11-03 20:07:57'),
+(43, NULL, NULL, 'client', 1, 'admin_update', '{\"full_name\":\"Ivana Di Bruneli\",\"dni\":\"505050\",\"email\":\"ivanabruneli@gmail.com\"}', '2026-11-03 20:17:10'),
+(44, NULL, NULL, 'client', 1, 'admin_update', '{\"full_name\":\"Ivana Di Bruneli\",\"dni\":\"505050\",\"email\":\"ivanabruneli@gmail.com\"}', '2026-11-03 20:17:18'),
+(45, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-11-03 20:19:58');
 
 -- --------------------------------------------------------
 
@@ -119,11 +158,11 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `avatar_path`, `password_hash`, `created_at`, `updated_at`) VALUES
-(1, '44649955', 'Ivan I. Bruno', 'ivan@gmail.com', '11 4455-6677', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-16 16:24:10', '2026-10-27 23:18:07'),
-(2, '464646', 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'avatars/client_2_4846352e9bdb7cd9.jpg', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-10-28 00:00:13'),
-(4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '222222', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-10-28 05:22:17'),
-(5, '123', 'Pedro', 'aaaa@gmail.com', '1111', NULL, '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-10-27 23:18:07'),
-(9, '45219568', 'Thiago Mantoani', 'thiagomantoani0122@gmail.com', '1111', NULL, '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-01 22:06:28');
+(1, '505050', 'Ivana Di Bruneli', 'ivanabruneli@gmail.com', '11 4455-6677', 'avatars/client_1_1fbe135366470f6c.webp', '$2y$10$KcYtasVwTkprRYszfFFUlOwMfWDFtzKjc173byTM.W/gwKZ6mAc7i', '2026-10-16 16:24:10', '2026-11-03 20:17:18'),
+(2, '464646', 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '11 4455-6666', 'avatars/client_2_e9c5092f983aad3f.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-11-03 20:07:28'),
+(4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '11 4455-6688', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-11-03 20:07:40'),
+(5, '484848', 'Pedro Smith', 'pedro@gmail.com', '11 4455-6699', 'avatars/client_5_8beb96feffc364c4.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-11-03 20:07:49'),
+(9, '494949', 'Thiago Mantoani', 'thiagomantoani0122@gmail.com', '11 4455-6600', 'avatars/client_9_dfc9c352645a2d36.webp', '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-03 20:07:57');
 
 -- --------------------------------------------------------
 
@@ -153,9 +192,9 @@ CREATE TABLE `clinics` (
 --
 
 INSERT INTO `clinics` (`id`, `name`, `email`, `street`, `city`, `province`, `active`, `created_at`, `cuit`, `phone`, `opening_hours`, `available_days`, `opening_time`, `closing_time`) VALUES
-(1, 'Mau', 'mau@gmail.com', 'Belgrano 3747', 'San Martín', 'Buenos Aires', 1, '2026-10-16 16:23:03', NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Plaza Belgrano', 'La Plata', 'Buenos Aires', 1, '2026-10-21 03:06:45', '404045', '444444', NULL, 'Lunes a Viernes', '08:00:00', '22:00:00'),
-(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '555', '11111', NULL, 'lun mar', '21:16:00', '17:18:00');
+(1, 'Mautorrales', 'mautorrales@gmail.com', 'Belgrano 3747', 'San Martín', 'Buenos Aires', 1, '2026-10-16 16:23:03', '2010010020', '11 4455-7777', NULL, '', NULL, NULL),
+(2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Plaza Belgrano', 'La Plata', 'Buenos Aires', 1, '2026-10-21 03:06:45', '2030030020', '444444', NULL, 'Lunes a Viernes', '08:00:00', '22:00:00'),
+(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '2020020020', '11111', NULL, 'lun mar', '21:16:00', '17:18:00');
 
 -- --------------------------------------------------------
 
@@ -177,8 +216,8 @@ CREATE TABLE `clinic_clients` (
 INSERT INTO `clinic_clients` (`clinic_id`, `client_id`, `first_seen_at`, `last_seen_at`) VALUES
 (1, 1, '2026-10-16 16:24:10', '2026-10-16 16:39:06'),
 (1, 4, '2026-10-21 23:38:33', '2026-10-21 23:39:49'),
-(2, 2, '2026-10-21 03:12:47', '2026-10-28 01:44:27'),
-(2, 4, '2026-10-21 03:16:58', '2026-10-21 03:16:58'),
+(2, 2, '2026-10-21 03:12:47', '2026-11-03 16:52:14'),
+(2, 4, '2026-10-21 03:16:58', '2026-11-03 19:55:55'),
 (3, 2, '2026-10-21 03:31:48', '2026-10-21 14:53:25'),
 (3, 4, '2026-10-21 12:26:23', '2026-10-21 12:26:23'),
 (3, 5, '2026-10-21 14:59:44', '2026-10-21 14:59:44');
@@ -211,9 +250,9 @@ CREATE TABLE `consultations` (
 
 INSERT INTO `consultations` (`id`, `pet_id`, `clinic_id`, `vet_user_id`, `reason`, `notes`, `diagnosis`, `treatment`, `status`, `vaccine_expiry`, `next_dose`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 1, 'Consulta general', 'diarrea', 'parasitos en el estomago', 'paracetamol cada 2 dias', 'En proceso', NULL, NULL, '2026-10-16 16:26:25', '2026-10-16 16:26:25'),
-(2, 2, 3, 3, 'Vacuna', 'dolor fisico', 'dolor estomacal', 'Penisilina cada 3 dias', 'Dado de Alta', '2026-10-23', NULL, '2026-10-21 12:33:13', '2026-10-21 13:01:13'),
-(3, 2, 3, 3, 'Vacuna', 'dfdf', 'sdfsdfsd', 'sdfsdfsdf', 'En proceso', '2026-10-21', '2027-01-14', '2026-10-21 14:58:28', '2026-10-21 14:58:28'),
-(4, 2, 2, 2, 'Vacuna', '7', '1', '1', 'Dado de Alta', '2026-10-15', '2026-10-06', '2026-10-24 21:23:44', '2026-10-24 21:23:44');
+(2, 2, 3, 3, 'Desparasitación', 'Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.', 'Protocolo preventivo de desparasitación al día / Sin alteraciones digestivas aparentes.', 'Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel / Pirantel / Febantel) según franja de peso correspondiente.\r\n\r\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\r\n\r\nRepetir esquema trimestralmente según fecha sugerida.', 'Dado de Alta', NULL, NULL, '2026-10-21 12:33:13', '2026-11-03 18:51:34'),
+(3, 2, 3, 3, 'Control', 'Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.', 'Paciente en buen estado general de salud / Control periódico de rutina sin hallazgos patológicos de relevancia.', 'Mantenimiento de dieta equilibrada habitual.\r\n\r\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\r\n\r\nPróximo control general sugerido en 6 meses.', 'En proceso', NULL, NULL, '2026-10-21 14:58:28', '2026-11-03 18:46:56'),
+(4, 2, 2, 2, 'Vacuna', 'Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.', 'Paciente clínico sano apto para inmunización profiláctica anual.', 'Aplicación de vacuna séxtuple anual (realizada en consultorio).\r\n\r\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.', 'Dado de Alta', '2027-10-15', '2027-10-12', '2026-10-24 21:23:44', '2026-11-03 18:28:38');
 
 -- --------------------------------------------------------
 
@@ -231,6 +270,14 @@ CREATE TABLE `consultation_files` (
   `mime_type` varchar(120) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `consultation_files`
+--
+
+INSERT INTO `consultation_files` (`id`, `consultation_id`, `uploaded_by`, `uploader_id`, `original_name`, `stored_name`, `mime_type`, `created_at`) VALUES
+(2, 2, 'veterinaria', 3, 'informe_desparasitacion_apolo_2026-10-21.jpg', 'cf_2_89462eff3cb8c1f4.webp', 'image/webp', '2026-11-03 19:33:56'),
+(3, 4, 'veterinaria', 2, 'informe_vacuna_apolo_2026-10-24.pdf', 'cf_4_a145735529dfbdac.pdf', 'application/pdf', '2026-11-03 19:45:40');
 
 -- --------------------------------------------------------
 
@@ -251,9 +298,9 @@ CREATE TABLE `consultation_medications` (
 
 INSERT INTO `consultation_medications` (`consultation_id`, `medication_id`, `other_medication`, `purchase_needed`) VALUES
 (1, NULL, 'paracetamol', 1),
-(2, 1, NULL, 0),
-(3, 1, NULL, 0),
-(4, NULL, '45', 1);
+(2, 6, NULL, 0),
+(3, 5, NULL, 0),
+(4, 10, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -277,7 +324,14 @@ CREATE TABLE `medications` (
 --
 
 INSERT INTO `medications` (`id`, `clinic_id`, `name`, `brand`, `purpose`, `quantity`, `last_restock_quantity`, `updated_at`) VALUES
-(1, 3, 'penisilina', NULL, NULL, 8, 8, '2026-10-21 14:58:28');
+(4, 3, 'Meloxicam', 'Metacam', 'Antiinflamatorio no esteroideo (AINE).', 10, 10, '2026-11-03 19:39:45'),
+(5, 3, 'Amoxicilina + Ácido Clavulánico', 'Synulox', 'Antibiótico de amplio espectro.', 19, 19, '2026-11-03 19:38:00'),
+(6, 3, 'Carprofeno', 'Rimadyl', 'Antiinflamatorio no esteroideo (AINE) analgésico.', 14, 14, '2026-11-03 19:39:19'),
+(7, 3, 'Prednisona / Prednisolona', 'Deltasona', 'Corticosteroide / Antiinflamatorio e inmunosupresor.', 15, 15, '2026-11-03 19:40:16'),
+(8, 3, 'Afoxolaner / Fluralaner', 'NexGard', 'Antiparasitario oral', 0, 0, '2026-11-03 19:38:40'),
+(9, 2, 'Oclacitinib', 'Apoquel', 'Inhibidor selectivo de la Janus quinasa (JAK).', 10, 10, '2026-11-03 19:56:34'),
+(10, 2, 'Cefalexina', 'Cephatabs', 'Antibiótico cefalosporínico de primera generación.', 1, 2, '2026-11-03 19:58:12'),
+(11, 2, 'Metronidazol', 'Flagyl', 'Antibiótico y antiparasitario (nitroimidazol).', 4, 4, '2026-11-03 19:57:00');
 
 -- --------------------------------------------------------
 
@@ -304,9 +358,12 @@ CREATE TABLE `pets` (
 --
 
 INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `weight_kg`, `height_cm`, `birth_date`, `photo_path`, `created_at`) VALUES
-(1, 1, 'Tobi', 'Perro', NULL, 'Beagle', '21.00', '41.50', '2021-03-10', NULL, '2026-10-16 16:24:51'),
-(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', '8.50', '0.20', '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
-(5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', '10.00', '10.00', '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53');
+(1, 1, 'Tobi', 'Perro', 'Macho', 'Beagle', 21.00, 41.50, '2021-03-10', 'pets/6adc029637b130ac1108774db758d34e12905ef6.webp', '2026-10-16 16:24:51'),
+(2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
+(5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53'),
+(7, 2, 'Teseo', 'Roedor', 'Macho', 'Chinchilla', 2.00, 12.00, NULL, NULL, '2026-11-03 16:15:36'),
+(8, 2, 'Icaro', 'Ave', 'Macho', 'Guacamayo', 12.00, 15.00, NULL, NULL, '2026-11-03 16:16:09'),
+(9, 2, 'Artemisa', 'Reptil', 'Hembra', 'Salamandra', 3.00, 13.00, NULL, NULL, '2026-11-03 16:17:19');
 
 -- --------------------------------------------------------
 
@@ -343,7 +400,19 @@ INSERT INTO `pet_access_codes` (`id`, `pet_id`, `code`, `action_type`, `created_
 (10, 2, '613049', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:18', '2026-10-28 00:03:18'),
 (11, 2, '904586', 'modify_history', 2, NULL, NULL, '2026-10-27 21:33:21', '2026-10-28 00:03:21'),
 (12, 2, '332838', 'modify_history', 2, NULL, '2026-11-03 11:33:34', '2026-11-03 12:02:24', '2026-11-03 14:32:24'),
-(13, 2, '662226', 'modify_history', 2, NULL, NULL, '2026-11-03 12:03:34', '2026-11-03 14:33:34');
+(13, 2, '662226', 'modify_history', 2, NULL, NULL, '2026-11-03 12:03:34', '2026-11-03 14:33:34'),
+(14, 2, '901660', 'modify_history', 2, NULL, '2026-11-03 15:28:21', '2026-11-03 15:58:15', '2026-11-03 18:28:15'),
+(15, 2, '365159', 'modify_history', 2, NULL, '2026-11-03 15:28:23', '2026-11-03 15:58:21', '2026-11-03 18:28:21'),
+(16, 2, '675094', 'modify_history', 2, 2, '2026-11-03 15:28:38', '2026-11-03 15:58:23', '2026-11-03 18:28:23'),
+(17, 2, '141039', 'modify_history', 2, 3, '2026-11-03 15:46:56', '2026-11-03 16:16:49', '2026-11-03 18:46:49'),
+(18, 2, '862258', 'modify_history', 2, 3, '2026-11-03 15:51:34', '2026-11-03 16:21:25', '2026-11-03 18:51:25'),
+(19, 2, '144937', 'modify_history', 2, 3, '2026-11-03 15:58:18', '2026-11-03 16:28:04', '2026-11-03 18:58:04'),
+(20, 2, '221620', 'modify_history', 2, 3, '2026-11-03 15:58:44', '2026-11-03 16:28:37', '2026-11-03 18:58:37'),
+(21, 2, '392414', 'modify_history', 2, 3, '2026-11-03 16:32:14', '2026-11-03 17:02:04', '2026-11-03 19:32:04'),
+(22, 2, '578125', 'modify_history', 2, 3, '2026-11-03 16:33:21', '2026-11-03 17:03:15', '2026-11-03 19:33:15'),
+(23, 2, '441087', 'modify_history', 2, 3, '2026-11-03 16:33:49', '2026-11-03 17:03:31', '2026-11-03 19:33:31'),
+(24, 2, '441106', 'modify_history', 2, 2, '2026-11-03 16:49:33', '2026-11-03 17:19:27', '2026-11-03 19:49:27'),
+(25, 2, '910240', 'modify_history', 2, 2, '2026-11-03 16:58:12', '2026-11-03 17:28:02', '2026-11-03 19:58:02');
 
 -- --------------------------------------------------------
 
@@ -426,7 +495,9 @@ CREATE TABLE `remember_tokens` (
 --
 
 INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `selector`, `validator_hash`, `expires_at`, `created_at`) VALUES
-(1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59');
+(1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59'),
+(41, 'client', 2, NULL, '13714c3dbf7a96414078005b', '05e4258a3e4ad0bd0c95b69ee179e471032e0b41e836c975a230d648d831fbbe', '2027-01-02 15:28:09', '2026-11-03 18:28:09'),
+(43, 'client', 2, NULL, 'c8ed6c7dbba6b1fe73bbfe27', '7ec6f6745e782d7d46b52ab8121d45bc4637d258295d9bae8221b5befe069ee9', '2027-01-02 15:54:42', '2026-11-03 18:54:42');
 
 -- --------------------------------------------------------
 
@@ -669,7 +740,7 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT de la tabla `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT de la tabla `clients`
@@ -693,25 +764,25 @@ ALTER TABLE `consultations`
 -- AUTO_INCREMENT de la tabla `consultation_files`
 --
 ALTER TABLE `consultation_files`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `medications`
 --
 ALTER TABLE `medications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
 --
 ALTER TABLE `pet_access_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_co_owners`
@@ -729,7 +800,7 @@ ALTER TABLE `plan_requests`
 -- AUTO_INCREMENT de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT de la tabla `support_messages`
