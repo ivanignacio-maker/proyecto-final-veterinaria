@@ -35,26 +35,65 @@ $pageTitle = 'Historial de mascota';
 require __DIR__ . '/../includes/header.php';
 ?>
 
+<!-- Ficha de la mascota: foto a la mitad del bloque y los datos apilados al costado -->
 <div class="panel">
-    <?php if ($p['photo_path']): ?>
-        <img class="pet-photo" src="<?= url('archivo_mascota.php?id=' . (int)$p['id']) ?>" alt="Foto de mascota">
-    <?php endif; ?>
-    
-    <span class="pill">ID de mascota: <?= (int)$p['id'] ?></span>
-    <h1><?= e($p['name']) ?></h1>
-    
-    <p>
-        <?= e($p['animal_type']) ?> · 
-        <?= e($p['breed']) ?> · 
-        Peso <?= e((string)$p['weight_kg']) ?> kg · 
-        Altura <?= e((string)$p['height_cm']) ?> cm
-    </p>
-    
-    <p>Dueño: <?= e($p['full_name']) ?> (DNI <?= e($p['dni']) ?>)</p>
-    
-    <div class="actions">
-        <a class="btn" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">Agregar consulta</a>
-        <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>">Volver al cliente</a>
+    <div class="pet-profile-header is-photo-75">
+        <div class="pet-profile-photo-frame">
+            <img class="pet-photo" src="<?= pet_photo_url($p) ?>" alt="Foto de <?= e_name($p['name']) ?>">
+        </div>
+
+        <div class="pet-profile-info">
+            <div class="pet-profile-heading">
+                <div class="pet-profile-tags">
+                    <span class="pill" style="font-family: monospace; font-weight: 700;">ID de mascota: #<?= (int)$p['id'] ?></span>
+                    <span class="badge" style="background: var(--mint); color: var(--green); font-weight: 700;">
+                        <i class="fa-solid fa-book-medical" style="margin-right: 4px;"></i> Historial clínico
+                    </span>
+                </div>
+                <h1 class="name-titlecase"><?= e_name($p['name']) ?></h1>
+            </div>
+
+            <div class="pet-shelves">
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-paw"></i> Especie</span>
+                    <span class="pet-shelf-value"><?= e_name($p['animal_type']) ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid <?= ($p['sexo'] ?? '') === 'Hembra' ? 'fa-venus' : 'fa-mars' ?>"></i> Sexo</span>
+                    <span class="pet-shelf-value"><?= e($p['sexo'] ?: 'No registrado') ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-dna"></i> Raza</span>
+                    <span class="pet-shelf-value"><?= e_name($p['breed'] ?: 'Mestizo') ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-weight-scale"></i> Peso</span>
+                    <span class="pet-shelf-value"><?= $p['weight_kg'] ? e((string)$p['weight_kg']) . ' kg' : 'No registrado' ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-ruler-vertical"></i> Altura</span>
+                    <span class="pet-shelf-value"><?= $p['height_cm'] ? e((string)$p['height_cm']) . ' cm' : 'No registrada' ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-cake-candles"></i> Nacimiento</span>
+                    <span class="pet-shelf-value"><?= $p['birth_date'] ? date('d/m/Y', strtotime($p['birth_date'])) : 'No especificada' ?></span>
+                </div>
+                <div class="pet-shelf pet-shelf-stack">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-user"></i> Dueño</span>
+                    <div class="pet-shelf-value">
+                        <span class="pet-shelf-owner">
+                            <span class="name-titlecase"><?= e_name($p['full_name']) ?></span>
+                            <small>DNI <?= e($p['dni']) ?></small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pet-profile-actions">
+                <a class="btn" href="<?= url('consultas/nueva.php?pet_id=' . $id) ?>">Agregar consulta</a>
+                <a class="btn secondary" href="<?= url('clientes/ver.php?id=' . (int)$p['client_id']) ?>">Volver al cliente</a>
+            </div>
+        </div>
     </div>
 </div>
 

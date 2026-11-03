@@ -3051,3 +3051,60 @@ body.client-portal :is(.panel, .card, .vc-results-shell, .vc-card) {
     }
 }
 
+
+/* Header a todo el ancho (todos los roles): la marca va contra el borde izquierdo,
+   la sesión y el modo oscuro contra el derecho, y los enlaces se reparten con aire en el medio. */
+.public-topbar .topbar-inner {
+    width: 100%;
+    max-width: none;
+    padding: 0 clamp(16px, 2.4vw, 44px);
+    gap: clamp(16px, 2vw, 40px);
+    justify-content: space-between;
+}
+
+.public-topbar .brand {
+    margin-right: 0;
+}
+
+@media (min-width: 769px) {
+    .public-topbar .desktop-nav {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-left: 0;
+        gap: clamp(6px, 1.5vw, 30px);
+    }
+
+    /* Los dos márgenes automáticos centran los enlaces en el espacio libre
+       y empujan el bloque de sesión hacia el borde derecho. */
+    .public-topbar .desktop-nav > a:first-child,
+    .public-topbar .desktop-nav > .nav-actions,
+    .public-topbar .desktop-nav > .nav-divider {
+        margin-left: auto;
+    }
+
+    .public-topbar .desktop-nav > .nav-actions {
+        margin-right: 0;
+    }
+
+    .public-topbar .topbar-inner > .topbar-actions {
+        margin-left: 0;
+    }
+
+    /* Veterinarias tiene más enlaces: la separación arranca chica en 1400px y crece con la pantalla */
+    .public-topbar.topbar-vet .desktop-nav {
+        gap: clamp(4px, calc(4.6vw - 60px), 28px);
+    }
+}
+
+@media (min-width: 1451px) {
+    .public-topbar:not(.topbar-vet) .desktop-nav > a {
+        padding: 8px 14px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .public-topbar.topbar-vet .desktop-nav > a {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}

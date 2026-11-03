@@ -30,8 +30,8 @@ $resolvedBodyClass = trim((string)($bodyClass ?? '') . ($isClientPortal ? ' clie
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
-    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=18">
-    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=67">
+    <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=21">
+    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=69">
     <link rel="stylesheet" href="<?= url('assets/dark.generated.css') ?>?v=5">
     <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=52">
     <link rel="icon" href="<?= url('assets/logo.webp') ?>?v=4" type="image/webp">

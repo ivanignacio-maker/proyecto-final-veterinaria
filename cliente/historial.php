@@ -46,118 +46,79 @@ if (!empty($_GET['upload_success'])) {
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<!-- Panel Principal con Foto al lado del Nombre y Datos de la Mascota -->
+<!-- Ficha de la mascota: foto a la mitad del bloque y los datos apilados al costado -->
 <div class="panel">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
-        <!-- Foto de Perfil al Lado del Nombre -->
-        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-            <div style="position: relative; flex-shrink: 0;">
-                <img src="<?= pet_photo_url($p) ?>" 
-                     alt="Foto de <?= e_name($p['name']) ?>" 
-                     style="width: 86px; height: 86px; border-radius: 20px; object-fit: cover; border: 2.5px solid var(--green); box-shadow: 0 4px 14px rgba(35,119,101,0.15); display: block;">
-            </div>
+    <div class="pet-profile-header is-photo-75">
+        <div class="pet-profile-photo-frame">
+            <img class="pet-photo" src="<?= pet_photo_url($p) ?>" alt="Foto de <?= e_name($p['name']) ?>">
+        </div>
 
-            <div>
-                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px;">
+        <div class="pet-profile-info">
+            <div class="pet-profile-heading">
+                <div class="pet-profile-tags">
                     <span class="pill" style="font-family: monospace; font-weight: 700;">#<?= (int)$p['id'] ?></span>
                     <span class="badge" style="background: var(--mint); color: var(--green); font-weight: 700;">
-                        <i class="fa-solid fa-paw" style="margin-right: 4px;"></i> <?= e_name($p['animal_type']) ?>
+                        <i class="fa-solid fa-id-card-clip" style="margin-right: 4px;"></i> Ficha clínica
                     </span>
-                    <?php if (!empty($p['sexo'])): ?>
-                        <span class="badge" style="background: var(--paper); border: 1px solid var(--line); color: var(--ink);">
-                            <i class="fa-solid <?= $p['sexo'] === 'Hembra' ? 'fa-venus' : 'fa-mars' ?>" style="color: var(--green); margin-right: 4px;"></i>
-                            <?= e($p['sexo']) ?>
-                        </span>
-                    <?php endif; ?>
                 </div>
-
-                <h1 class="name-titlecase" style="margin: 0 0 6px; font-size: 30px;"><?= e_name($p['name']) ?></h1>
-                
-                <p class="muted" style="margin: 0; font-size: 14px;">
-                    <?= $p['breed'] ? 'Raza: <strong>' . e_name($p['breed']) . '</strong>' : 'Raza: <em>Mestizo / No especificada</em>' ?>
-                </p>
+                <h1 class="name-titlecase"><?= e_name($p['name']) ?></h1>
             </div>
-        </div>
 
-        <!-- Botones de Acción: Código para Vet, Asignar Dueño y Volver -->
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <button type="button" class="btn primary" onclick="openAccessCodeModal()" style="background: #1e5a4d; border-color: #1e5a4d;">
-                <i class="fa-solid fa-key" style="margin-right: 6px;"></i> Código para veterinaria
-            </button>
-            <button type="button" class="btn secondary" onclick="openModal('modalCoOwners')">
-                <i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> Asignar otro dueño
-            </button>
-            <a class="btn secondary" href="<?= url('cliente/mascotas.php') ?>">
-                <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Volver
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Tarjeta con Todos los Datos Completos de la Mascota -->
-<div class="card" style="margin-top: 20px;">
-    <h2 style="font-size: 18px; margin: 0 0 16px; color: var(--ink);">
-        <i class="fa-solid fa-id-card-clip" style="color: var(--green); margin-right: 8px;"></i>Ficha clínica de <?= e_name($p['name']) ?>
-    </h2>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Especie</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;"><?= e_name($p['animal_type']) ?></div>
-        </div>
-
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Sexo</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;">
-                <i class="fa-solid <?= ($p['sexo'] ?? '') === 'Hembra' ? 'fa-venus' : 'fa-mars' ?>" style="color: var(--green); margin-right: 4px;"></i>
-                <?= e($p['sexo'] ?: 'No registrado') ?>
+            <div class="pet-shelves">
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-paw"></i> Especie</span>
+                    <span class="pet-shelf-value"><?= e_name($p['animal_type']) ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid <?= ($p['sexo'] ?? '') === 'Hembra' ? 'fa-venus' : 'fa-mars' ?>"></i> Sexo</span>
+                    <span class="pet-shelf-value"><?= e($p['sexo'] ?: 'No registrado') ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-dna"></i> Raza</span>
+                    <span class="pet-shelf-value"><?= e_name($p['breed'] ?: 'Mestizo') ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-weight-scale"></i> Peso actual</span>
+                    <span class="pet-shelf-value"><?= $p['weight_kg'] ? e((string)$p['weight_kg']) . ' kg' : 'No registrado' ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-ruler-vertical"></i> Altura</span>
+                    <span class="pet-shelf-value"><?= $p['height_cm'] ? e((string)$p['height_cm']) . ' cm' : 'No registrada' ?></span>
+                </div>
+                <div class="pet-shelf">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-cake-candles"></i> Nacimiento</span>
+                    <span class="pet-shelf-value"><?= $p['birth_date'] ? date('d/m/Y', strtotime($p['birth_date'])) : 'No especificada' ?></span>
+                </div>
+                <div class="pet-shelf pet-shelf-stack">
+                    <span class="pet-shelf-label"><i class="fa-solid fa-users"></i> Tutores responsables</span>
+                    <div class="pet-shelf-value">
+                        <?php foreach ($owners as $ow): ?>
+                            <span class="pet-shelf-owner">
+                                <span class="name-titlecase"><?= e_name($ow['full_name']) ?></span>
+                                <small>DNI <?= e($ow['dni']) ?></small>
+                                <?php if ((int)$ow['is_primary'] === 1): ?>
+                                    <small class="is-primary">Principal</small>
+                                <?php else: ?>
+                                    <small>Co-tutor</small>
+                                <?php endif; ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Raza</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;"><?= e_name($p['breed'] ?: 'Mestizo') ?></div>
-        </div>
-
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Peso actual</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;">
-                <?= $p['weight_kg'] ? e((string)$p['weight_kg']) . ' kg' : 'No registrado' ?>
+            <!-- Botones de Acción: Código para Vet, Asignar Dueño y Volver -->
+            <div class="pet-profile-actions">
+                <button type="button" class="btn primary" onclick="openAccessCodeModal()" style="background: #1e5a4d; border-color: #1e5a4d;">
+                    <i class="fa-solid fa-key" style="margin-right: 6px;"></i> Código para veterinaria
+                </button>
+                <button type="button" class="btn secondary" onclick="openModal('modalCoOwners')">
+                    <i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> Asignar otro dueño
+                </button>
+                <a class="btn secondary" href="<?= url('cliente/mascotas.php') ?>">
+                    <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Volver
+                </a>
             </div>
-        </div>
-
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Altura</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;">
-                <?= $p['height_cm'] ? e((string)$p['height_cm']) . ' cm' : 'No registrada' ?>
-            </div>
-        </div>
-
-        <div style="background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;">
-            <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700;">Nacimiento</span>
-            <div style="font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 4px;">
-                <?= $p['birth_date'] ? date('d/m/Y', strtotime($p['birth_date'])) : 'No especificada' ?>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tutores Responsables de la Mascota -->
-    <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);">
-        <span class="muted" style="font-size: 12px; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 8px;">
-            <i class="fa-solid fa-users" style="color: var(--green); margin-right: 4px;"></i> Tutores responsables:
-        </span>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <?php foreach ($owners as $ow): ?>
-                <span class="pill" style="font-size: 13px; padding: 6px 12px; background: var(--paper); border: 1px solid var(--line);">
-                    <i class="fa-solid fa-user" style="color: var(--green); margin-right: 4px;"></i>
-                    <?= e_name($ow['full_name']) ?> (DNI: <?= e($ow['dni']) ?>)
-                    <?php if ((int)$ow['is_primary'] === 1): ?>
-                        <strong style="color: var(--green); font-size: 11px; margin-left: 4px;">(Principal)</strong>
-                    <?php else: ?>
-                        <span class="muted" style="font-size: 11px; margin-left: 4px;">(Co-tutor)</span>
-                    <?php endif; ?>
-                </span>
-            <?php endforeach; ?>
         </div>
     </div>
 </div>
