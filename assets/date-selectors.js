@@ -152,10 +152,33 @@
         for (let y = now.year; y <= now.year + 20; y += 1) addOption(year, String(y), String(y));
         year.value = String(now.year);
         month.value = String(now.month);
-        for (let minutes = 0; minutes < 24 * 60; minutes += 15) {
-            const value = `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
-            addOption(time, value, value);
-        }
+        // Horario de atención opcional por campo (lo arma includes/horarios.php):
+        //   data-time-start / data-time-end: primer y último turno "HH:MM" (sin ellos, todo el día;
+        //     si el último es menor que el primero, el horario cruza la medianoche).
+        //   data-days: días ISO en que atiende, ej. "1,2,3,4,5" (vacío = todos).
+        const toMinutes = (text, fallback) => {
+            const m = /^(\d{2}):(\d{2})$/.exec(text || '');
+            return m ? Number(m[1]) * 60 + Number(m[2]) : fallback;
+        };
+        const allowedDays = () => (input.dataset.days || '').split(',').map(Number).filter(Boolean);
+        const buildTimes = () => {
+            const previous = time.value;
+            time.replaceChildren();
+            addOption(time, '', 'Elegí un horario');
+            const firstSlot = toMinutes(input.dataset.timeStart, 0);
+            const lastSlot = toMinutes(input.dataset.timeEnd, 24 * 60 - 15);
+            const end = lastSlot >= firstSlot ? lastSlot : lastSlot + 24 * 60;
+            for (let minutes = firstSlot; minutes <= end; minutes += 15) {
+                const m = minutes % (24 * 60);
+                const value = `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+                addOption(time, value, value);
+            }
+            if (previous && Array.from(time.options).some((option) => option.value === previous)) {
+                time.value = previous;
+            }
+        };
+        time.replaceChildren();
+        buildTimes();
 
         [day, month, year, time].forEach((select) => { select.required = wasRequired; });
         dateParts.append(day, month, year);
@@ -195,7 +218,13 @@
             const dayCount = new Date(yearNumber, monthNumber, 0).getDate();
             const today = localToday();
             const firstAvailableDay = yearNumber === today.year && monthNumber === today.month ? today.day : 1;
-            for (let d = firstAvailableDay; d <= dayCount; d += 1) addOption(day, String(d), String(d));
+            const days = allowedDays();
+            for (let d = firstAvailableDay; d <= dayCount; d += 1) {
+                // Solo los días en que atiende la veterinaria (getDay: 0 = domingo -> ISO 7)
+                const iso = new Date(yearNumber, monthNumber - 1, d).getDay() || 7;
+                if (days.length && !days.includes(iso)) continue;
+                addOption(day, String(d), String(d));
+            }
             if (previousDay && Array.from(day.options).some((option) => option.value === previousDay)) {
                 day.value = previousDay;
             }
@@ -208,17 +237,21 @@
             const hasDate = day.value && month.value && year.value;
             const today = localToday();
 
-            if (hasDate && Number(year.value) === today.year && Number(month.value) === today.month && Number(day.value) === today.day) {
-                const current = new Date();
-                const currentMinutes = current.getHours() * 60 + current.getMinutes();
-                Array.from(time.options).forEach((option) => {
-                    if (!option.value) return;
-                    const [hours, mins] = option.value.split(':').map(Number);
-                    option.disabled = hours * 60 + mins <= currentMinutes;
-                });
-            } else {
-                Array.from(time.options).forEach((option) => { if (option.value) option.disabled = false; });
-            }
+            // Se deshabilitan los horarios ya pasados (si es hoy) y los ya reservados
+            // (data-taken: "2026-11-09T10:00,..." = turnos confirmados de la veterinaria).
+            const isToday = hasDate && Number(year.value) === today.year && Number(month.value) === today.month && Number(day.value) === today.day;
+            const current = new Date();
+            const currentMinutes = current.getHours() * 60 + current.getMinutes();
+            const taken = new Set((input.dataset.taken || '').split(',').filter(Boolean));
+            const datePrefix = hasDate ? `${year.value}-${pad(month.value)}-${pad(day.value)}T` : '';
+            Array.from(time.options).forEach((option) => {
+                if (!option.value) return;
+                const [hours, mins] = option.value.split(':').map(Number);
+                const isPast = isToday && hours * 60 + mins <= currentMinutes;
+                const isTaken = hasDate && taken.has(datePrefix + option.value);
+                option.disabled = isPast || isTaken;
+                option.textContent = isTaken ? `${option.value} · reservado` : option.value;
+            });
             if (time.selectedOptions[0]?.disabled) time.value = '';
             if (wasRequired && !time.value && hasDate) time.setCustomValidity('Elegí un horario futuro.');
 
@@ -242,7 +275,7 @@
         year.addEventListener('focus', sync);
         const form = input.form;
         if (form) form.addEventListener('submit', sync, true);
-        const picker = { day, month, year, time, sync };
+        const picker = { day, month, year, time, sync, buildTimes };
         input._vcAppointmentPicker = picker;
         const match = String(initialValue || '').match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})$/);
         if (match) {
@@ -264,6 +297,22 @@
     window.syncAppointmentPicker = (target) => {
         const input = typeof target === 'string' ? document.getElementById(target) : target;
         input?._vcAppointmentPicker?.sync();
+    };
+
+    // Cambia los días y horarios permitidos de un selector de turno (ej. al elegir otra veterinaria).
+    // schedule = { days: "1,2,3", start: "08:00", end: "21:45", taken: "2026-11-09T10:00,..." };
+    // vacíos = sin restricción.
+    window.setAppointmentSchedule = (target, schedule) => {
+        const input = typeof target === 'string' ? document.getElementById(target) : target;
+        if (!input) return;
+        input.dataset.days = schedule?.days || '';
+        input.dataset.taken = schedule?.taken || '';
+        input.dataset.timeStart = schedule?.start || '';
+        input.dataset.timeEnd = schedule?.end || '';
+        const picker = input._vcAppointmentPicker;
+        if (!picker) return;
+        picker.buildTimes();
+        picker.sync();
     };
 
     initialize();

@@ -98,7 +98,9 @@ require __DIR__ . '/../includes/header.php';
             </div>
         </div>
         
-        <div class="form-grid">
+        <!-- compact-date-grid (date-selectors.css): Día/Mes/Año se achican para entrar en su
+             columna y no pisar la foto, manteniendo todos los campos en la misma fila. -->
+        <div class="form-grid compact-date-grid">
             <div>
                 <label>Nombre de la mascota *</label>
                 <input name="name" placeholder="Ej. Luna" required>

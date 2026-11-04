@@ -104,3 +104,26 @@
         grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, 1fr);
     }
 }
+
+/* Grillas donde la fecha comparte fila con otros campos (ej. Agregar mascota del tutor):
+   los selectores Día/Mes/Año pueden achicarse hasta el ancho de su columna en lugar de
+   desbordar sobre el campo de al lado. */
+.compact-date-grid > div {
+    min-width: 0;
+}
+
+.compact-date-grid .vc-date-picker {
+    grid-template-columns: minmax(0, .75fr) minmax(0, 1.45fr) minmax(0, 1fr);
+    gap: 6px;
+}
+
+.compact-date-grid .vc-date-picker select {
+    padding-left: 8px;
+    padding-right: 4px;
+    text-overflow: ellipsis;
+}
+
+.compact-date-grid input[type="file"] {
+    min-width: 0;
+    max-width: 100%;
+}

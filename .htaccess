@@ -1,0 +1,11 @@
+# Página de error 404 propia.
+# Cualquier dirección que no sea un archivo o carpeta real del proyecto se
+# atiende con 404.php (que además devuelve el código HTTP 404).
+# Se usa RewriteRule con ruta relativa en lugar de "ErrorDocument" para no
+# tener que escribir a mano la carpeta del proyecto dentro de htdocs.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ 404.php [L]
+</IfModule>

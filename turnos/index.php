@@ -13,16 +13,46 @@ $form = ['dni' => '', 'pet_id' => 0, 'appointment_at' => '', 'reason_option' => 
 $professionals = vet_professionals($cid);
 $myId = (int)$_SESSION['vet_user_id'];
 
+// Días y horarios de atención de la clínica: los turnos solo se dan dentro de ellos.
+// Si la clínica no los cargó, no se restringe.
+$q = db()->prepare("SELECT available_days, opening_time, closing_time FROM clinics WHERE id = ?");
+$q->execute([$cid]);
+$schedule = clinic_schedule($q->fetch() ?: []);
+
 // 1. Procesar la actualización del estado de un turno existente
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_status'])) {
     $aid = (int)($_POST['appointment_id'] ?? 0);
     $status = $_POST['status'] ?? '';
 
     if (in_array($status, ['Solicitado', 'Confirmado', 'Cancelado', 'Atendido'], true)) {
-        $q = db()->prepare("UPDATE appointments SET status = ? WHERE id = ? AND clinic_id = ?");
-        $q->execute([$status, $aid, $cid]);
-        
-        flash('Estado del turno actualizado.');
+        // Al confirmar, el horario no puede estar ya confirmado para otro turno de la clínica.
+        $pdo = db();
+        $pdo->beginTransaction();
+        try {
+            lock_clinic_for_booking($cid);
+            $taken = false;
+            if ($status === 'Confirmado') {
+                $q = $pdo->prepare("SELECT appointment_at FROM appointments WHERE id = ? AND clinic_id = ?");
+                $q->execute([$aid, $cid]);
+                $at = $q->fetchColumn();
+                $taken = $at !== false && appointment_slot_taken($cid, (string)$at, $aid);
+            }
+            if ($taken) {
+                $pdo->rollBack();
+                flash('No se pudo confirmar: ya hay otro turno confirmado en ese mismo horario. Cancelá uno o pedile al cliente otro horario.');
+            } else {
+                $q = $pdo->prepare("UPDATE appointments SET status = ? WHERE id = ? AND clinic_id = ?");
+                $q->execute([$status, $aid, $cid]);
+                $pdo->commit();
+                flash('Estado del turno actualizado.');
+            }
+        } catch (Throwable $ex) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $ex;
+        }
+
         header('Location: ' . url('turnos/index.php'));
         exit;
     }
@@ -67,6 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_status'])) {
         $error = 'Ingresá una fecha y hora válidas.';
     } elseif ((int)$when->format('i') % 15 !== 0) {
         $error = 'Elegí un horario en intervalos de 15 minutos.';
+    } elseif (($scheduleError = clinic_schedule_error($schedule, $when)) !== null) {
+        $error = $scheduleError;
     } elseif ($when <= new DateTime()) {
         $error = 'El turno no puede ser en una fecha u hora anterior a la actual.';
     } elseif ($reason === null) {
@@ -74,19 +106,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_status'])) {
     } elseif ($profId > 0 && !in_array($profId, array_map(fn($p) => (int)$p['id'], $professionals), true)) {
         $error = 'El profesional elegido no pertenece a esta clínica.';
     } else {
-        // Registrar o actualizar la relación entre la clínica y el cliente
-        $q = db()->prepare("INSERT INTO clinic_clients(clinic_id, client_id) VALUES(?, ?) ON DUPLICATE KEY UPDATE last_seen_at = CURRENT_TIMESTAMP");
-        $q->execute([$cid, $client]);
+        // El turno se crea ya confirmado: el horario tiene que estar libre (con la clínica
+        // bloqueada mientras se verifica, por si otro pedido llega al mismo tiempo).
+        $pdo = db();
+        $pdo->beginTransaction();
+        try {
+            lock_clinic_for_booking($cid);
+            if (appointment_slot_taken($cid, $dt)) {
+                $error = APPOINTMENT_SLOT_TAKEN_MSG;
+                $pdo->rollBack();
+            } else {
+                // Registrar o actualizar la relación entre la clínica y el cliente
+                $q = $pdo->prepare("INSERT INTO clinic_clients(clinic_id, client_id) VALUES(?, ?) ON DUPLICATE KEY UPDATE last_seen_at = CURRENT_TIMESTAMP");
+                $q->execute([$cid, $client]);
 
-        // Guardar el nuevo turno
-        $q = db()->prepare("INSERT INTO appointments(clinic_id, client_id, pet_id, vet_user_id, requested_by, appointment_at, reason, status) VALUES(?, ?, ?, ?, 'veterinaria', ?, ?, 'Confirmado')");
-        $q->execute([$cid, $client, $pet, $profId > 0 ? $profId : null, $dt, $reason]);
+                // Guardar el nuevo turno
+                $q = $pdo->prepare("INSERT INTO appointments(clinic_id, client_id, pet_id, vet_user_id, requested_by, appointment_at, reason, status) VALUES(?, ?, ?, ?, 'veterinaria', ?, ?, 'Confirmado')");
+                $q->execute([$cid, $client, $pet, $profId > 0 ? $profId : null, $dt, $reason]);
+                $pdo->commit();
 
-        flash('Turno asignado.');
-        header('Location: ' . url('turnos/index.php'));
-        exit;
+                flash('Turno asignado.');
+                header('Location: ' . url('turnos/index.php'));
+                exit;
+            }
+        } catch (Throwable $ex) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $ex;
+        }
     }
 }
+
+// Horarios ya confirmados de la clínica: el selector no los ofrece.
+$takenSlots = clinics_taken_slots([$cid])[$cid] ?? [];
 
 // 3. Obtener el listado de turnos de la clínica (últimos 100). Con ?mine=1 solo los que eligieron a este profesional.
 $onlyMine = !empty($_GET['mine']);
@@ -141,7 +194,11 @@ require __DIR__ . '/../includes/header.php';
             </div>
             <div>
                 <label for="turnoFechaDay">Fecha y hora</label>
-                <input type="datetime-local" id="turnoFecha" name="appointment_at" value="<?= e($form['appointment_at']) ?>" required>
+                <?php // Solo los días y horarios de atención de la clínica (includes/horarios.php) ?>
+                <input type="datetime-local" id="turnoFecha" name="appointment_at" <?= schedule_data_attrs($schedule) ?> data-taken="<?= e(implode(',', $takenSlots)) ?>" value="<?= e($form['appointment_at']) ?>" required>
+                <?php if ($schedule['label'] !== ''): ?>
+                    <small class="muted" style="display: block; margin-top: 6px; font-size: 12px;"><i class="fa-regular fa-clock"></i> Atienden <?= e($schedule['label']) ?></small>
+                <?php endif; ?>
             </div>
             <div>
                 <label for="turnoProf">Profesional (opcional)</label>

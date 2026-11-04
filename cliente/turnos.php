@@ -10,12 +10,25 @@ $error = '';
 // 1. Veterinarias activas. En la lista aparecen solo las que el tutor ya visitó; el resto se muestra
 //    cuando las busca por nombre o por cercanía (se puede pedir turno en cualquiera de las activas).
 $clinics = db()->query("
-    SELECT id, name, street, city, province
+    SELECT id, name, street, city, province, available_days, opening_time, closing_time
     FROM clinics
     WHERE active = 1
     ORDER BY name
 ")->fetchAll();
 $clinicIds = array_map(fn($c) => (int)$c['id'], $clinics);
+
+// Días y horarios de atención de cada veterinaria (includes/horarios.php). Si una no cargó
+// su horario, se usa el general de 08:30 a 22:00.
+$schedules = [];
+foreach ($clinics as $c) {
+    $s = clinic_schedule($c);
+    if ($s['first_slot'] === null) {
+        $s['first_slot'] = '08:30';
+        $s['last_slot'] = '22:00';
+        $s['label'] = trim(($s['label'] !== '' ? $s['label'] . ', ' : '') . 'de 08:30 a 22:00');
+    }
+    $schedules[(int)$c['id']] = $s;
+}
 
 // Veterinarias donde alguna mascota del tutor (propia o compartida) ya tuvo una consulta
 $q = db()->prepare("
@@ -77,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Elegí una fecha y hora válidas.';
     } elseif ((int)$when->format('i') % 15 !== 0) {
         $error = 'Elegí un horario en intervalos de 15 minutos.';
+    } elseif (($scheduleError = clinic_schedule_error($schedules[$clinic], $when)) !== null) {
+        $error = $scheduleError;
     } elseif ($when <= new DateTime()) {
         $error = 'Elegí una fecha y hora futuras.';
     } elseif ($reason === null) {
@@ -84,18 +99,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($profId > 0 && !in_array($profId, $profIdsOfClinic, true)) {
         $error = 'El profesional elegido no atiende en esa veterinaria.';
     } else {
-        // Insertar el turno con estado "Solicitado"
-        $q = db()->prepare("
-            INSERT INTO appointments(clinic_id, client_id, pet_id, vet_user_id, requested_by, appointment_at, reason, status)
-            VALUES(?, ?, ?, ?, 'cliente', ?, ?, 'Solicitado')
-        ");
-        $q->execute([$clinic, $clientId, $pet, $profId > 0 ? $profId : null, $dt, $reason]);
+        // Insertar el turno con estado "Solicitado", solo si ese horario no está confirmado para
+        // otro cliente. La veterinaria queda bloqueada durante la verificación para que dos
+        // pedidos simultáneos no tomen el mismo horario.
+        $pdo = db();
+        $pdo->beginTransaction();
+        try {
+            lock_clinic_for_booking($clinic);
+            if (appointment_slot_taken($clinic, $dt . ':00')) {
+                $error = APPOINTMENT_SLOT_TAKEN_MSG;
+                $pdo->rollBack();
+            } else {
+                $q = $pdo->prepare("
+                    INSERT INTO appointments(clinic_id, client_id, pet_id, vet_user_id, requested_by, appointment_at, reason, status)
+                    VALUES(?, ?, ?, ?, 'cliente', ?, ?, 'Solicitado')
+                ");
+                $q->execute([$clinic, $clientId, $pet, $profId > 0 ? $profId : null, $dt, $reason]);
+                $pdo->commit();
 
-        flash('Solicitud enviada. La veterinaria debe confirmarla.');
-        header('Location: ' . url('cliente/turnos.php'));
-        exit;
+                flash('Solicitud enviada. La veterinaria debe confirmarla.');
+                header('Location: ' . url('cliente/turnos.php'));
+                exit;
+            }
+        } catch (Throwable $ex) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $ex;
+        }
     }
 }
+
+// Horarios ya confirmados de cada veterinaria: el selector no los ofrece.
+$takenSlots = clinics_taken_slots($clinicIds);
 
 // 4. Historial de turnos y solicitudes del cliente
 $q = db()->prepare("
@@ -176,6 +212,9 @@ require __DIR__ . '/../includes/header.php';
                         $isSelected = $selectedClinic === (int)$cl['id'];
                     ?>
                     <label class="tc-item" data-id="<?= (int)$cl['id'] ?>" data-visited="<?= $isVisited ? '1' : '0' ?>"
+                           <?= schedule_data_attrs($schedules[(int)$cl['id']]) ?>
+                           data-schedule-label="<?= e($schedules[(int)$cl['id']]['label']) ?>"
+                           data-taken="<?= e(implode(',', $takenSlots[(int)$cl['id']] ?? [])) ?>"
                            data-search="<?= e(mb_strtolower($cl['name'] . ' ' . $addr)) ?>"
                            <?= ($isVisited || $isSelected) ? '' : 'hidden' ?>>
                         <input type="radio" name="clinic_id" value="<?= (int)$cl['id'] ?>" required
@@ -213,7 +252,16 @@ require __DIR__ . '/../includes/header.php';
 
                 <div>
                     <label for="clientTurnoFechaDay">Fecha y horario deseado</label>
-                    <input type="datetime-local" id="clientTurnoFecha" name="appointment_at" required value="<?= e($_POST['appointment_at'] ?? '') ?>">
+                    <?php // Días y horarios según la veterinaria elegida; el JS los cambia al elegir otra. ?>
+                    <input type="datetime-local" id="clientTurnoFecha" name="appointment_at"
+                           <?= $selectedClinic ? schedule_data_attrs($schedules[$selectedClinic]) : 'data-time-start="08:30" data-time-end="22:00"' ?>
+                           data-taken="<?= e(implode(',', $takenSlots[$selectedClinic] ?? [])) ?>"
+                           required value="<?= e($_POST['appointment_at'] ?? '') ?>">
+                    <small class="muted" id="clinicScheduleHint" style="display: block; margin-top: 6px; font-size: 12px;">
+                        <?= $selectedClinic
+                            ? '<i class="fa-regular fa-clock"></i> Atiende ' . e($schedules[$selectedClinic]['label'])
+                            : 'Elegí una veterinaria para ver sus días y horarios.' ?>
+                    </small>
                 </div>
 
                 <div>
@@ -351,6 +399,22 @@ require __DIR__ . '/../includes/header.php';
     }
     list.addEventListener('change', refreshProfessionals);
     refreshProfessionals();
+
+    // ---- Días y horarios de la veterinaria elegida ----
+    // El selector de fecha solo ofrece los días y horarios en que atiende (datos en cada .tc-item).
+    const scheduleHint = document.getElementById('clinicScheduleHint');
+    function refreshSchedule() {
+        const checked = list.querySelector('input:checked');
+        const item = checked && checked.closest('.tc-item');
+        if (!item) { return; }
+        window.setAppointmentSchedule('clientTurnoFecha', {
+            days: item.dataset.days, start: item.dataset.timeStart, end: item.dataset.timeEnd,
+            taken: item.dataset.taken
+        });
+        scheduleHint.innerHTML = '<i class="fa-regular fa-clock"></i> ';
+        scheduleHint.append('Atiende ' + item.dataset.scheduleLabel);
+    }
+    list.addEventListener('change', refreshSchedule);
     applyFilter(false);
 
     // ---- Orden por cercanía ----

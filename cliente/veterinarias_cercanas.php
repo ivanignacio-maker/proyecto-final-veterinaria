@@ -60,7 +60,7 @@ require __DIR__ . '/../includes/header.php';
         </button>
         <span class="muted" style="font-size: 13px;">o</span>
         <form class="vc-search" id="vcSearchForm">
-            <input type="text" id="vcQuery" maxlength="200" placeholder="Escribí tu dirección o localidad (Ej. Ramos Mejía, Buenos Aires)">
+            <input type="text" id="vcQuery" maxlength="200" placeholder="Ingresa una ubicación">
             <button type="submit" class="btn secondary">Buscar</button>
         </form>
     </div>

@@ -48,7 +48,7 @@
                 <div class="footer-col footer-col-social">
                     <h3 class="footer-heading">Redes sociales</h3>
                     <div class="footer-social-icons">
-                        <a class="footer-social-icon" href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+                        <a class="footer-social-icon" href="https://instagram.com/vetcare.ok" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
                             <i class="fa-brands fa-instagram" aria-hidden="true"></i>
                         </a>
                         <a class="footer-social-icon" href="https://www.facebook.com/profile.php?id=61596432201348" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">

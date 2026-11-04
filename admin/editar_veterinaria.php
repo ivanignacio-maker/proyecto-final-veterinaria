@@ -34,8 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Elegí el rol del nuevo usuario (jefe, doctor o recepcionista).';
             } elseif ($newUsername === '' || !filter_var($newEmail, FILTER_VALIDATE_EMAIL) ) {
                 $error = 'Para el nuevo usuario completá nombre y un correo válido.';
-            } elseif (($passError = password_policy_error($newPassword)) !== null) {
-                $error = $passError;
+            } elseif ($newPassword === '') {
+                // El admin elige libremente la contraseña de los usuarios de veterinaria (sin política).
+                $error = 'Escribí una contraseña para el nuevo usuario.';
             } else {
                 try {
                     $stmtUser = db()->prepare("INSERT INTO vet_users (clinic_id, username, email, role, password_hash, active) VALUES (?, ?, ?, ?, ?, 1)");
@@ -99,10 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($error === '' ? $formUsers : [] as $fu) {
                     if ($fu['username'] === '' || !filter_var($fu['email'], FILTER_VALIDATE_EMAIL)) {
                         $error = 'Cada usuario necesita un nombre y un correo válido.';
-                        break;
-                    }
-                    if ($fu['password'] !== '' && ($passError = password_policy_error($fu['password'])) !== null) {
-                        $error = $passError;
                         break;
                     }
                 }
@@ -331,7 +328,7 @@ require __DIR__ . '/../includes/header.php';
                     </div>
                     <div>
                         <label>Nueva contraseña (opcional)</label>
-                        <input type="password" name="users[<?= (int)$uid ?>][password]" minlength="8" placeholder="Vacía = no cambiarla. <?= e(password_policy_hint()) ?>" title="<?= e(password_policy_hint()) ?>" autocomplete="new-password">
+                        <input type="password" name="users[<?= (int)$uid ?>][password]" placeholder="Vacía = no cambiarla" autocomplete="new-password">
                     </div>
                 </div>
                 <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
@@ -388,8 +385,7 @@ require __DIR__ . '/../includes/header.php';
 
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px;">Contraseña inicial</label>
-                <input type="password" name="new_password" class="form-control" minlength="8" required style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px;" placeholder="Mayúscula, minúscula y número" autocomplete="new-password">
-                <small style="display: block; margin-top: 5px; color: var(--muted); font-size: 12px;"><?= e(password_policy_hint()) ?></small>
+                <input type="password" name="new_password" class="form-control" required style="width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px;" placeholder="La que quieras" autocomplete="new-password">
             </div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">

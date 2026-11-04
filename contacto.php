@@ -257,7 +257,7 @@
                         Seguinos para novedades sobre salud animal, actualizaciones del sistema y capacitaciones veterinarias:
                     </p>
                     <div class="contact-social-icons">
-                        <a class="contact-social-icon" href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+                        <a class="contact-social-icon" href="https://instagram.com/vetcare.ok" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
                             <i class="fa-brands fa-instagram" aria-hidden="true"></i>
                         </a>
                         <a class="contact-social-icon" href="https://www.facebook.com/profile.php?id=61596432201348" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">

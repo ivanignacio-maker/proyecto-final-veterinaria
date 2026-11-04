@@ -62,8 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$name || !filter_var($clinicEmail, FILTER_VALIDATE_EMAIL) || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$username) {
         $error = 'Completá el nombre de la veterinaria, su correo y los datos del usuario inicial.';
-    } elseif (($passError = password_policy_error($pass)) !== null) {
-        $error = $passError;
+    } elseif ($pass === '') {
+        // El admin elige libremente la contraseña inicial (sin política).
+        $error = 'Escribí la contraseña inicial del usuario.';
     } elseif ($street === '' || $city === '' || !in_array($province, ar_provinces(), true)
               || mb_strlen($street) > 180 || mb_strlen($city) > 120) {
         $error = 'Completá la dirección: provincia, localidad y calle con número.';
@@ -115,7 +116,7 @@ $search = trim($_GET['q'] ?? '');
 
 if ($search !== '') {
     $q = db()->prepare("
-        SELECT c.*, COUNT(u.id) users
+        SELECT c.*, COUNT(CASE WHEN u.active = 1 THEN u.id END) users
         FROM clinics c
         LEFT JOIN vet_users u ON u.clinic_id = c.id
         WHERE c.id = ? OR c.name LIKE ? OR c.email LIKE ? OR c.cuit LIKE ? OR c.city LIKE ?
@@ -128,7 +129,7 @@ if ($search !== '') {
     $rows = $q->fetchAll();
 } else {
     $rows = db()->query("
-        SELECT c.*, COUNT(u.id) users
+        SELECT c.*, COUNT(CASE WHEN u.active = 1 THEN u.id END) users
         FROM clinics c
         LEFT JOIN vet_users u ON u.clinic_id = c.id
         GROUP BY c.id
@@ -262,10 +263,9 @@ require __DIR__ . '/../includes/header.php';
             <div>
                 <label>Contraseña inicial</label>
                 <div style="display: flex; gap: 8px;">
-                    <input type="text" name="password" id="newClinicPass" minlength="8" placeholder="Mayúscula, minúscula y número" required autocomplete="new-password" style="margin: 0; flex: 1;">
+                    <input type="text" name="password" id="newClinicPass" placeholder="La que quieras" required autocomplete="new-password" style="margin: 0; flex: 1;">
                     <button type="button" class="btn secondary btn-sm" id="genPass">Generar</button>
                 </div>
-                <small class="muted"><?= e(password_policy_hint()) ?></small>
             </div>
         </div>
 
@@ -345,7 +345,7 @@ require __DIR__ . '/../includes/header.php';
                     <td><?= e($r['email']) ?></td>
                     <td><?= $address !== '' ? e($address) : '<span class="muted">Sin dirección</span>' ?></td>
                     <td style="white-space: nowrap;">
-                        <span class="pill pill-users"><i class="fa-solid fa-user-doctor" style="color: var(--green);"></i> <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
+                        <span class="pill pill-users"><i class="fa-solid fa-user-doctor" style="color: var(--green);"></i> <?= (int)$r['users'] ?> usuario<?= (int)$r['users'] === 1 ? '' : 's' ?> activo<?= (int)$r['users'] === 1 ? '' : 's' ?></span>
                     </td>
                     <td>
                         <span class="badge <?= $isActive ? 'badge-success' : 'badge-danger' ?>">

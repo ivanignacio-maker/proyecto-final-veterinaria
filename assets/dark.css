@@ -83,7 +83,7 @@ html[data-theme="dark"] body.page-bg-migration::before {
 }
 
 html[data-theme="dark"] body.page-bg-migration::after {
-    background: linear-gradient(to bottom, rgba(15, 25, 22, .18) 0%, rgba(15, 25, 22, .32) 45%, rgba(15, 25, 22, .72) 62%, #0f1916 75%);
+    background: rgba(15, 25, 22, .24);
 }
 
 html[data-theme="dark"] body.page-bg-about::before {
@@ -108,7 +108,7 @@ html[data-theme="dark"] body.page-bg-plans::before {
 }
 
 html[data-theme="dark"] body.page-bg-plans::after {
-    background: linear-gradient(to bottom, rgba(15, 25, 22, .4) 0%, rgba(15, 25, 22, .58) 24%, rgba(15, 25, 22, .82) 45%, rgba(15, 25, 22, .96) 58%, var(--paper) 66%);
+    background: linear-gradient(to bottom, rgba(15, 25, 22, .36) 0%, rgba(15, 25, 22, .48) 30%, rgba(15, 25, 22, .66) 55%, rgba(15, 25, 22, .8) 75%, rgba(15, 25, 22, .88) 100%);
 }
 
 html[data-theme="dark"] body.page-bg-contact::before {
@@ -410,6 +410,14 @@ html[data-theme="dark"] body.client-portal :is(.panel, .card, .vc-results-shell,
     box-shadow: 8px 8px 0 rgba(42, 143, 117, .38), 0 16px 32px rgba(0, 0, 0, .28) !important;
 }
 
+/* "Pedir turno" en Veterinarias cercanas: la regla generada `.vc-card a { color: var(--green) }`
+   pintaba el texto del mismo verde que el fondo del botón y lo dejaba invisible. */
+html[data-theme="dark"] .vc-card a.vc-turno,
+html[data-theme="dark"] .vc-card a.vc-turno:hover,
+html[data-theme="dark"] .vc-card a.vc-turno i {
+    color: #fff;
+}
+
 html[data-theme="dark"] .consultation-auth-code-input::placeholder {
     color: #98aaa1;
 }
@@ -507,4 +515,31 @@ html[data-theme="dark"] .footer-bottom {
         color: #10251e;
         box-shadow: 0 0 0 4px rgba(67, 201, 158, .16), 0 0 26px rgba(67, 201, 158, .62);
     }
+}
+
+/* Halo de legibilidad sobre fondos ilustrados (modo oscuro) */
+html[data-theme="dark"] body.page-bg-home .section-header-center::before,
+html[data-theme="dark"] body.page-bg-follow .section-header-center::before,
+html[data-theme="dark"] body.page-bg-follow .page-intro-header::before,
+html[data-theme="dark"] body.page-bg-home .audience-block-header::before,
+html[data-theme="dark"] body.page-bg-follow .pricing-toggle-wrap::before {
+    background: rgba(15, 25, 22, .84);
+}
+
+/* Planes: con el fondo oscuro, el halo rectangular se notaba como una caja negra.
+   Se recorta con una elipse que se desvanece hacia afuera, así queda sin bordes. */
+html[data-theme="dark"] body.page-bg-plans .page-intro-header::before,
+html[data-theme="dark"] body.page-bg-plans .pricing-toggle-wrap::before {
+    background: rgba(15, 25, 22, .62);
+    -webkit-mask-image: radial-gradient(closest-side, #000 45%, rgba(0, 0, 0, .6) 70%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 45%, rgba(0, 0, 0, .6) 70%, transparent 100%);
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+}
+
+html[data-theme="dark"] body.page-bg-home .section-header-center .section-desc,
+html[data-theme="dark"] body.page-bg-follow .section-header-center .section-desc,
+html[data-theme="dark"] body.page-bg-follow .page-intro-header p,
+html[data-theme="dark"] body.page-bg-home .audience-title-text p {
+    color: #bccdc6;
 }

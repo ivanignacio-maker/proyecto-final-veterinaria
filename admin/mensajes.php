@@ -85,10 +85,6 @@ require __DIR__ . '/../includes/header.php';
         </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px;">
-            <a class="btn primary btn-sm" href="mailto:<?= e($m['email']) ?>?subject=<?= rawurlencode('Re: ' . $m['subject'] . ' (soporte ' . APP_NAME . ')') ?>">
-                <i class="fa-solid fa-reply" style="margin-right: 6px;"></i>Responder a <?= e($m['email']) ?>
-            </a>
-            <?php if ($m['phone']): ?><span class="muted"><i class="fa-solid fa-phone" style="margin-right: 4px;"></i><?= e($m['phone']) ?></span><?php endif; ?>
             <form method="post" style="margin: 0 0 0 auto;">
                 <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="id" value="<?= (int)$m['id'] ?>">

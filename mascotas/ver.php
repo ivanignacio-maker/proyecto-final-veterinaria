@@ -15,8 +15,7 @@ $q->execute([$id]);
 $p = $q->fetch();
 
 if (!$p) {
-    http_response_code(404);
-    exit('Mascota no encontrada');
+    not_found();
 }
 
 // 2. Obtener el historial clínico (consultas en todas las clínicas vinculadas)

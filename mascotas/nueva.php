@@ -19,6 +19,10 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $type = trim($_POST['animal_type'] ?? '');
+    $sexo = trim($_POST['sexo'] ?? '');
+    if (!in_array($sexo, ['Macho', 'Hembra'], true)) {
+        $sexo = null;
+    }
     $breed = trim($_POST['breed'] ?? '');
     
     // Convertir campos opcionales numéricos
@@ -28,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $photo = null;
 
     // Validación de campos obligatorios
-    if (!$name || !$type) {
-        $error = 'Nombre y tipo de animal son obligatorios.';
+    if (!$name || !$type || !$sexo) {
+        $error = 'El nombre, tipo de animal y sexo son obligatorios.';
     }
 
     // 2. Procesar subida de foto (si no hay errores previos y se envió un archivo)
@@ -56,12 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 3. Guardar en base de datos si no hay errores
     if (!$error) {
-        $q = db()->prepare("INSERT INTO pets(client_id, name, animal_type, breed, weight_kg, height_cm, birth_date, photo_path) VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+        $q = db()->prepare("INSERT INTO pets(client_id, name, animal_type, sexo, breed, weight_kg, height_cm, birth_date, photo_path) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $q->execute([
-            $clientId, 
-            $name, 
-            $type, 
-            $breed ?: null, 
+            $clientId,
+            $name,
+            $type,
+            $sexo,
+            $breed ?: null,
             $weight, 
             $height, 
             $_POST['birth_date'] ?: null, 
@@ -97,14 +102,17 @@ require __DIR__ . '/../includes/header.php';
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
         <input type="hidden" name="client_id" value="<?= $clientId ?>">
         
-        <div class="form-grid">
+        <!-- Mismo armado que "Registrar una mascota" del tutor: dos filas de cuatro campos.
+             compact-date-grid (date-selectors.css): Día/Mes/Año se achican para entrar en su
+             columna y no pisar la foto. -->
+        <div class="form-grid compact-date-grid">
             <div>
-                <label>Nombre</label>
+                <label>Nombre *</label>
                 <input name="name" required>
             </div>
-            
+
             <div>
-                <label>Tipo de animal</label>
+                <label>Tipo de animal *</label>
                 <select name="animal_type" required>
                     <option value="">Seleccionar</option>
                     <option>Perro</option>
@@ -115,30 +123,40 @@ require __DIR__ . '/../includes/header.php';
                     <option>Otro</option>
                 </select>
             </div>
-            
+
+            <div>
+                <label>Sexo *</label>
+                <select name="sexo" required>
+                    <option value="">Seleccionar</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
+            </div>
+
             <div>
                 <label>Raza</label>
                 <input name="breed">
             </div>
-            
+
             <div>
                 <label>Peso (kg)</label>
                 <input type="number" min="0" step=".01" name="weight_kg">
             </div>
-            
+
             <div>
                 <label>Altura (cm)</label>
                 <input type="number" min="0" step=".1" name="height_cm">
             </div>
-            
+
             <div>
                 <label>Fecha de nacimiento</label>
                 <input type="date" name="birth_date">
             </div>
-            
+
             <div>
-                <label>Foto de perfil (opcional, máx. 3 MB)</label>
-                <input type="file" name="photo" accept=".jpg,.jpeg,.png,.webp">
+                <label>Foto de perfil (opcional)</label>
+                <input type="file" name="photo" accept=".jpg,.jpeg,.png,.webp" style="font-size: 13px;">
+                <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">JPG, PNG o WEBP. Máximo 5 MB.</div>
             </div>
         </div>
         

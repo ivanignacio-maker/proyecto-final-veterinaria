@@ -168,23 +168,24 @@ require __DIR__ . '/../includes/header.php';
                 <div>
                     <!-- Encabezado de la Tarjeta de Mascota -->
                     <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
                             <img class="pet-photo pet-card-photo" src="<?= pet_photo_url($p) ?>" alt="Foto de <?= e_name($p['name']) ?>">
 
-                            <div>
-                                <h3 class="name-titlecase" style="margin: 0 0 4px; font-size: 19px; color: var(--ink);"><?= e_name($p['name']) ?></h3>
-                                <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--green); background: var(--mint); padding: 2px 10px; border-radius: 12px;">
-                                    <?= e_name($p['animal_type']) ?> <?= $p['breed'] ? '· ' . e_name($p['breed']) : '' ?>
-                                </span>
+                            <div style="min-width: 0;">
+                                <h3 class="name-titlecase" style="margin: 0 0 6px; font-size: 19px; color: var(--ink);"><?= e_name($p['name']) ?></h3>
+                                <!-- Tipo/raza y "Co-tutor" van juntos debajo del nombre (antes "Co-tutor" estaba arriba a la derecha y apretaba todo) -->
+                                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
+                                    <span style="display: inline-block; font-size: 12px; font-weight: 700; color: var(--green); background: var(--mint); padding: 2px 10px; border-radius: 12px; white-space: nowrap;">
+                                        <?= e_name($p['animal_type']) ?> <?= $p['breed'] ? '· ' . e_name($p['breed']) : '' ?>
+                                    </span>
+                                    <?php if ((int)($p['is_primary_owner'] ?? 1) === 0): ?>
+                                        <span class="badge" style="background: rgba(35,119,101,0.1); color: var(--green); font-size: 11px; white-space: nowrap;"><i class="fa-solid fa-user-group" style="margin-right: 4px;"></i>Co-tutor</span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            <?php if ((int)($p['is_primary_owner'] ?? 1) === 0): ?>
-                                <span class="badge" style="background: rgba(35,119,101,0.1); color: var(--green); font-size: 11px;">Co-tutor</span>
-                            <?php endif; ?>
-                            <span class="pill" style="font-size: 11px; padding: 3px 8px;">#<?= (int)$p['id'] ?></span>
-                        </div>
+                        <span class="pill" style="font-size: 11px; padding: 3px 8px; flex-shrink: 0;">#<?= (int)$p['id'] ?></span>
                     </div>
 
                     <!-- Ficha Rápida de Métricas -->
@@ -513,12 +514,13 @@ require __DIR__ . '/../includes/header.php';
                 <i class="fa-solid fa-circle-exclamation"></i> <span id="petErrorText"></span>
             </div>
 
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" class="btn secondary" onclick="closeModal('modalEditPet')">Cerrar</button>
-                <button type="submit" class="btn primary" id="btnSavePet">Guardar cambios</button>
+            <!-- Los dos botones se reparten el ancho del modal en partes iguales -->
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn secondary" style="flex: 1; justify-content: center;" onclick="closeModal('modalEditPet')">Cerrar</button>
+                <button type="submit" class="btn primary" style="flex: 1; justify-content: center;" id="btnSavePet">Guardar cambios</button>
             </div>
 
-            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px dashed var(--line); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px;">
                 <div>
                     <div style="font-size: 13px; font-weight: 700; color: #dc2626;"><i class="fa-solid fa-trash-can"></i> ¿La mascota falleció o ya no la tenés?</div>
                     <div class="muted" style="font-size: 11.5px;">Podés darla de baja de tu cuenta de forma definitiva.</div>

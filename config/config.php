@@ -185,6 +185,15 @@ function url(string $path = ''): string {
     return BASE_URL . '/' . ltrim($path, '/');
 }
 
+/**
+ * Muestra la página 404 del sitio y corta la ejecución.
+ * Usar en páginas HTML cuando el registro pedido no existe (en APIs JSON no).
+ */
+function not_found(): never {
+    require dirname(__DIR__) . '/404.php';
+    exit;
+}
+
 function csrf_token(): string {
     if (empty($_SESSION['csrf'])) {
         $_SESSION['csrf'] = bin2hex(random_bytes(32));
@@ -214,6 +223,20 @@ function require_vet(): void {
     if (empty($_SESSION['vet_user_id']) || empty($_SESSION['clinic_id'])) {
         header('Location: ' . url('login.php?tipo=veterinaria'));
         exit;
+    }
+    // Si el admin desactivó al usuario (o suspendió la clínica), la sesión abierta deja de valer en el próximo pedido.
+    static $vetChecked = false;
+    if (!$vetChecked) {
+        $vetChecked = true;
+        $q = db()->prepare('SELECT u.active AS user_active, c.active AS clinic_active FROM vet_users u JOIN clinics c ON c.id = u.clinic_id WHERE u.id = ? AND u.clinic_id = ?');
+        $q->execute([(int)$_SESSION['vet_user_id'], (int)$_SESSION['clinic_id']]);
+        $st = $q->fetch();
+        if (!$st || !(int)$st['user_active'] || !(int)$st['clinic_active']) {
+            unset($_SESSION['vet_user_id'], $_SESSION['clinic_id'], $_SESSION['vet_username'], $_SESSION['clinic_name']);
+            clear_remember_cookie();
+            header('Location: ' . url('login.php?tipo=veterinaria'));
+            exit;
+        }
     }
     // Además de estar logueado, el ROL tiene que alcanzar para esta página (ver includes/roles.php).
     vet_enforce_role();
@@ -346,6 +369,9 @@ ensure_pet_co_owners_and_codes_tables();
 
 // Roles de la veterinaria (jefe / doctor / recepcionista) y profesional elegido en los turnos
 require_once __DIR__ . '/../includes/roles.php';
+
+// Días y horarios de atención de cada veterinaria (para limitar los turnos)
+require_once __DIR__ . '/../includes/horarios.php';
 
 // Política de contraseñas, solicitudes de alta/pago (Mercado Pago) y mensajes de soporte
 require_once __DIR__ . '/../includes/password_policy.php';

@@ -17,8 +17,7 @@ $q->execute([$id]);
 $c = $q->fetch();
 
 if (!$c) {
-    http_response_code(404);
-    exit('Consulta no encontrada');
+    not_found();
 }
 
 // Solo la clínica que registró la consulta puede administrar sus adjuntos.

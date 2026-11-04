@@ -29,8 +29,7 @@ $q->execute([$id]);
 $c = $q->fetch();
 
 if (!$c) {
-    http_response_code(404);
-    exit('Cliente no encontrado');
+    not_found();
 }
 
 // 2. Registrar o actualizar la última visita del cliente a esta clínica específica

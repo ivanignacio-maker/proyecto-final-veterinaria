@@ -40,8 +40,7 @@ if (!$c) {
         exit;
     }
 
-    http_response_code(404);
-    exit('Consulta no encontrada');
+    not_found();
 }
 
 $q = db()->prepare("

@@ -31,9 +31,9 @@ $resolvedBodyClass = trim((string)($bodyClass ?? '') . ($isClientPortal ? ' clie
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <link rel="stylesheet" href="<?= url('assets/style.css') ?>?v=24">
-    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=70">
+    <link rel="stylesheet" href="<?= url('assets/public.css') ?>?v=80">
     <link rel="stylesheet" href="<?= url('assets/dark.generated.css') ?>?v=5">
-    <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=53">
+    <link rel="stylesheet" href="<?= url('assets/dark.css') ?>?v=60">
     <link rel="stylesheet" href="<?= url('assets/date-selectors.css') ?>?v=<?= filemtime(__DIR__ . '/../assets/date-selectors.css') ?>">
     <link rel="icon" href="<?= url('assets/logo.webp') ?>?v=4" type="image/webp">
     <script>
