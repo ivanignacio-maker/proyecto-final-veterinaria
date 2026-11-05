@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2026 a las 21:39:37
--- Versión del servidor: 10.11.16-MariaDB
--- Versión de PHP: 8.3.36
+-- Tiempo de generación: 05-11-2026 a las 02:11:00
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -65,7 +65,9 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `clinic_id`, `client_id`, `pet_id`, `vet_user_id`, `requested_by`, `appointment_at`, `reason`, `status`, `created_at`) VALUES
-(1, 3, 2, 2, NULL, 'veterinaria', '2026-10-22 09:29:00', 'vacunacion', 'Atendido', '2026-10-21 12:29:18');
+(1, 3, 2, 2, NULL, 'veterinaria', '2026-10-22 09:29:00', 'vacunacion', 'Atendido', '2026-10-21 12:29:18'),
+(2, 3, 2, 2, 6, 'cliente', '2026-11-09 17:15:00', 'Control', 'Solicitado', '2026-11-04 13:28:59'),
+(6, 3, 2, 2, 6, 'veterinaria', '2026-11-09 17:00:00', 'Consulta general', 'Confirmado', '2026-11-04 14:54:14');
 
 -- --------------------------------------------------------
 
@@ -133,7 +135,11 @@ INSERT INTO `audit_log` (`id`, `clinic_id`, `vet_user_id`, `entity_type`, `entit
 (42, NULL, NULL, 'client', 9, 'admin_update', '{\"full_name\":\"Thiago Mantoani\",\"dni\":\"494949\",\"email\":\"thiagomantoani0122@gmail.com\"}', '2026-11-03 20:07:57'),
 (43, NULL, NULL, 'client', 1, 'admin_update', '{\"full_name\":\"Ivana Di Bruneli\",\"dni\":\"505050\",\"email\":\"ivanabruneli@gmail.com\"}', '2026-11-03 20:17:10'),
 (44, NULL, NULL, 'client', 1, 'admin_update', '{\"full_name\":\"Ivana Di Bruneli\",\"dni\":\"505050\",\"email\":\"ivanabruneli@gmail.com\"}', '2026-11-03 20:17:18'),
-(45, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-11-03 20:19:58');
+(45, NULL, NULL, 'client', 4, 'admin_update', '{\"full_name\":\"Ricardo Rickenbacher\",\"dni\":\"474747\",\"email\":\"ricardorickenbacher@gmail.com\"}', '2026-11-03 20:19:58'),
+(46, 3, 3, 'pet', 10, 'created', '{\"name\":\"Eustaquio\",\"client_id\":2}', '2026-11-04 13:04:59'),
+(47, NULL, NULL, 'pet', 9, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-04 13:58:28'),
+(48, NULL, NULL, 'pet', 10, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-04 13:58:53'),
+(49, NULL, NULL, 'pet', 11, 'client_deleted', '{\"client_id\":2,\"reason\":\"Fallecimiento\"}', '2026-11-04 14:59:06');
 
 -- --------------------------------------------------------
 
@@ -162,7 +168,8 @@ INSERT INTO `clients` (`id`, `dni`, `full_name`, `email`, `phone`, `avatar_path`
 (2, '464646', 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '11 4455-6666', 'avatars/client_2_e9c5092f983aad3f.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-11-03 20:07:28'),
 (4, '474747', 'Ricardo Rickenbacher', 'ricardorickenbacher@gmail.com', '11 4455-6688', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-11-03 20:07:40'),
 (5, '484848', 'Pedro Smith', 'pedro@gmail.com', '11 4455-6699', 'avatars/client_5_8beb96feffc364c4.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-11-03 20:07:49'),
-(9, '494949', 'Thiago Mantoani', 'thiagomantoani0122@gmail.com', '11 4455-6600', 'avatars/client_9_dfc9c352645a2d36.webp', '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-03 20:07:57');
+(9, '494949', 'Thiago Mantoani', 'thiagomantoani0122@gmail.com', '11 4455-6600', 'avatars/client_9_dfc9c352645a2d36.webp', '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-03 20:07:57'),
+(10, '424242', 'Mariano Paulo Ingerto', 'mariano@gmail.com', '111111', NULL, '$2y$10$IvczqLQdRaoBe/e9jcfcTeGFLFvsERYvJk3rbmEK2SR8nOwyN60eq', '2026-11-04 14:53:37', '2026-11-04 14:53:37');
 
 -- --------------------------------------------------------
 
@@ -194,7 +201,7 @@ CREATE TABLE `clinics` (
 INSERT INTO `clinics` (`id`, `name`, `email`, `street`, `city`, `province`, `active`, `created_at`, `cuit`, `phone`, `opening_hours`, `available_days`, `opening_time`, `closing_time`) VALUES
 (1, 'Mautorrales', 'mautorrales@gmail.com', 'Belgrano 3747', 'San Martín', 'Buenos Aires', 1, '2026-10-16 16:23:03', '2010010020', '11 4455-7777', NULL, '', NULL, NULL),
 (2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Plaza Belgrano', 'La Plata', 'Buenos Aires', 1, '2026-10-21 03:06:45', '2030030020', '444444', NULL, 'Lunes a Viernes', '08:00:00', '22:00:00'),
-(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '2020020020', '11111', NULL, 'lun mar', '21:16:00', '17:18:00');
+(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '2020020020', '11111', NULL, 'lun mar', '09:15:00', '17:30:00');
 
 -- --------------------------------------------------------
 
@@ -216,11 +223,12 @@ CREATE TABLE `clinic_clients` (
 INSERT INTO `clinic_clients` (`clinic_id`, `client_id`, `first_seen_at`, `last_seen_at`) VALUES
 (1, 1, '2026-10-16 16:24:10', '2026-10-16 16:39:06'),
 (1, 4, '2026-10-21 23:38:33', '2026-10-21 23:39:49'),
-(2, 2, '2026-10-21 03:12:47', '2026-11-03 16:52:14'),
+(2, 2, '2026-10-21 03:12:47', '2026-11-04 12:15:28'),
 (2, 4, '2026-10-21 03:16:58', '2026-11-03 19:55:55'),
-(3, 2, '2026-10-21 03:31:48', '2026-10-21 14:53:25'),
-(3, 4, '2026-10-21 12:26:23', '2026-10-21 12:26:23'),
-(3, 5, '2026-10-21 14:59:44', '2026-10-21 14:59:44');
+(3, 2, '2026-10-21 03:31:48', '2026-11-04 15:20:45'),
+(3, 4, '2026-10-21 12:26:23', '2026-11-04 13:36:34'),
+(3, 5, '2026-10-21 14:59:44', '2026-10-21 14:59:44'),
+(3, 10, '2026-11-04 14:53:37', '2026-11-04 14:53:38');
 
 -- --------------------------------------------------------
 
@@ -362,8 +370,7 @@ INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `
 (2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
 (5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53'),
 (7, 2, 'Teseo', 'Roedor', 'Macho', 'Chinchilla', 2.00, 12.00, NULL, NULL, '2026-11-03 16:15:36'),
-(8, 2, 'Icaro', 'Ave', 'Macho', 'Guacamayo', 12.00, 15.00, NULL, NULL, '2026-11-03 16:16:09'),
-(9, 2, 'Artemisa', 'Reptil', 'Hembra', 'Salamandra', 3.00, 13.00, NULL, NULL, '2026-11-03 16:17:19');
+(8, 2, 'Eustaquio', 'Ave', 'Macho', 'Guacamayo', 12.00, 15.00, NULL, NULL, '2026-11-03 16:16:09');
 
 -- --------------------------------------------------------
 
@@ -412,7 +419,13 @@ INSERT INTO `pet_access_codes` (`id`, `pet_id`, `code`, `action_type`, `created_
 (22, 2, '578125', 'modify_history', 2, 3, '2026-11-03 16:33:21', '2026-11-03 17:03:15', '2026-11-03 19:33:15'),
 (23, 2, '441087', 'modify_history', 2, 3, '2026-11-03 16:33:49', '2026-11-03 17:03:31', '2026-11-03 19:33:31'),
 (24, 2, '441106', 'modify_history', 2, 2, '2026-11-03 16:49:33', '2026-11-03 17:19:27', '2026-11-03 19:49:27'),
-(25, 2, '910240', 'modify_history', 2, 2, '2026-11-03 16:58:12', '2026-11-03 17:28:02', '2026-11-03 19:58:02');
+(25, 2, '910240', 'modify_history', 2, 2, '2026-11-03 16:58:12', '2026-11-03 17:28:02', '2026-11-03 19:58:02'),
+(26, 2, '995088', 'modify_history', 2, NULL, '2026-11-04 11:55:51', '2026-11-04 12:25:48', '2026-11-04 14:55:48'),
+(27, 2, '847231', 'modify_history', 2, NULL, '2026-11-04 11:55:51', '2026-11-04 12:25:51', '2026-11-04 14:55:51'),
+(28, 2, '895980', 'modify_history', 2, NULL, '2026-11-04 11:55:52', '2026-11-04 12:25:51', '2026-11-04 14:55:51'),
+(29, 2, '147284', 'modify_history', 2, NULL, NULL, '2026-11-04 12:25:52', '2026-11-04 14:55:52'),
+(30, 7, '879547', 'modify_history', 2, NULL, '2026-11-04 11:55:54', '2026-11-04 12:25:53', '2026-11-04 14:55:53'),
+(31, 7, '257926', 'modify_history', 2, NULL, NULL, '2026-11-04 12:25:54', '2026-11-04 14:55:54');
 
 -- --------------------------------------------------------
 
@@ -473,6 +486,13 @@ CREATE TABLE `plan_requests` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `plan_requests`
+--
+
+INSERT INTO `plan_requests` (`id`, `token`, `plan_code`, `billing`, `amount`, `clinic_name`, `cuit`, `clinic_email`, `phone`, `available_days`, `opening_time`, `closing_time`, `province`, `city`, `street`, `responsible_name`, `responsible_email`, `responsible_phone`, `staff_count`, `notes`, `payment_status`, `mp_preference_id`, `mp_payment_id`, `mp_status_detail`, `paid_at`, `status`, `clinic_id`, `admin_note`, `created_at`, `updated_at`) VALUES
+(1, '9e46b967a0a8459b2c31416b363abf32', 'clinicas', 'anual', 326400.00, 'Mau', '20111111117', 'mau@gmail.com', '11111111', 'Lunes a Viernes', NULL, NULL, 'Ciudad Autónoma de Buenos Aires', 'Balvanera', 'Belgrano 3747', 'Maria Teresa', 'maria@gmail.com', NULL, 3, NULL, 'pendiente', '3812389882-698a2c82-af06-4dcf-9645-aee264aa55f8', NULL, NULL, NULL, 'nueva', NULL, NULL, '2026-11-04 12:59:45', '2026-11-04 12:59:49');
+
 -- --------------------------------------------------------
 
 --
@@ -531,7 +551,9 @@ INSERT INTO `support_messages` (`id`, `sender_type`, `client_id`, `vet_user_id`,
 (4, 'veterinaria', NULL, NULL, NULL, 'Pedro Pascal', 'pedro@gmail.com', '123123123123', 'Consulta coso', 'hola soy Pedro Pascal', 'nuevo', '2026-11-03 14:08:21'),
 (5, 'veterinaria', NULL, NULL, NULL, 'Pedro Pascal', 'pedro@gmail.com', '123123123123', 'Consulta coso', 'hola soy Pedro Pascal', 'nuevo', '2026-11-03 14:08:39'),
 (6, 'tutor', NULL, NULL, NULL, 'Lattafa', 'lattafa@gmail.com', '12312123', 'Pregunta', 'hola soy Lattafa', 'nuevo', '2026-11-03 14:11:59'),
-(7, 'tutor', 2, NULL, NULL, 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'Problema con mis mascotas o su historial', 'ayudaaaaaaaaaaaaaaaaaaaaaaa', 'nuevo', '2026-11-03 14:22:55');
+(7, 'tutor', 2, NULL, NULL, 'Ivan Bruno', 'ivanignaciobruno@gmail.com', '111111', 'Problema con mis mascotas o su historial', 'ayudaaaaaaaaaaaaaaaaaaaaaaa', 'resuelto', '2026-11-03 14:22:55'),
+(8, 'tutor', NULL, NULL, NULL, 'Juan', 'juan@gmail.com', '11111111', 'Consulta general', 'soy juan', 'nuevo', '2026-11-04 12:09:37'),
+(9, 'veterinaria', NULL, NULL, NULL, 'Mariano', 'mariano@gmail.com', '111111111', 'Consulta general', 'hola soy Mariano', 'resuelto', '2026-11-04 14:50:37');
 
 -- --------------------------------------------------------
 
@@ -575,7 +597,10 @@ INSERT INTO `vet_users` (`id`, `clinic_id`, `username`, `email`, `role`, `passwo
 (1, 1, 'Ana', 'ana@gmail.com', 'jefe', '$2y$10$sRBl3iVgFqU1KNS09FnhYOoLNhmq.EmioZGVP810HKmHA2STMKXbC', 1, '2026-10-16 16:23:03'),
 (2, 2, 'Teresa', 'teresalasanta@gmail.com', 'jefe', '$2y$10$WN7VOFtdf33QMSwUJV8IU.7jK9nA5FkvF5tRUwWRvhHVWqM/D03A.', 1, '2026-10-21 03:06:45'),
 (3, 3, 'Martin', 'martindoc@gmail.com', 'jefe', '$2y$10$V85fHxC/U.KZ9lBFQy66ZuWgp09wJkXWsMp9OT7j.mVRATHU.p8wS', 1, '2026-10-21 03:08:40'),
-(4, 1, 'Thiago Mantoani', 'thiago@gmail.com', 'jefe', '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38');
+(4, 1, 'Thiago Mantoani', 'thiago@gmail.com', 'jefe', '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38'),
+(5, 3, 'Carlos', 'carlos@gmail.com', 'recepcionista', '$2y$10$UffOQXhO3j30LnkI3UEcX.WTqlRVB77ZrP4RTgUwbmriJWFFSYHL6', 1, '2026-11-04 13:16:58'),
+(6, 3, 'Carla', 'carla@gmail.com', 'doctor', '$2y$10$x3QCqTO07ov2u4OTA13XVOmbg3Ja4HkHFHselmekH5gJ778uwDLxa', 1, '2026-11-04 13:18:05'),
+(7, 1, 'Carlos1', 'carlos@gmail.com', 'doctor', '$2y$10$HUVDzvPCC9.qbJh6ni7b5u1eRX89sjozm1/5BHUSsws5EHoe/Ktdi', 1, '2026-11-04 15:02:14');
 
 --
 -- Índices para tablas volcadas
@@ -734,19 +759,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT de la tabla `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `clinics`
@@ -776,13 +801,13 @@ ALTER TABLE `medications`
 -- AUTO_INCREMENT de la tabla `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
 --
 ALTER TABLE `pet_access_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_co_owners`
@@ -794,19 +819,19 @@ ALTER TABLE `pet_co_owners`
 -- AUTO_INCREMENT de la tabla `plan_requests`
 --
 ALTER TABLE `plan_requests`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT de la tabla `support_messages`
 --
 ALTER TABLE `support_messages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `vaccine_reminders`
@@ -818,7 +843,7 @@ ALTER TABLE `vaccine_reminders`
 -- AUTO_INCREMENT de la tabla `vet_users`
 --
 ALTER TABLE `vet_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
