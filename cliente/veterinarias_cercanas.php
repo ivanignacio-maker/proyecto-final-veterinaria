@@ -1,0 +1,330 @@
+<?php
+require_once __DIR__ . '/../config/config.php';
+require_client();
+
+$pageTitle = 'Veterinarias cercanas | Portal Tutores';
+require __DIR__ . '/../includes/header.php';
+?>
+
+<!-- Leaflet: librería gratuita de mapas. Los mapas los dibuja OpenStreetMap.
+     Los atributos integrity verifican que el archivo del CDN no fue alterado. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+<style>
+    .vc-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+    .vc-search { display: flex; gap: 8px; flex: 1; min-width: 260px; }
+    .vc-search input { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+    .vc-results-shell { margin: 26px 0 32px; padding: 22px; border: 1px solid var(--line); border-radius: 24px; background: var(--white); box-shadow: 0 18px 42px rgba(24, 59, 53, .12), 0 3px 10px rgba(24, 59, 53, .05); }
+    .vc-results-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 0 0 18px; }
+    .vc-results-heading-main { display: flex; align-items: flex-start; gap: 13px; min-width: 0; }
+    .vc-results-icon { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 1px solid rgba(35, 119, 101, .13); border-radius: 14px; background: var(--mint); color: var(--green); font-size: 17px; }
+    .vc-results-kicker { margin: 0 0 2px; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .vc-results-heading h2 { margin: 0; color: var(--ink); font: 800 19px/1.25 Manrope, sans-serif; letter-spacing: -.35px; }
+    .vc-results-description { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .vc-results-badge { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--green); font-size: 12px; font-weight: 700; }
+    .vc-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 18px; }
+    #vcMap { height: 520px; border-radius: 18px; border: 1px solid var(--line); z-index: 0; overflow: hidden; }
+    .vc-list { display: flex; flex-direction: column; gap: 12px; max-height: 520px; overflow-y: auto; }
+    .vc-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: box-shadow .15s, border-color .15s; }
+    .vc-card:hover { border-color: var(--green); box-shadow: 0 4px 14px rgba(24, 59, 53, 0.08); }
+    .vc-card h3 { margin: 0 0 4px; font-size: 16px; color: var(--ink); }
+    .vc-card .vc-dist { font-size: 12px; font-weight: 700; color: var(--green); background: var(--mint); padding: 2px 10px; border-radius: 12px; white-space: nowrap; }
+    .vc-card .vc-line { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .vc-card a { font-size: 13px; font-weight: 700; color: var(--green); }
+    .vc-card a.vc-turno { display: inline-flex; align-items: center; gap: 6px; background: var(--green); color: #fff; padding: 7px 14px; border-radius: 10px; margin-right: 8px; }
+    .vc-card a.vc-turno:hover { filter: brightness(1.1); }
+    .vc-placeholder { min-height: 148px; display: grid; grid-template-columns: 42px minmax(0, 1fr); align-content: center; align-items: start; gap: 12px; padding: 17px; border: 1px dashed var(--line); border-radius: 14px; background: var(--paper); }
+    .vc-placeholder-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--mint); color: var(--green); font-size: 16px; }
+    .vc-placeholder h3 { margin: 1px 0 5px; color: var(--ink); font-size: 14px; }
+    .vc-placeholder p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .vc-placeholder-tag { display: inline-flex; margin-top: 9px; padding: 3px 8px; border-radius: 999px; background: var(--white); color: var(--green); font-size: 10px; font-weight: 800; }
+    .vc-status { margin-top: 16px; font-size: 14px; }
+    .vc-status.error { color: #991b1b; }
+    .vc-pin { color: var(--green); font-size: 32px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35); line-height: 1; }
+    .vc-user-location-icon { background: transparent !important; border: 0 !important; }
+    .vc-user-location-dot { display: block; width: 18px; height: 18px; box-sizing: border-box; border: 3px solid #fff; border-radius: 50%; background: #2b7bc4; box-shadow: 0 1px 5px rgba(15, 45, 70, .55); }
+    @media (max-width: 900px) {
+        .vc-layout { grid-template-columns: 1fr; }
+        #vcMap { height: 380px; }
+        .vc-list { max-height: none; }
+    }
+    @media (max-width: 600px) {
+        .vc-results-shell { margin-top: 20px; padding: 14px; border-radius: 19px; }
+        .vc-results-heading { align-items: flex-start; }
+        .vc-results-badge { display: none; }
+        .vc-results-heading h2 { font-size: 17px; }
+        #vcMap { height: 340px; border-radius: 14px; }
+    }
+</style>
+
+<div class="panel">
+    <h1><i class="fa-solid fa-location-dot" style="color: var(--green); margin-right: 8px;"></i>Veterinarias cercanas</h1>
+    <p class="muted">Encontrá las veterinarias registradas en <?= APP_NAME ?> más cerca tuyo. Tu ubicación se usa solo para esta búsqueda y no se guarda.</p>
+
+    <div class="vc-controls">
+        <button type="button" class="btn primary" id="vcLocate">
+            <i class="fa-solid fa-crosshairs" style="margin-right: 6px;"></i> Usar mi ubicación
+        </button>
+        <span class="muted" style="font-size: 13px;">o</span>
+        <form class="vc-search" id="vcSearchForm">
+            <input type="text" id="vcQuery" maxlength="200" placeholder="Ingresa una ubicación">
+            <button type="submit" class="btn secondary">Buscar</button>
+        </form>
+    </div>
+
+    <!-- aria-live: los lectores de pantalla anuncian los mensajes de estado -->
+    <div class="vc-status muted" id="vcStatus" aria-live="polite">Compartí tu ubicación o escribí una dirección para ver las veterinarias más cercanas.</div>
+</div>
+
+<section class="vc-results-shell" aria-labelledby="vcResultsTitle">
+    <div class="vc-results-heading">
+        <div class="vc-results-heading-main">
+            <span class="vc-results-icon" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></span>
+            <div>
+                <p class="vc-results-kicker">Explorá por zona</p>
+                <h2 id="vcResultsTitle">Mapa y resultados</h2>
+                <p class="vc-results-description">Seleccioná una veterinaria para ubicarla en el mapa.</p>
+            </div>
+        </div>
+        <span class="vc-results-badge"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> Ubicaciones cercanas</span>
+    </div>
+    <div class="vc-layout">
+        <div id="vcMap"></div>
+        <div class="vc-list" id="vcList"></div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+    // Datos que le pasa PHP al JavaScript (json_encode los escapa de forma segura).
+    const API_NEAR = <?= json_encode(url('cliente/api_veterinarias_cercanas.php')) ?>;
+    const API_GEO  = <?= json_encode(url('cliente/api_geocodificar.php')) ?>;
+    const TURNOS   = <?= json_encode(url('cliente/turnos.php')) ?>;   // pantalla de solicitar turno
+    const CSRF     = <?= json_encode(csrf_token()) ?>;
+
+    const statusEl = document.getElementById('vcStatus');
+    const listEl   = document.getElementById('vcList');
+
+    // Mapa inicial centrado en Buenos Aires; se reubica cuando hay resultados.
+    const map = L.map('vcMap').setView([-34.6037, -58.3816], 11);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Pin propio con el ícono de Font Awesome (ya cargado en el sitio), así no
+    // dependemos de las imágenes por defecto de Leaflet.
+    const pinIcon = L.divIcon({
+        className: '',
+        html: '<div class="vc-pin"><i class="fa-solid fa-location-dot"></i></div>',
+        iconSize: [26, 32], iconAnchor: [13, 32], popupAnchor: [0, -30]
+    });
+    // Un marcador HTML conserva un tamaño fijo y evita que el punto azul se
+    // deforme por estilos globales aplicados al SVG que usa CircleMarker.
+    const userLocationIcon = L.divIcon({
+        className: 'vc-user-location-icon',
+        html: '<span class="vc-user-location-dot" aria-hidden="true"></span>',
+        iconSize: [18, 18], iconAnchor: [9, 9]
+    });
+
+    const clinicLayer = L.layerGroup().addTo(map);
+    let userMarker = null;
+    let markers = [];
+
+    function renderStartPlaceholders() {
+        const placeholders = [
+            {
+                icon: 'fa-location-crosshairs',
+                title: 'Buscá una ubicación',
+                text: 'Usá tu ubicación actual o escribí una dirección para encontrar veterinarias cercanas.',
+                tag: 'Empezá por acá'
+            },
+            {
+                icon: 'fa-house-medical',
+                title: 'Conocé cada veterinaria',
+                text: 'Los resultados mostrarán distancia, dirección y datos de contacto para que compares opciones.',
+                tag: 'Resultados cercanos'
+            },
+            {
+                icon: 'fa-calendar-plus',
+                title: 'Elegí dónde atenderte',
+                text: 'Seleccioná una tarjeta para verla en el mapa y continuar con la solicitud de un turno.',
+                tag: 'Mapa interactivo'
+            }
+        ];
+
+        listEl.innerHTML = placeholders.map(function (item) {
+            return '<article class="vc-placeholder">' +
+                '<span class="vc-placeholder-icon" aria-hidden="true"><i class="fa-solid ' + item.icon + '"></i></span>' +
+                '<div><h3>' + item.title + '</h3><p>' + item.text + '</p><span class="vc-placeholder-tag">' + item.tag + '</span></div>' +
+                '</article>';
+        }).join('');
+    }
+
+    function renderNoClinicsCard() {
+        listEl.innerHTML = '<article class="vc-placeholder" role="status">' +
+            '<span class="vc-placeholder-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>' +
+            '<div><h3>No encontramos veterinarias en esta búsqueda</h3>' +
+            '<p>Probá con otra dirección o localidad. También puede que todavía no haya clínicas registradas en esa zona.</p>' +
+            '<span class="vc-placeholder-tag">Sin resultados</span></div>' +
+            '</article>';
+    }
+
+    renderStartPlaceholders();
+
+    // Evita que un nombre con < o " rompa el HTML (nunca insertar texto de la base sin escapar).
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    }
+
+    function setStatus(msg, isError) {
+        statusEl.textContent = msg;
+        statusEl.className = 'vc-status ' + (isError ? 'error' : 'muted');
+    }
+
+    // Envía datos por POST con el token CSRF y devuelve el JSON, o lanza un Error con el mensaje.
+    async function post(url, fields) {
+        const fd = new FormData();
+        fd.append('csrf', CSRF);
+        Object.keys(fields).forEach(k => fd.append(k, fields[k]));
+        const resp = await fetch(url, { method: 'POST', body: fd, credentials: 'same-origin' });
+        let json = null;
+        try { json = await resp.json(); } catch (e) { /* respuesta no JSON */ }
+        if (!json) throw new Error('Respuesta inesperada del servidor.');
+        if (!json.ok) throw new Error(json.error || 'Error desconocido.');
+        return json;
+    }
+
+    async function searchNear(lat, lng, label) {
+        setStatus('Buscando veterinarias cercanas…', false);
+        try {
+            const data = await post(API_NEAR, { lat: lat, lng: lng });
+            showResults(lat, lng, data.clinics, label);
+        } catch (err) {
+            setStatus(err.message, true);
+        }
+    }
+
+    function showResults(lat, lng, clinics, label) {
+        clinicLayer.clearLayers();
+        markers = [];
+        if (userMarker) { map.removeLayer(userMarker); }
+
+        userMarker = L.marker([lat, lng], { icon: userLocationIcon, keyboard: false })
+            .addTo(map).bindTooltip(label || 'Tu ubicación');
+
+        const points = [[lat, lng]];
+        listEl.innerHTML = '';
+
+        if (!clinics.length) {
+            renderNoClinicsCard();
+            setStatus('Todavía no hay veterinarias con ubicación cargada en el sistema.', true);
+            map.setView([lat, lng], 13);
+            return;
+        }
+
+        clinics.forEach(function (c, i) {
+            const dir = 'https://www.google.com/maps/dir/?api=1&destination=' + c.lat + ',' + c.lng;
+            // Lleva a "Solicitar turno" con esta veterinaria ya elegida
+            const turnoUrl = TURNOS + '?clinic_id=' + encodeURIComponent(c.id);
+            const marker = L.marker([c.lat, c.lng], { icon: pinIcon }).addTo(clinicLayer);
+            marker.bindPopup(
+                '<strong>' + esc(c.name) + '</strong><br>' + esc(c.address) +
+                '<br><em>a ' + c.distance_km.toLocaleString('es-AR') + ' km</em>' +
+                '<br><a href="' + turnoUrl + '">Pedir turno en esta veterinaria</a>'
+            );
+            markers.push(marker);
+            points.push([c.lat, c.lng]);
+
+            const card = document.createElement('div');
+            card.className = 'vc-card';
+            card.dataset.index = i;
+            card.innerHTML =
+                '<div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">' +
+                    '<h3>' + esc(c.name) + '</h3>' +
+                    '<span class="vc-dist">' + c.distance_km.toLocaleString('es-AR') + ' km</span>' +
+                '</div>' +
+                '<div class="vc-line"><i class="fa-solid fa-location-dot"></i> ' + esc(c.address) + '</div>' +
+                '<div class="vc-line"><i class="fa-solid fa-envelope"></i> ' + esc(c.email) + '</div>' +
+                '<div class="vc-line">' +
+                    '<a class="vc-turno" href="' + turnoUrl + '"><i class="fa-solid fa-calendar-plus"></i> Pedir turno</a>' +
+                    '<a href="' + dir + '" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Cómo llegar</a>' +
+                '</div>';
+            listEl.appendChild(card);
+        });
+
+        // Encuadrar el mapa para que se vean el tutor y todas las veterinarias.
+        map.fitBounds(points, { padding: [40, 40], maxZoom: 15 });
+        setStatus('Mostrando las ' + clinics.length + ' veterinaria' + (clinics.length === 1 ? '' : 's') + ' más cercana' + (clinics.length === 1 ? '' : 's') + (label ? ' a: ' + label : '') + '.', false);
+    }
+
+    // Clic en una tarjeta => el mapa vuela hasta esa veterinaria y abre su globo.
+    // (Un solo listener en el contenedor sirve para todas las tarjetas.)
+    listEl.addEventListener('click', function (ev) {
+        if (ev.target.closest('a')) { return; }   // el link "Cómo llegar" funciona normal
+        const card = ev.target.closest('.vc-card');
+        if (!card) { return; }
+        const m = markers[Number(card.dataset.index)];
+        if (m) {
+            map.flyTo(m.getLatLng(), 16);
+            m.openPopup();
+            document.getElementById('vcMap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    // ---- Opción 1: ubicación del navegador ----
+    function useMyLocation() {
+        // La ubicación del navegador solo funciona en HTTPS o en localhost.
+        if (!window.isSecureContext) {
+            setStatus('Tu navegador bloquea la ubicación en este tipo de conexión. Escribí tu dirección o localidad.', true);
+            return;
+        }
+        if (!('geolocation' in navigator)) {
+            setStatus('Tu navegador no permite obtener la ubicación. Escribí tu dirección o localidad.', true);
+            return;
+        }
+        setStatus('Pidiendo permiso para usar tu ubicación…', false);
+        navigator.geolocation.getCurrentPosition(
+            function (pos) { searchNear(pos.coords.latitude, pos.coords.longitude, 'tu ubicación'); },
+            function (err) {
+                const msgs = {
+                    1: 'No diste permiso para usar tu ubicación. Podés escribir tu dirección o localidad.',
+                    2: 'No pudimos detectar tu ubicación. Escribí tu dirección o localidad.',
+                    3: 'Tardó demasiado en detectar tu ubicación. Probá de nuevo o escribí tu dirección.'
+                };
+                setStatus(msgs[err.code] || msgs[2], true);
+            },
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        );
+    }
+    document.getElementById('vcLocate').addEventListener('click', useMyLocation);
+
+    // ---- Opción 2: escribir una dirección ----
+    document.getElementById('vcSearchForm').addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        const text = document.getElementById('vcQuery').value.trim();
+        if (text.length < 3) {
+            setStatus('Escribí al menos 3 letras de tu dirección o localidad.', true);
+            return;
+        }
+        setStatus('Buscando ese lugar…', false);
+        try {
+            const geo = await post(API_GEO, { q: text });
+            await searchNear(geo.lat, geo.lng, text);
+        } catch (err) {
+            setStatus(err.message, true);
+        }
+    });
+
+    // Si el tutor ya había dado permiso antes, buscamos solos al entrar.
+    // (Si no, esperamos al botón: pedir permiso apenas carga la página molesta.)
+    if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'geolocation' }).then(function (p) {
+            if (p.state === 'granted') { useMyLocation(); }
+        }).catch(function () { /* navegador sin soporte: no pasa nada */ });
+    }
+})();
+</script>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>

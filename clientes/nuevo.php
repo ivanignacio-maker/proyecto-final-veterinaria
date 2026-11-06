@@ -8,13 +8,21 @@ $error = '';
 // 1. Procesar el formulario de registro de un nuevo cliente
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dni = trim($_POST['dni'] ?? '');
-    $name = trim($_POST['full_name'] ?? '');
+    $nombre = format_name(trim($_POST['nombre'] ?? ''));
+    $apellido = format_name(trim($_POST['apellido'] ?? ''));
+    $fullName = trim($nombre . ' ' . $apellido);
+    if ($fullName === '' && !empty($_POST['full_name'])) {
+        $fullName = format_name(trim($_POST['full_name']));
+        $parts = explode(' ', $fullName, 2);
+        $nombre = $parts[0] ?? '';
+        $apellido = $parts[1] ?? '';
+    }
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     
     // Validar campos obligatorios y formato de correo electrónico
-    if (!$dni || !$name || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$phone) {
-        $error = 'Completá todos los campos correctamente.';
+    if (!$dni || !$nombre || !$apellido || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$phone) {
+        $error = 'Completá todos los campos (DNI, nombre, apellido, correo y teléfono) correctamente.';
     } else {
         $pdo = db();
         
@@ -24,11 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $q->fetchColumn();
         
         if ($id) {
-            $error = 'Ese DNI ya existe. Usá Buscar cliente para acceder al registro compartido.';
+            $error = 'Ese DNI ya se encuentra registrado. Podés buscarlo desde "Buscar cliente".';
         } else {
-            // Registrar el nuevo cliente globalmente
-            $q = $pdo->prepare("INSERT INTO clients(dni, full_name, email, phone) VALUES(?, ?, ?, ?)");
-            $q->execute([$dni, $name, $email, $phone]);
+            // Registrar el nuevo cliente globalmente guardando con formato ordenado y contraseña inicial (su DNI)
+            $pwHash = password_hash($dni, PASSWORD_DEFAULT);
+            $q = $pdo->prepare("INSERT INTO clients(dni, nombre, apellido, first_name, last_name, full_name, email, phone, password_hash) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $q->execute([$dni, $nombre, $apellido, $nombre, $apellido, $fullName, strtolower($email), $phone, $pwHash]);
             $id = (int)$pdo->lastInsertId();
         }
         
@@ -37,51 +46,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $q = $pdo->prepare("INSERT IGNORE INTO clinic_clients(clinic_id, client_id) VALUES(?, ?)");
             $q->execute([$_SESSION['clinic_id'], $id]);
             
+            flash('Cliente registrado y vinculado exitosamente.');
             header('Location: ' . url('clientes/ver.php?id=' . $id));
             exit;
         }
     }
 }
 
-$pageTitle = 'Nuevo cliente';
+$pageTitle = 'Nuevo Cliente | ' . APP_NAME;
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="panel">
-    <h1>Agregar cliente</h1>
-    <p class="muted">El DNI identifica al cliente en todas las veterinarias participantes.</p>
+    <h1><i class="fa-solid fa-user-plus" style="color: var(--green); margin-right: 8px;"></i>Registrar nuevo cliente</h1>
+    <p class="muted">El DNI identifica de forma única al tutor en toda la red de clínicas participantes.</p>
     
     <?php if ($error): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="notice error">
+            <span class="notice-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <span><?= e($error) ?></span>
+        </div>
     <?php endif; ?>
     
-    <form method="post">
+    <form method="post" style="margin-top: 18px;">
         <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
         
         <div class="form-grid">
             <div>
-                <label>DNI</label>
-                <input name="dni" required>
+                <label>DNI del tutor *</label>
+                <input name="dni" required inputmode="numeric" placeholder="Número de documento" value="<?= e($_POST['dni'] ?? '') ?>">
             </div>
             
             <div>
-                <label>Nombre y apellido</label>
-                <input name="full_name" required>
+                <label>Nombre del tutor *</label>
+                <input name="nombre" required placeholder="Ej. Juan" value="<?= e($_POST['nombre'] ?? '') ?>">
+            </div>
+
+            <div>
+                <label>Apellido del tutor *</label>
+                <input name="apellido" required placeholder="Ej. Pérez" value="<?= e($_POST['apellido'] ?? '') ?>">
             </div>
             
             <div>
-                <label>Correo</label>
-                <input type="email" name="email" required>
+                <label>Correo electrónico *</label>
+                <input type="email" name="email" required placeholder="correo@ejemplo.com" value="<?= e($_POST['email'] ?? '') ?>">
             </div>
             
             <div>
-                <label>Celular</label>
-                <input name="phone" required>
+                <label>Teléfono o celular *</label>
+                <input name="phone" required placeholder="Ej. 11 4455-6677" value="<?= e($_POST['phone'] ?? '') ?>">
             </div>
         </div>
         
         <div class="actions">
-            <button>Guardar cliente</button>
+            <button type="submit" class="btn primary">
+                <span>Guardar cliente</span>
+                <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+            </button>
             <a class="btn secondary" href="<?= url('clientes/buscar.php') ?>">Cancelar</a>
         </div>
     </form>

@@ -223,7 +223,10 @@ CREATE TABLE `medications` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `clinic_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(180) NOT NULL,
+  `brand` varchar(180) DEFAULT NULL,
+  `purpose` text DEFAULT NULL,
   `quantity` int(11) NOT NULL DEFAULT 0,
+  `last_restock_quantity` int(11) NOT NULL DEFAULT 0,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
