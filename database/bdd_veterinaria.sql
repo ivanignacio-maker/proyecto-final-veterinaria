@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-11-2026 a las 17:17:53
--- Versión del servidor: 10.11.16-MariaDB
--- Versión de PHP: 8.3.36
+-- Tiempo de generación: 06-11-2026 a las 01:20:26
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -66,8 +66,19 @@ CREATE TABLE `appointments` (
 
 INSERT INTO `appointments` (`id`, `clinic_id`, `client_id`, `pet_id`, `vet_user_id`, `requested_by`, `appointment_at`, `reason`, `status`, `created_at`) VALUES
 (1, 3, 2, 2, NULL, 'veterinaria', '2026-10-22 09:29:00', 'vacunacion', 'Atendido', '2026-10-21 12:29:18'),
-(2, 3, 2, 2, 6, 'cliente', '2026-11-09 17:15:00', 'Control', 'Solicitado', '2026-11-04 13:28:59'),
-(6, 3, 2, 2, 6, 'veterinaria', '2026-11-09 17:00:00', 'Consulta general', 'Confirmado', '2026-11-04 14:54:14');
+(2, 3, 2, 2, 6, 'cliente', '2026-11-09 17:15:00', 'Control', 'Atendido', '2026-11-04 13:28:59'),
+(6, 3, 2, 2, 6, 'veterinaria', '2026-11-09 17:00:00', 'Consulta general', 'Solicitado', '2026-11-04 14:54:14'),
+(7, 3, 4, 5, 9, 'veterinaria', '2026-11-09 14:15:00', 'Análisis clínicos', 'Solicitado', '2026-11-05 18:36:16'),
+(8, 3, 1, 1, 9, 'veterinaria', '2026-11-09 14:00:00', 'Control', 'Confirmado', '2026-11-05 18:37:12'),
+(9, 3, 4, 2, NULL, 'veterinaria', '2026-11-05 15:45:00', 'Dermatología', 'Atendido', '2026-11-05 18:43:47'),
+(10, 3, 2, 7, 3, 'veterinaria', '2026-11-05 16:00:00', 'Dermatología', 'Atendido', '2026-11-05 18:44:24'),
+(11, 3, 4, 2, 9, 'veterinaria', '2026-11-05 16:15:00', 'Cirugía', 'Cancelado', '2026-11-05 18:44:53'),
+(12, 3, 4, 2, 9, 'veterinaria', '2026-11-06 12:15:00', 'Desparasitación', 'Confirmado', '2026-11-05 18:46:40'),
+(13, 3, 2, 2, 3, 'veterinaria', '2026-11-09 12:45:00', 'Consulta general', 'Confirmado', '2026-11-05 18:49:47'),
+(14, 3, 2, 8, 3, 'veterinaria', '2026-11-06 12:30:00', 'Vacunación', 'Confirmado', '2026-11-05 20:28:26'),
+(15, 3, 2, 2, 3, 'veterinaria', '2026-11-06 12:45:00', 'Control', 'Confirmado', '2026-11-05 20:47:17'),
+(16, 3, 2, 2, 3, 'cliente', '2026-12-07 14:00:00', 'Odontología', 'Solicitado', '2026-11-05 20:58:04'),
+(17, 1, 4, 2, 1, 'veterinaria', '2026-11-17 23:30:00', 'Desparasitación', 'Confirmado', '2026-11-05 23:47:05');
 
 -- --------------------------------------------------------
 
@@ -143,7 +154,15 @@ INSERT INTO `audit_log` (`id`, `clinic_id`, `vet_user_id`, `entity_type`, `entit
 (50, 3, 3, 'medication', 5, 'stock_reduced', '{\"name\":\"Amoxicilina + Ácido Clavulánico\",\"previous_quantity\":19,\"subtracted_quantity\":10,\"new_quantity\":9}', '2026-11-05 16:15:44'),
 (51, 3, 3, 'medication', 6, 'stock_reduced', '{\"name\":\"Carprofeno\",\"previous_quantity\":14,\"subtracted_quantity\":3,\"new_quantity\":11}', '2026-11-05 16:16:11'),
 (52, 3, 3, 'medication', 6, 'stock_reduced', '{\"name\":\"Carprofeno\",\"previous_quantity\":11,\"subtracted_quantity\":7,\"new_quantity\":4}', '2026-11-05 16:16:20'),
-(53, 3, 3, 'medication', 6, 'stock_reduced', '{\"name\":\"Carprofeno\",\"previous_quantity\":4,\"subtracted_quantity\":1,\"new_quantity\":3}', '2026-11-05 16:16:39');
+(53, 3, 3, 'medication', 6, 'stock_reduced', '{\"name\":\"Carprofeno\",\"previous_quantity\":4,\"subtracted_quantity\":1,\"new_quantity\":3}', '2026-11-05 16:16:39'),
+(54, 3, 3, 'medication', 12, 'created', '{\"name\":\"paracetamol\",\"initial_quantity\":6}', '2026-11-05 20:50:52'),
+(55, 3, 3, 'medication', 12, 'restocked', '{\"name\":\"paracetamol\",\"previous_quantity\":6,\"added_quantity\":4,\"new_quantity\":10}', '2026-11-05 20:51:00'),
+(56, 3, 3, 'medication', 12, 'stock_reduced', '{\"name\":\"paracetamol\",\"previous_quantity\":10,\"subtracted_quantity\":8,\"new_quantity\":2}', '2026-11-05 20:51:23'),
+(57, 3, 3, 'medication', 12, 'deleted', '{\"name\":\"paracetamol\",\"quantity_at_deletion\":2,\"consultations_preserved\":0}', '2026-11-05 20:51:47'),
+(58, 1, 1, 'medication', 13, 'created', '{\"name\":\"paracetamol\",\"initial_quantity\":10}', '2026-11-05 23:45:47'),
+(59, 1, 1, 'medication', 14, 'created', '{\"name\":\"Antirrabica\",\"initial_quantity\":25}', '2026-11-05 23:45:55'),
+(60, NULL, NULL, 'client', 10, 'admin_update', '{\"full_name\":\"Mariano Ingerto\",\"dni\":\"424242\",\"email\":\"mariano@gmail.com\"}', '2026-11-06 00:18:35'),
+(61, NULL, NULL, 'plan_request', 1, 'payment_marked_manually', '{\"note\":\"\"}', '2026-11-06 00:19:42');
 
 -- --------------------------------------------------------
 
@@ -176,8 +195,8 @@ INSERT INTO `clients` (`id`, `dni`, `nombre`, `apellido`, `full_name`, `first_na
 (2, '464646', 'Ivan', 'Bruno', 'Ivan Bruno', 'Ivan', 'Bruno', 'ivanignaciobruno@gmail.com', '11 4455-6666', 'avatars/client_2_e9c5092f983aad3f.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:12:47', '2026-11-05 04:46:37'),
 (4, '474747', 'Ricardo', 'Rickenbacher', 'Ricardo Rickenbacher', 'Ricardo', 'Rickenbacher', 'ricardorickenbacher@gmail.com', '11 4455-6688', 'avatars/client_4_ce0db24f9ed2cad7.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 03:16:58', '2026-11-05 04:46:37'),
 (5, '484848', 'Pedro', 'Smith', 'Pedro Smith', 'Pedro', 'Smith', 'pedro@gmail.com', '11 4455-6699', 'avatars/client_5_8beb96feffc364c4.webp', '$2y$10$1Y03rzBQIPTOHHYFBwzcQ.YmPMzvpYzp4OH9cAxbDcI8S68aB0T3y', '2026-10-21 14:59:44', '2026-11-05 04:46:37'),
-(9, '494949', 'Thiago', 'Mantoani', 'Thiago Mantoani', 'Thiago', 'Mantoani', 'thiagomantoani0122@gmail.com', '11 4455-6600', 'avatars/client_9_dfc9c352645a2d36.webp', '$2y$10$iRi9wk86/HYCXtfdS/w7d.Cgp3ALy.xsTdYDNwpkQ0lagnCGuPmPO', '2026-11-01 22:06:28', '2026-11-05 04:46:37'),
-(10, '424242', 'Mariano', 'Paulo Ingerto', 'Mariano Paulo Ingerto', 'Mariano', 'Paulo Ingerto', 'mariano@gmail.com', '111111', NULL, '$2y$10$IvczqLQdRaoBe/e9jcfcTeGFLFvsERYvJk3rbmEK2SR8nOwyN60eq', '2026-11-04 14:53:37', '2026-11-05 04:46:37');
+(10, '424242', 'Mariano', 'Ingerto', 'Mariano Ingerto', 'Mariano', 'Ingerto', 'mariano@gmail.com', '111111', NULL, '$2y$10$IvczqLQdRaoBe/e9jcfcTeGFLFvsERYvJk3rbmEK2SR8nOwyN60eq', '2026-11-04 14:53:37', '2026-11-06 00:18:35'),
+(12, '123', 'Jaun', 'Perez', 'Jaun Perez', 'Jaun', 'Perez', 'jaun@gmail.com', '1111', NULL, '$2y$10$UXVWYRz4RlKL5YJRiG1SJew54AdtdbygYyaWemtnKxTpCucS21I8q', '2026-11-05 20:46:17', '2026-11-05 20:46:17');
 
 -- --------------------------------------------------------
 
@@ -209,7 +228,7 @@ CREATE TABLE `clinics` (
 INSERT INTO `clinics` (`id`, `name`, `email`, `street`, `city`, `province`, `active`, `created_at`, `cuit`, `phone`, `opening_hours`, `available_days`, `opening_time`, `closing_time`) VALUES
 (1, 'Mautorrales', 'mautorrales@gmail.com', 'Belgrano 3747', 'San Martín', 'Buenos Aires', 1, '2026-10-16 16:23:03', '2010010020', '11 4455-7777', NULL, '', NULL, NULL),
 (2, 'Veterinaria Santa Teresita', 'vetsanter@gmail.com', 'Plaza Belgrano', 'La Plata', 'Buenos Aires', 1, '2026-10-21 03:06:45', '2030030020', '444444', NULL, 'Lunes a Viernes', '08:00:00', '22:00:00'),
-(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '2020020020', '11111', NULL, 'lun mar', '09:15:00', '17:30:00');
+(3, 'Veterinaria La Matanza', 'vetmatanza@gmail.com', 'Dr. Rodolfo Monte 848', 'Morón', 'Buenos Aires', 1, '2026-10-21 03:08:40', '2020020020', '11111', NULL, 'Lunes a Domingos', '09:15:00', '17:30:00');
 
 -- --------------------------------------------------------
 
@@ -230,13 +249,15 @@ CREATE TABLE `clinic_clients` (
 
 INSERT INTO `clinic_clients` (`clinic_id`, `client_id`, `first_seen_at`, `last_seen_at`) VALUES
 (1, 1, '2026-10-16 16:24:10', '2026-10-16 16:39:06'),
-(1, 4, '2026-10-21 23:38:33', '2026-10-21 23:39:49'),
+(1, 4, '2026-10-21 23:38:33', '2026-11-05 23:47:55'),
 (2, 2, '2026-10-21 03:12:47', '2026-11-04 12:15:28'),
 (2, 4, '2026-10-21 03:16:58', '2026-11-03 19:55:55'),
-(3, 2, '2026-10-21 03:31:48', '2026-11-04 15:20:45'),
-(3, 4, '2026-10-21 12:26:23', '2026-11-04 13:36:34'),
+(3, 1, '2026-11-05 18:37:12', '2026-11-05 18:37:12'),
+(3, 2, '2026-10-21 03:31:48', '2026-11-05 20:47:17'),
+(3, 4, '2026-10-21 12:26:23', '2026-11-05 18:46:40'),
 (3, 5, '2026-10-21 14:59:44', '2026-10-21 14:59:44'),
-(3, 10, '2026-11-04 14:53:37', '2026-11-04 14:53:38');
+(3, 10, '2026-11-04 14:53:37', '2026-11-04 14:53:38'),
+(3, 12, '2026-11-05 20:46:17', '2026-11-05 20:46:17');
 
 -- --------------------------------------------------------
 
@@ -268,7 +289,11 @@ INSERT INTO `consultations` (`id`, `pet_id`, `clinic_id`, `vet_user_id`, `reason
 (1, 1, 1, 1, 'Consulta general', 'diarrea', 'parasitos en el estomago', 'paracetamol cada 2 dias', 'En proceso', NULL, NULL, '2026-10-16 16:26:25', '2026-10-16 16:26:25'),
 (2, 2, 3, 3, 'Desparasitación', 'Consulta programada para plan trimestral de desparasitación interna y externa. Tutor refiere buen apetito, correcta hidratación y deposiciones normales. Al examen físico, abdomen blando, depresible y indoloro a la palpación. Sin signos de parásitos en materia fecal reciente.', 'Protocolo preventivo de desparasitación al día / Sin alteraciones digestivas aparentes.', 'Administración oral de comprimido antiparasitario interno de amplio espectro (Praziquantel / Pirantel / Febantel) según franja de peso correspondiente.\r\n\r\nRefuerzo de pipeta tópica externa para control de pulgas y garrapatas.\r\n\r\nRepetir esquema trimestralmente según fecha sugerida.', 'Dado de Alta', NULL, NULL, '2026-10-21 12:33:13', '2026-11-03 18:51:34'),
 (3, 2, 3, 3, 'Control', 'Control de rutina periódico. Apolo se presenta activo, alerta y con excelente condición corporal (peso estable de 14.2 kg). Se revisan cavidad oral (leve placa de sarro incipiente), estado de pelaje y piel (sin ectoparásitos ni lesiones). Se procede a corte de uñas y limpieza superficial de conductos auditivos.', 'Paciente en buen estado general de salud / Control periódico de rutina sin hallazgos patológicos de relevancia.', 'Mantenimiento de dieta equilibrada habitual.\r\n\r\nPlan de higiene dental preventiva en casa (cepillado periódico con pasta apta para canes).\r\n\r\nPróximo control general sugerido en 6 meses.', 'En proceso', NULL, NULL, '2026-10-21 14:58:28', '2026-11-03 18:46:56'),
-(4, 2, 2, 2, 'Vacuna', 'Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.', 'Paciente clínico sano apto para inmunización profiláctica anual.', 'Aplicación de vacuna séxtuple anual (realizada en consultorio).\r\n\r\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.', 'Dado de Alta', '2027-10-15', '2027-10-12', '2026-10-24 21:23:44', '2026-11-03 18:28:38');
+(4, 2, 2, 2, 'Vacuna', 'Paciente acude para aplicación de refuerzo anual de vacuna séxtuple. Se realiza examen clínico general previo: temperatura normal (38.5 °C), mucosas rosadas, hidratación adecuada, ganglios linfáticos sin alteraciones y auscultación cardiopulmonar sin ruidos agregados. Se administra la vacuna por vía subcutánea sin reacciones adversas inmediatas. Se aconseja reposo relativo durante las próximas 24 horas.', 'Paciente clínico sano apto para inmunización profiláctica anual.', 'Aplicación de vacuna séxtuple anual (realizada en consultorio).\r\n\r\nControl periódico y observación en domicilio por posible somnolencia leve post-vacunación.', 'Dado de Alta', '2027-10-15', '2027-10-12', '2026-10-24 21:23:44', '2026-11-03 18:28:38'),
+(5, 8, 3, 3, 'Dermatología', 'Texto de prueba', 'Texto de prueba', 'Texto de prueba', 'En proceso', NULL, NULL, '2026-11-05 18:53:30', '2026-11-05 18:53:30'),
+(6, 2, 3, 3, 'Consulta general', 'asdasdd', 'asdasd', 'asdasd', 'En proceso', NULL, NULL, '2026-11-05 20:26:22', '2026-11-05 20:26:22'),
+(7, 2, 3, 3, 'Vacuna', 'dsad', 'sddsd', 'dsd', 'En proceso', '2031-02-09', '2034-02-13', '2026-11-05 20:39:49', '2026-11-05 20:39:49'),
+(8, 2, 3, 3, 'Vacuna', 'sdsd', 'sdsd', 'sdsd', 'En proceso', '2004-11-16', '2025-06-06', '2026-11-05 20:45:23', '2026-11-05 20:45:23');
 
 -- --------------------------------------------------------
 
@@ -316,7 +341,11 @@ INSERT INTO `consultation_medications` (`consultation_id`, `medication_id`, `oth
 (1, NULL, 'paracetamol', 1),
 (2, 6, NULL, 0),
 (3, 5, NULL, 0),
-(4, 10, NULL, 0);
+(4, 10, NULL, 0),
+(5, 7, NULL, 0),
+(6, 6, NULL, 0),
+(7, 5, NULL, 0),
+(8, 5, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -341,13 +370,15 @@ CREATE TABLE `medications` (
 
 INSERT INTO `medications` (`id`, `clinic_id`, `name`, `brand`, `purpose`, `quantity`, `last_restock_quantity`, `updated_at`) VALUES
 (4, 3, 'Meloxicam', 'Metacam', 'Antiinflamatorio no esteroideo (AINE).', 10, 10, '2026-11-03 19:39:45'),
-(5, 3, 'Amoxicilina + Ácido Clavulánico', 'Synulox', 'Antibiótico de amplio espectro.', 9, 19, '2026-11-05 16:15:44'),
-(6, 3, 'Carprofeno', 'Rimadyl', 'Antiinflamatorio no esteroideo (AINE) analgésico.', 3, 14, '2026-11-05 16:16:39'),
-(7, 3, 'Prednisona / Prednisolona', 'Deltasona', 'Corticosteroide / Antiinflamatorio e inmunosupresor.', 15, 15, '2026-11-03 19:40:16'),
+(5, 3, 'Amoxicilina + Ácido Clavulánico', 'Synulox', 'Antibiótico de amplio espectro.', 7, 19, '2026-11-05 20:45:23'),
+(6, 3, 'Carprofeno', 'Rimadyl', 'Antiinflamatorio no esteroideo (AINE) analgésico.', 2, 14, '2026-11-05 20:26:22'),
+(7, 3, 'Prednisona / Prednisolona', 'Deltasona', 'Corticosteroide / Antiinflamatorio e inmunosupresor.', 14, 15, '2026-11-05 18:53:30'),
 (8, 3, 'Afoxolaner / Fluralaner', 'NexGard', 'Antiparasitario oral', 0, 0, '2026-11-03 19:38:40'),
 (9, 2, 'Oclacitinib', 'Apoquel', 'Inhibidor selectivo de la Janus quinasa (JAK).', 10, 10, '2026-11-03 19:56:34'),
 (10, 2, 'Cefalexina', 'Cephatabs', 'Antibiótico cefalosporínico de primera generación.', 1, 2, '2026-11-03 19:58:12'),
-(11, 2, 'Metronidazol', 'Flagyl', 'Antibiótico y antiparasitario (nitroimidazol).', 4, 4, '2026-11-03 19:57:00');
+(11, 2, 'Metronidazol', 'Flagyl', 'Antibiótico y antiparasitario (nitroimidazol).', 4, 4, '2026-11-03 19:57:00'),
+(13, 1, 'paracetamol', NULL, NULL, 10, 10, '2026-11-05 23:45:47'),
+(14, 1, 'Antirrabica', NULL, NULL, 25, 25, '2026-11-05 23:45:55');
 
 -- --------------------------------------------------------
 
@@ -378,7 +409,8 @@ INSERT INTO `pets` (`id`, `client_id`, `name`, `animal_type`, `sexo`, `breed`, `
 (2, 2, 'Apolo', 'Perro', 'Macho', 'Shitsu', 8.50, 0.20, '2013-10-11', 'pets/db283741f9eaac9df9cdf39aa99f81d7efc3d566.jpg', '2026-10-21 03:17:32'),
 (5, 4, 'Eustaquio', 'Roedor', 'Macho', 'Chinchilla', 10.00, 10.00, '2008-06-17', 'pets/706a7c913a3fb5d656a3f73b2b97a0d099955963.webp', '2026-10-28 05:23:53'),
 (7, 2, 'Teseo', 'Roedor', 'Macho', 'Chinchilla', 2.00, 12.00, NULL, NULL, '2026-11-03 16:15:36'),
-(8, 2, 'Eustaquio', 'Ave', 'Macho', 'Guacamayo', 12.00, 15.00, NULL, NULL, '2026-11-03 16:16:09');
+(8, 2, 'Eustaquio', 'Ave', 'Macho', 'Guacamayo', 12.00, 15.00, NULL, NULL, '2026-11-03 16:16:09'),
+(12, 2, 'Luna', 'Gato', 'Hembra', 'Tricolor', 12.00, 44.00, '2019-01-16', NULL, '2026-11-05 20:56:01');
 
 -- --------------------------------------------------------
 
@@ -433,7 +465,13 @@ INSERT INTO `pet_access_codes` (`id`, `pet_id`, `code`, `action_type`, `created_
 (28, 2, '895980', 'modify_history', 2, NULL, '2026-11-04 11:55:52', '2026-11-04 12:25:51', '2026-11-04 14:55:51'),
 (29, 2, '147284', 'modify_history', 2, NULL, NULL, '2026-11-04 12:25:52', '2026-11-04 14:55:52'),
 (30, 7, '879547', 'modify_history', 2, NULL, '2026-11-04 11:55:54', '2026-11-04 12:25:53', '2026-11-04 14:55:53'),
-(31, 7, '257926', 'modify_history', 2, NULL, NULL, '2026-11-04 12:25:54', '2026-11-04 14:55:54');
+(31, 7, '257926', 'modify_history', 2, NULL, NULL, '2026-11-04 12:25:54', '2026-11-04 14:55:54'),
+(32, 2, '663922', 'modify_history', 2, NULL, NULL, '2026-11-05 16:22:34', '2026-11-05 18:52:34'),
+(33, 8, '212036', 'modify_history', 2, 3, '2026-11-05 15:53:30', '2026-11-05 16:22:50', '2026-11-05 18:52:50'),
+(34, 2, '728941', 'modify_history', 2, 3, '2026-11-05 17:26:22', '2026-11-05 17:54:42', '2026-11-05 20:24:42'),
+(35, 2, '813067', 'modify_history', 2, 3, '2026-11-05 17:39:49', '2026-11-05 18:09:11', '2026-11-05 20:39:11'),
+(36, 2, '501972', 'modify_history', 2, 3, '2026-11-05 17:45:23', '2026-11-05 18:15:03', '2026-11-05 20:45:03'),
+(37, 2, '289803', 'modify_history', 2, NULL, NULL, '2026-11-05 18:26:19', '2026-11-05 20:56:19');
 
 -- --------------------------------------------------------
 
@@ -454,45 +492,6 @@ CREATE TABLE `pet_co_owners` (
 
 INSERT INTO `pet_co_owners` (`id`, `pet_id`, `client_id`, `created_at`) VALUES
 (1, 2, 4, '2026-10-24 22:34:27');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `plan_requests`
---
-
-CREATE TABLE `plan_requests` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `token` char(32) NOT NULL,
-  `plan_code` varchar(30) NOT NULL,
-  `billing` enum('mensual','anual') NOT NULL,
-  `amount` decimal(12,2) NOT NULL,
-  `clinic_name` varchar(150) NOT NULL,
-  `cuit` varchar(20) NOT NULL,
-  `clinic_email` varchar(190) NOT NULL,
-  `phone` varchar(50) DEFAULT NULL,
-  `available_days` varchar(100) DEFAULT NULL,
-  `opening_time` varchar(5) DEFAULT NULL,
-  `closing_time` varchar(5) DEFAULT NULL,
-  `province` varchar(60) NOT NULL,
-  `city` varchar(120) NOT NULL,
-  `street` varchar(180) NOT NULL,
-  `responsible_name` varchar(120) NOT NULL,
-  `responsible_email` varchar(190) NOT NULL,
-  `responsible_phone` varchar(50) DEFAULT NULL,
-  `staff_count` tinyint(3) UNSIGNED DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `payment_status` enum('pendiente','en_proceso','aprobado','rechazado','cancelado') NOT NULL DEFAULT 'pendiente',
-  `mp_preference_id` varchar(80) DEFAULT NULL,
-  `mp_payment_id` varchar(40) DEFAULT NULL,
-  `mp_status_detail` varchar(80) DEFAULT NULL,
-  `paid_at` datetime DEFAULT NULL,
-  `status` enum('nueva','registrada','descartada') NOT NULL DEFAULT 'nueva',
-  `clinic_id` int(11) DEFAULT NULL,
-  `admin_note` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -519,37 +518,10 @@ INSERT INTO `remember_tokens` (`id`, `user_type`, `user_id`, `vet_user_id`, `sel
 (1, 'vet', 0, 0, '57d6ecd2294ae58f7c2f0ce8', '64cd6edd8ebe7b8768b8d0707ec5e140faeb620777053ed474300f9b9a8cf8ba', '2026-12-20 20:33:59', '2026-10-21 23:33:59'),
 (41, 'client', 2, NULL, '13714c3dbf7a96414078005b', '05e4258a3e4ad0bd0c95b69ee179e471032e0b41e836c975a230d648d831fbbe', '2027-01-02 15:28:09', '2026-11-03 18:28:09'),
 (43, 'client', 2, NULL, 'c8ed6c7dbba6b1fe73bbfe27', '7ec6f6745e782d7d46b52ab8121d45bc4637d258295d9bae8221b5befe069ee9', '2027-01-02 15:54:42', '2026-11-03 18:54:42'),
-(98, 'vet', 3, 3, '34058316fc528abbe8b77406', 'c1e3efe0007ff948511da4fbb4067e1d5176eabcb469f963fddcbac79a8842ec', '2027-01-04 13:15:21', '2026-11-05 16:15:21');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `support_messages`
---
-
-CREATE TABLE `support_messages` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `sender_type` enum('tutor','veterinaria','publico') NOT NULL,
-  `client_id` int(11) DEFAULT NULL,
-  `vet_user_id` int(11) DEFAULT NULL,
-  `clinic_id` int(11) DEFAULT NULL,
-  `name` varchar(120) NOT NULL,
-  `email` varchar(190) NOT NULL,
-  `phone` varchar(50) DEFAULT NULL,
-  `subject` varchar(150) NOT NULL,
-  `message` text NOT NULL,
-  `status` enum('nuevo','resuelto') NOT NULL DEFAULT 'nuevo',
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `support_messages`
---
-
-INSERT INTO `support_messages` (`id`, `sender_type`, `client_id`, `vet_user_id`, `clinic_id`, `name`, `email`, `phone`, `subject`, `message`, `status`, `created_at`) VALUES
-(1, 'veterinaria', NULL, 3, 3, 'Martin', 'martindoc@gmail.com', '11111', 'Problema con historiales médicos', 'Me faltan historiales medicos, tal vez borre alguno por accidente, podrian revisar si en algun Backup de Enero-Febrero existe? Apolo ID 2 - Control', 'nuevo', '2026-11-05 16:10:28'),
-(2, 'veterinaria', NULL, 3, 3, 'Martin', 'martindoc@gmail.com', '11111', 'Facturación o plan', 'No se ejecuta el cobro de nuestra tarjeta de credito, como podemos arreglarlo?', 'nuevo', '2026-11-05 16:13:59'),
-(3, 'veterinaria', NULL, 3, 3, 'Martin', 'martindoc@gmail.com', '11111', 'Sugerencia', 'Estaria bueno poder registrar mas mascotas!', 'nuevo', '2026-11-05 16:14:31');
+(98, 'vet', 3, 3, '34058316fc528abbe8b77406', 'c1e3efe0007ff948511da4fbb4067e1d5176eabcb469f963fddcbac79a8842ec', '2027-01-04 13:15:21', '2026-11-05 16:15:21'),
+(104, 'client', 2, NULL, '96400d89b4fb832eae15bca4', '998936f3dd3f5279e9360b33dfbc9ecc50030d329a7218ab4453c45285113940', '2027-01-04 15:52:31', '2026-11-05 18:52:31'),
+(112, 'client', 2, NULL, '25ad3b728546af7368e25b66', '2237bcbf194d69c9c0c8fb5bc752165031fb0552f0dadfe678f1d109f02a77bc', '2027-01-04 17:24:40', '2026-11-05 20:24:40'),
+(120, 'vet', 2, 2, 'c9e715727ba34414289fa2cb', 'f7c4a6c1c687d44b721f1e51639900ccb7322f073eb278c60b60cef4e9ccdc3f', '2027-01-04 19:51:25', '2026-11-05 22:51:25');
 
 -- --------------------------------------------------------
 
@@ -576,14 +548,16 @@ CREATE TABLE `vet_users` (
 --
 
 INSERT INTO `vet_users` (`id`, `clinic_id`, `nombre`, `apellido`, `username`, `email`, `role`, `avatar_path`, `password_hash`, `active`, `created_at`) VALUES
-(1, 1, 'Ana', '', 'Ana', 'ana@gmail.com', 'jefe', NULL, '$2y$10$sRBl3iVgFqU1KNS09FnhYOoLNhmq.EmioZGVP810HKmHA2STMKXbC', 1, '2026-10-16 16:23:03'),
+(1, 1, 'Ana', 'Alvarez', 'Ana', 'ana@gmail.com', 'jefe', 'avatars/vet_1_c490163bc9c2.jpg', '$2y$10$76maqxA8dJqDdP.Jy6u/pO6wV20oL6rQ4U/.B8pb9yXrVe6EaWYAG', 1, '2026-10-16 16:23:03'),
 (2, 2, 'Teresa', 'Torosa', 'Teresa', 'teresalasanta@gmail.com', 'jefe', 'avatars/vet_2_b6adec787f61.jpg', '$2y$10$WN7VOFtdf33QMSwUJV8IU.7jK9nA5FkvF5tRUwWRvhHVWqM/D03A.', 1, '2026-10-21 03:06:45'),
-(3, 3, 'Martin', '', 'Martin', 'martindoc@gmail.com', 'jefe', NULL, '$2y$10$V85fHxC/U.KZ9lBFQy66ZuWgp09wJkXWsMp9OT7j.mVRATHU.p8wS', 1, '2026-10-21 03:08:40'),
-(4, 1, 'Thiago Mantoani', '', 'Thiago Mantoani', 'thiago@gmail.com', 'jefe', NULL, '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38'),
-(5, 3, 'Carlos', '', 'Carlos', 'carlos@gmail.com', 'recepcionista', NULL, '$2y$10$UffOQXhO3j30LnkI3UEcX.WTqlRVB77ZrP4RTgUwbmriJWFFSYHL6', 1, '2026-11-04 13:16:58'),
-(6, 3, 'Carla', '', 'Carla', 'carla@gmail.com', 'doctor', NULL, '$2y$10$x3QCqTO07ov2u4OTA13XVOmbg3Ja4HkHFHselmekH5gJ778uwDLxa', 1, '2026-11-04 13:18:05'),
-(7, 1, 'Carlos1', '', 'Carlos1', 'carlos@gmail.com', 'doctor', NULL, '$2y$10$HUVDzvPCC9.qbJh6ni7b5u1eRX89sjozm1/5BHUSsws5EHoe/Ktdi', 1, '2026-11-04 15:02:14'),
-(8, 2, 'Pepe', 'Pinga', '', 'pinga@gmail.com', 'doctor', 'avatars/vet_8_d7f0d7f051cf.jpg', '$2y$10$dNGip29MdDVrqkFZ1DkG2OpMV0mcpavLOoFzT0b396GLZ15g9vYnW', 1, '2026-11-05 04:14:29');
+(3, 3, 'Martin', 'Martinez', 'Martin', 'martindoc@gmail.com', 'jefe', 'avatars/vet_3_e7d02491a011.jpg', '$2y$10$V85fHxC/U.KZ9lBFQy66ZuWgp09wJkXWsMp9OT7j.mVRATHU.p8wS', 1, '2026-10-21 03:08:40'),
+(4, 1, 'Thiago', 'Mantoani', 'Thiago Mantoani', 'thiago@gmail.com', 'recepcionista', 'avatars/vet_4_49235243efc2.jpg', '$2y$10$6Z4HOcj.j3/Cly3CBdYqdOZeu0iTS9dgc6z.dmPdNC9WOpxbflffm', 1, '2026-10-21 23:37:38'),
+(5, 3, 'Carlos', 'Alvarez', 'Carlos', 'carlitos@gmail.com', 'recepcionista', 'avatars/vet_5_f5f372a49f88.jpg', '$2y$10$UffOQXhO3j30LnkI3UEcX.WTqlRVB77ZrP4RTgUwbmriJWFFSYHL6', 1, '2026-11-04 13:16:58'),
+(6, 3, 'Carla', 'Perez', 'Carla', 'carla@gmail.com', 'doctor', 'avatars/vet_6_d086955567ca.jpg', '$2y$10$x3QCqTO07ov2u4OTA13XVOmbg3Ja4HkHFHselmekH5gJ778uwDLxa', 1, '2026-11-04 13:18:05'),
+(7, 1, 'Carlos', 'Mendez', 'Carlos1', 'carlos@gmail.com', 'doctor', 'avatars/vet_7_a6504c745ad0.webp', '$2y$10$HUVDzvPCC9.qbJh6ni7b5u1eRX89sjozm1/5BHUSsws5EHoe/Ktdi', 1, '2026-11-04 15:02:14'),
+(8, 2, 'Pepe', 'Gonzales', 'Pepe', 'Pepe@gmail.com', 'doctor', 'avatars/vet_8_2f1c447c8de0.webp', '$2y$10$dNGip29MdDVrqkFZ1DkG2OpMV0mcpavLOoFzT0b396GLZ15g9vYnW', 1, '2026-11-05 04:14:29'),
+(9, 3, 'Santiago', 'Romero', 'Santiago Romero', 'santiago@gmail.com', 'doctor', 'avatars/vet_9_425629085f9c.webp', '$2y$10$9kpwYu1gDQaaWMuMFQycDeT5NU/CYs.j7retwlAng4/41SUv4avpi', 1, '2026-11-05 18:34:36'),
+(10, 3, 'Santiago', 'Perez', 'Roman Martinez', 'aaa@gmail.com', 'recepcionista', NULL, '$2y$10$ZpvgzSwMTzk.MXfAuB0y.OuYDT0RCWKQW2brakgMHq3ZRoMbwNYkO', 1, '2026-11-05 20:52:50');
 
 --
 -- Índices para tablas volcadas
@@ -689,29 +663,12 @@ ALTER TABLE `pet_co_owners`
   ADD KEY `client_id` (`client_id`);
 
 --
--- Indices de la tabla `plan_requests`
---
-ALTER TABLE `plan_requests`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uq_token` (`token`),
-  ADD KEY `idx_payment` (`payment_status`),
-  ADD KEY `idx_status` (`status`);
-
---
 -- Indices de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `selector` (`selector`),
   ADD KEY `vet_user_id` (`vet_user_id`);
-
---
--- Indices de la tabla `support_messages`
---
-ALTER TABLE `support_messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_sender` (`sender_type`);
 
 --
 -- Indices de la tabla `vet_users`
@@ -734,19 +691,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT de la tabla `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT de la tabla `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `clinics`
@@ -758,7 +715,7 @@ ALTER TABLE `clinics`
 -- AUTO_INCREMENT de la tabla `consultations`
 --
 ALTER TABLE `consultations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `consultation_files`
@@ -770,19 +727,19 @@ ALTER TABLE `consultation_files`
 -- AUTO_INCREMENT de la tabla `medications`
 --
 ALTER TABLE `medications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_access_codes`
 --
 ALTER TABLE `pet_access_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `pet_co_owners`
@@ -791,28 +748,16 @@ ALTER TABLE `pet_co_owners`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `plan_requests`
---
-ALTER TABLE `plan_requests`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
-
---
--- AUTO_INCREMENT de la tabla `support_messages`
---
-ALTER TABLE `support_messages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
 
 --
 -- AUTO_INCREMENT de la tabla `vet_users`
 --
 ALTER TABLE `vet_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

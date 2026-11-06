@@ -1,31 +1,81 @@
 ADMIN:
 vetcare987@gmail.com
-vetcare987
+Contraseña: vetcare987
 
 
-VETERINARIA 1:  Veterinaria Santa Teresita
-vetsanter@gmail.com
-
-teresalasanta@gmail.com
-1234567890
-
-
-
-VETERINARIA 2: Veterinaria La Matanza
+VETERINARIA 1: Veterinaria La Matanza
 vetmatanza@gmail.com
 
 martindoc@gmail.com
-1234567890
+Contraseña: 1234567890
 
+carla@gmail.com
+Contraseña: 1234567890
+
+santiago@gmail.com
+Contraseña: 1234567890
+
+carlitos@gmail.com
+Contraseña: 1234567890
+
+aaa@gmail.com
+Contraseña: 1234567890
+
+
+VETERINARIA 2:  Veterinaria Santa Teresita
+
+teresalasanta@gmail.com
+Contraseña: 1234567890
+
+Pepe@gmail.com
+Contraseña: 1234567890
+
+VETERINARIA 3: 
+
+Mautorrales
+
+ana@gmail.com
+Contraseña: 1234567890
+
+thiago@gmail.com
+Contraseña: 1234567890
+
+carlos@gmail.com
+Contraseña: 1234567890
 
 Dueño 1:
 Ivan Bruno
-464646
+DNI: 464646
 ivanignaciobruno@gmail.com
-111111
+Contraseña: 1234567890
 
 Dueño 2:
 Ricardo Rickenbacher
-474747
+DNI: 474747
 ricardorickenbacher@gmail.com
-222222
+Contraseña: 1234567890
+
+Dueño 3:
+Ivana Di Bruneli
+DNI: 505050
+ivanabruneli@gmail.com
+Contraseña: 1234567890
+
+Dueño 4:
+Pedro Smith
+DNI: 484848
+pedro@gmail.com
+Contraseña: 1234567890
+
+Dueño 5:
+Mariano Ingerto
+DNI: 424242
+mariano@gmail.com
+Contraseña: 1234567890
+
+
+Dueño 6:
+Jaun Perez
+DNI: 123
+jaun@gmail.com
+Contraseña: 1234567890
