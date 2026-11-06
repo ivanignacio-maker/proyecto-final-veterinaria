@@ -1,5 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+if (!empty($_SESSION['admin_id'])) {
+    header('Location: ' . url('admin/veterinarias.php'));
+    exit;
+}
+
 csrf_check();
 
 $error = '';
@@ -9,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
-    // Buscar al administrador por su correo electrónico
-    $q = db()->prepare("SELECT * FROM admins WHERE email = ?");
+    // Buscar al administrador por su correo electrónico (case-insensitive)
+    $q = db()->prepare("SELECT * FROM admins WHERE LOWER(email) = LOWER(?) LIMIT 1");
     $q->execute([$email]);
     $a = $q->fetch();
     
@@ -32,24 +37,33 @@ $pageTitle = 'Administración';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="panel" style="max-width:500px;margin:40px auto">
-    <h1>Administración general</h1>
-    
-    <?php if ($error): ?>
-        <p><?= e($error) ?></p>
-    <?php endif; ?>
-    
-    <form method="post">
-        <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+
         
-        <label>Correo administrador</label>
-        <input type="email" name="email" required>
+        <form method="post" class="auth-form">
+            <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
+            
+            <div class="form-group">
+                <label>Correo del administrador</label>
+                <input type="email" name="email" required placeholder="admin@vetcompartido.com">
+            </div>
+            
+            <div class="form-group" style="margin-top: 14px;">
+                <label>Contraseña maestra</label>
+                <input type="password" name="password" required placeholder="••••••••••••">
+            </div>
+            
+            <button class="btn primary full" type="submit" style="margin-top: 20px; padding: 13px;">
+                <span>Ingresar al panel de control</span>
+                <span style="margin-left: 6px;">→</span>
+            </button>
+        </form>
         
-        <label>Contraseña</label>
-        <input type="password" name="password" required>
-        
-        <button>Ingresar</button>
-    </form>
+        <div style="text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line);">
+            <a href="<?= url('login.php') ?>" style="font-size: 13px; font-weight: 700; color: var(--green);">
+                ← Volver al login principal
+            </a>
+        </div>
+    </div>
 </div>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>

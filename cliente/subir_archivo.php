@@ -25,36 +25,53 @@ if (!$c) {
     exit('Consulta no autorizada.');
 }
 
+$redirectToHistory = static function (string $error) use ($c): void {
+    $query = http_build_query([
+        'pet_id' => (int)$c['pet_id'],
+        'upload_error' => $error,
+        'consultation_id' => (int)$c['id']
+    ]);
+    header('Location: ' . url('cliente/historial.php?' . $query));
+    exit;
+};
+
 // 3. Validar el archivo enviado (existencia, errores en la subida y tamaño máximo de 5 MB)
 $f = $_FILES['attachment'] ?? null;
 
 if (!$f || $f['error'] !== UPLOAD_ERR_OK || $f['size'] > 5 * 1024 * 1024) {
-    exit('Archivo inválido o mayor a 5 MB.');
+    $redirectToHistory('invalid');
 }
 
 // 4. Validar que el tipo MIME sea seguro y permitido
 $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);
-$allowed = [
-    'application/pdf' => 'pdf',
-    'image/jpeg'      => 'jpg',
-    'image/png'       => 'png'
+$allowedMimes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp'
 ];
 
-if (!isset($allowed[$mime])) {
-    exit('Solo se aceptan PDF, JPG y PNG.');
+if (!in_array($mime, $allowedMimes, true)) {
+    $redirectToHistory('invalid');
 }
 
-// 5. Preparar el directorio de subidas y guardar el archivo con un nombre aleatorio
-$dir = __DIR__ . '/../uploads';
+// 5. Guardar archivo: si es imagen, convertir a WebP automáticamente
+$dir = ensure_upload_dir();
+$isImage = strpos($mime, 'image/') === 0;
+$saveExt = $isImage ? 'webp' : 'pdf';
+$stored = bin2hex(random_bytes(24)) . '.' . $saveExt;
+$destPath = $dir . DIRECTORY_SEPARATOR . $stored;
 
-if (!is_dir($dir)) {
-    mkdir($dir, 0750, true);
+$saved = false;
+if ($isImage) {
+    $saved = convert_image_to_webp($f['tmp_name'], $destPath, 85);
+    $mime = 'image/webp';
+} else {
+    $saved = move_uploaded_file($f['tmp_name'], $destPath);
 }
 
-$stored = bin2hex(random_bytes(24)) . '.' . $allowed[$mime];
-
-if (!move_uploaded_file($f['tmp_name'], $dir . '/' . $stored)) {
-    exit('No se pudo guardar el archivo.');
+if (!$saved) {
+    $redirectToHistory('save');
 }
 
 // 6. Registrar el archivo en la base de datos vinculado a la consulta
@@ -71,5 +88,9 @@ $q->execute([
 ]);
 
 // 7. Redirigir de vuelta al historial médico de la mascota
-header('Location: ' . url('cliente/historial.php?pet_id=' . (int)$c['pet_id']));
+header('Location: ' . url('cliente/historial.php?' . http_build_query([
+    'pet_id' => (int)$c['pet_id'],
+    'upload_success' => 1,
+    'consultation_id' => (int)$c['id']
+])));
 exit;
