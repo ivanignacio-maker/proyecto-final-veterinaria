@@ -1,4 +1,4 @@
-# VetCompartido — versión 2 (XAMPP / Windows)
+# VetCare — versión 2 (XAMPP / Windows)
 
 Sistema inicial de gestión veterinaria multi-clínica en PHP 8.1+, MySQL/MariaDB, HTML, CSS y JavaScript.
 
